@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { hasMath, renderMarkdown } from "./markdown.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const contentRoot = path.join(root, "content");
@@ -126,6 +127,26 @@ function markdownToHtml(markdown) {
   return html.join("\n");
 }
 
+function deriveDescription(markdown) {
+  const plainText = markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/<!--([\s\S]*?)-->/g, " ")
+    .replace(/\{\{[<%][\s\S]*?[>%]\}\}/g, " ")
+    .replace(/^\[\^[^\]]+\]:.*$/gm, " ")
+    .replace(/\[\^[^\]]+\]/g, "")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^[-*>\d.]+\s+/gm, "")
+    .replace(/[*_`~]/g, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!plainText) return "阅读全文。";
+  return plainText.length > 92 ? `${plainText.slice(0, 92)}…` : plainText;
+}
+
 async function loadContent(group) {
   const directory = path.join(contentRoot, group.key);
   const files = (await readdir(directory)).filter((file) => file.endsWith(".md"));
@@ -134,14 +155,15 @@ async function loadContent(group) {
   for (const file of files) {
     const source = await readFile(path.join(directory, file), "utf8");
     const { data, body } = parseFrontmatter(source);
-    const slug = file.replace(/\.md$/, "");
-    if (!data.title || !data.description || !data.date) {
-      throw new Error(`${group.key}/${file} 缺少 title、description 或 date`);
+    const slug = data.slug || file.replace(/\.md$/, "");
+    if (!data.title || !data.date) {
+      throw new Error(`${group.key}/${file} 缺少 title 或 date`);
     }
     entries.push({
       ...data,
       slug,
-      body,
+      description: data.description || deriveDescription(body),
+      body: body.replace(/<!--([\s\S]*?)-->/g, "").trim(),
       href: `/${group.key}/${slug}/`,
       group,
     });
@@ -155,7 +177,12 @@ function formatDate(value) {
   return [year, month, day].filter(Boolean).join(".");
 }
 
-function layout({ title, description, content, bodyClass = "" }) {
+function layout({ title, description, content, bodyClass = "", math = false }) {
+  const mathAssets = math ? `
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script defer src="/math.js"></script>` : "";
   return `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -164,7 +191,7 @@ function layout({ title, description, content, bodyClass = "" }) {
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles.css">${mathAssets}
 </head>
 <body class="${escapeHtml(bodyClass)}">
 ${content}
@@ -207,10 +234,16 @@ function homePage(collections) {
 }
 
 function detailPage(entry) {
+  const warnings = [];
+  const rendered = renderMarkdown(entry.body, { warnings });
+  for (const warning of warnings) {
+    console.warn(`[${entry.group.key}/${entry.slug}] ${warning}`);
+  }
   return layout({
     title: `${entry.title} — AI 学习与理解`,
     description: entry.description,
     bodyClass: "detail",
+    math: hasMath(entry.body),
     content: `<main class="article-shell">
       <nav class="article-nav"><a href="/">← 返回首页</a><span>${entry.group.eyebrow}</span></nav>
       <header class="article-header">
@@ -219,7 +252,7 @@ function detailPage(entry) {
         <p class="article-description">${escapeHtml(entry.description)}</p>
         <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
       </header>
-      <article class="prose">${markdownToHtml(entry.body)}</article>
+      <article class="prose">${rendered.html}</article>
       <footer class="article-footer"><a href="/">回到全部内容 →</a></footer>
     </main>`,
   });

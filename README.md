@@ -34,3 +34,6 @@ date: 2026-07-14
 
 文件名会成为网址的一部分，例如 `content/writings/example.md` 会生成
 `/writings/example/`。
+
+从 Hugo 迁移文章、可用扩展格式和未知格式的处理方式，见
+[`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)。
