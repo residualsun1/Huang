@@ -14,6 +14,8 @@ test("首页包含三个最小内容栏目和用户文章", async () => {
   assert.match(html, /class="project-card"/);
   assert.match(html, /class="writing-row"/);
   assert.match(html, /class="prompt-card"/);
+  assert.match(html, /\/images\/ai-companion-scene\.png/);
+  assert.match(html, /class="scene-frame"/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
 });
 

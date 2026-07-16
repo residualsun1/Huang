@@ -290,12 +290,21 @@ function homePage(collections) {
           <p class="eyebrow">PERSONAL AI NOTEBOOK</p>
           <h1 id="home-title">AI 学习与理解</h1>
           <p class="intro">记录我正在构建的项目、持续形成的理解，以及反复使用的提示词。这里不是答案库，而是一份不断修订的个人认知档案。</p>
+          <div class="hero-meta">
+            <span class="status-label"><span class="status-dot" aria-hidden="true"></span>持续更新</span>
+            <time datetime="${escapeHtml(latestDate)}">最近更新 ${formatDate(latestDate)}</time>
+          </div>
         </div>
-        <div class="hero-note">
-          <span class="status-label"><span class="status-dot" aria-hidden="true"></span>持续更新</span>
-          <p>从清楚地写下一件事开始，让经验逐渐形成结构。</p>
-          <time datetime="${escapeHtml(latestDate)}">最近更新 ${formatDate(latestDate)}</time>
-        </div>
+        <figure class="hero-scene">
+          <div class="scene-frame">
+            <img src="/images/ai-companion-scene.png" alt="像素艺术场景：一名男性与蓝色 AI 编程伙伴站在发光的树下" width="1254" height="1254" fetchpriority="high">
+            <div class="scene-hud" aria-hidden="true">
+              <span><i></i>AI COMPANION</span>
+              <span>01</span>
+            </div>
+          </div>
+          <figcaption><span>LEARNING SPACE</span><span>人类与 AI，一起形成理解。</span></figcaption>
+        </figure>
       </section>
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
