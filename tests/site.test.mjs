@@ -54,10 +54,23 @@ test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
   assert.match(agent, /class="footnotes"/);
   assert.match(agent, /class="article-toc"/);
   assert.match(agent, /class="breadcrumb"/);
+  assert.match(agent, /class="article-pagination"/);
+  assert.match(agent, /上一篇文章/);
+  assert.match(agent, /下一篇文章/);
+  assert.match(agent, /href="\/writings\/deploy-an-agent-with-python\/"/);
+  assert.match(agent, /href="\/writings\/codex-desktop-reconnecting-problem\/"/);
   assert.match(appStore, /class="image-loop"/);
   assert.match(appStore, /<mark>/);
   assert.match(deploy, /<details>/);
   assert.match(deploy, /<summary>查看完整代码<\/summary>/);
+});
+
+test("正文和引用使用独立的中文阅读字体", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /--source-han-serif:/);
+  assert.match(css, /--kai:/);
+  assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--source-han-serif\)/);
+  assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--kai\)/);
 });
 
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {

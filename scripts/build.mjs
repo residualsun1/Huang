@@ -198,6 +198,9 @@ function layout({ title, description, content, bodyClass = "", math = false }) {
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://huang-ai-learning-notes.residualsun924088.chatgpt.site/og.png">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="/styles.css">${mathAssets}
 </head>
 <body class="${escapeHtml(bodyClass)}">
@@ -350,7 +353,29 @@ function createTableOfContents(html) {
   </aside>`;
 }
 
-function detailPage(entry) {
+function articlePagination(previousEntry, nextEntry) {
+  const item = (entry, direction) => {
+    const isPrevious = direction === "previous";
+    const label = isPrevious ? "← 上一篇文章" : "下一篇文章 →";
+    if (!entry) {
+      return `<span class="article-pagination-item is-disabled ${direction}">
+        <span>${label}</span>
+        <strong>暂无${isPrevious ? "上一篇" : "下一篇"}</strong>
+      </span>`;
+    }
+    return `<a class="article-pagination-item ${direction}" href="${entry.href}" aria-label="${label}：${escapeHtml(entry.title)}">
+      <span>${label}</span>
+      <strong>${escapeHtml(entry.title)}</strong>
+    </a>`;
+  };
+
+  return `<nav class="article-pagination" aria-label="上一篇与下一篇文章">
+    ${item(previousEntry, "previous")}
+    ${item(nextEntry, "next")}
+  </nav>`;
+}
+
+function detailPage(entry, previousEntry, nextEntry) {
   const warnings = [];
   const rendered = renderMarkdown(entry.body, { warnings });
   for (const warning of warnings) {
@@ -380,6 +405,7 @@ function detailPage(entry) {
         <article class="prose">${rendered.html}</article>
         ${toc}
       </div>
+      ${articlePagination(previousEntry, nextEntry)}
       <footer class="article-footer"><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">← 回到${entry.group.label}</a></footer>
     </main>
     ${siteFooter()}`,
@@ -395,10 +421,12 @@ export async function buildSite() {
   for (const group of groups) {
     const entries = await loadContent(group);
     collections.push({ group, entries });
-    for (const entry of entries) {
+    for (const [index, entry] of entries.entries()) {
       const target = path.join(clientRoot, group.key, entry.slug);
       await mkdir(target, { recursive: true });
-      await writeFile(path.join(target, "index.html"), detailPage(entry), "utf8");
+      const previousEntry = entries[index + 1];
+      const nextEntry = entries[index - 1];
+      await writeFile(path.join(target, "index.html"), detailPage(entry, previousEntry, nextEntry), "utf8");
     }
   }
 
