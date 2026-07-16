@@ -73,7 +73,7 @@ test("正文和引用使用独立的中文阅读字体", async () => {
   assert.match(css, /--kai:/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--kai\)/);
-  assert.match(css, /body\.detail-writings \{/);
+  assert.doesNotMatch(css, /body\.detail-writings \{/);
   assert.match(css, /\.detail-writings \.prose > p \{[\s\S]*?text-indent: 2em/);
   assert.match(css, /\.detail-writings \.article-pagination-item \{/);
   assert.match(writing, /<body class="detail detail-writings">/);
