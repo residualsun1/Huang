@@ -110,12 +110,12 @@ if (scene) {
     scene.classList.add("is-shaking");
     shell.classList.add("is-moving");
 
-    petOffset += petDirection * (24 + Math.round(Math.random() * 22));
-    if (petOffset > 28) {
-      petOffset = 28;
+    petOffset += petDirection * (8 + Math.round(Math.random() * 6));
+    if (petOffset > 16) {
+      petOffset = 16;
       petDirection = -1;
-    } else if (petOffset < -74) {
-      petOffset = -74;
+    } else if (petOffset < -28) {
+      petOffset = -28;
       petDirection = 1;
     }
     pet.style.setProperty("--pet-x", `${petOffset}px`);

@@ -285,16 +285,8 @@ function homePage(collections) {
             <img class="scene-background" src="/images/ai-companion-scene-v3.png" alt="粗像素艺术场景：一名男性站在夜晚发光的树下" width="1254" height="1254" fetchpriority="high">
             <canvas class="scene-particles" aria-hidden="true"></canvas>
             <span class="codex-pet" aria-hidden="true">
-              <span class="pet-shadow"></span>
               <span class="pet-shell">
-                <span class="pet-head">
-                  <span class="pet-screen"><i>&gt;</i><b>_</b></span>
-                </span>
-                <span class="pet-body"><i>&gt;</i><b>_</b></span>
-                <span class="pet-arm pet-arm-left"></span>
-                <span class="pet-arm pet-arm-right"></span>
-                <span class="pet-foot pet-foot-left"></span>
-                <span class="pet-foot pet-foot-right"></span>
+                <img class="pet-sprite" src="/images/codey-head-v1.png" alt="" width="72" height="56">
               </span>
             </span>
             <span class="scene-feather" aria-hidden="true"></span>
