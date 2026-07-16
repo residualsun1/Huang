@@ -385,7 +385,7 @@ function detailPage(entry, previousEntry, nextEntry) {
   return layout({
     title: `${entry.title} — Huang`,
     description: entry.description,
-    bodyClass: "detail",
+    bodyClass: `detail detail-${entry.group.key}`,
     math: hasMath(entry.body),
     content: `${siteHeader()}
     <main class="article-shell">

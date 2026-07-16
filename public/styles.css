@@ -61,6 +61,27 @@
   --article-width: 740px;
 }
 
+body.detail-writings {
+  --background-100: #eee5cf;
+  --background-200: rgba(47, 40, 29, 0.045);
+  --surface-raised: rgba(248, 242, 225, 0.68);
+  --gray-1000: #2f281d;
+  --gray-900: #544a3c;
+  --gray-800: #6e6354;
+  --gray-700: #897e6d;
+  --gray-alpha-100: rgba(47, 40, 29, 0.04);
+  --gray-alpha-200: rgba(47, 40, 29, 0.07);
+  --gray-alpha-400: rgba(47, 40, 29, 0.14);
+  --gray-alpha-500: rgba(47, 40, 29, 0.24);
+  background-color: var(--background-100);
+  background-image:
+    radial-gradient(circle at 16% 9%, rgba(255, 255, 255, 0.16), transparent 31%),
+    radial-gradient(circle at 82% 44%, rgba(119, 91, 39, 0.035), transparent 38%),
+    radial-gradient(circle at 30% 88%, rgba(255, 255, 255, 0.1), transparent 28%),
+    repeating-linear-gradient(112deg, rgba(72, 53, 19, 0.012) 0 1px, transparent 1px 9px);
+  background-attachment: fixed;
+}
+
 * { box-sizing: border-box; }
 
 .sr-only {
@@ -82,7 +103,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--background-100);
+  background-color: var(--background-100);
   color: var(--gray-1000);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
@@ -110,6 +131,10 @@ a { color: inherit; }
   border-bottom: 1px solid var(--gray-alpha-400);
   background: rgba(243, 241, 237, 0.86);
   backdrop-filter: saturate(140%) blur(14px);
+}
+
+.detail-writings .site-header {
+  background: rgba(238, 229, 207, 0.88);
 }
 
 .site-header-inner,
@@ -192,6 +217,28 @@ a { color: inherit; }
   margin: 16px 0 0;
   font-weight: 600;
   letter-spacing: -0.06em;
+}
+
+.detail-writings .article-header {
+  border-bottom-color: rgba(47, 40, 29, 0.16);
+}
+
+.detail-writings .article-header h1,
+.detail-writings .article-description {
+  font-family: var(--source-han-serif);
+}
+
+.detail-writings .article-header h1 {
+  max-width: 820px;
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+}
+
+.detail-writings .article-description {
+  max-width: 740px;
+  color: #594d3d;
+  line-height: 1.85;
 }
 
 .hero-intro {
@@ -714,6 +761,38 @@ a { color: inherit; }
 
 .prose blockquote > :last-child { margin-bottom: 0; }
 
+.detail-writings .prose {
+  margin-top: 72px;
+  margin-bottom: 96px;
+  color: #332b20;
+  font-size: 18px;
+  line-height: 1.78;
+  letter-spacing: 0.015em;
+}
+
+.detail-writings .prose > p {
+  margin-bottom: 2.65em;
+  text-align: justify;
+  text-indent: 2em;
+  text-justify: inter-ideograph;
+}
+
+.detail-writings .prose > p.text-center,
+.detail-writings .prose > p:has(> img:only-child),
+.detail-writings .prose > p:has(> a:only-child > img:only-child) {
+  text-indent: 0;
+}
+
+.detail-writings .prose blockquote {
+  margin: 2.8em 1.25em;
+  padding: 0.2em 0 0.2em 1.35em;
+  border-left: 1px solid rgba(47, 40, 29, 0.34);
+  background: transparent;
+  color: #514536;
+  font-size: 18px;
+  line-height: 2;
+}
+
 .prose code {
   padding: 0.15em 0.38em;
   border: 1px solid var(--gray-alpha-200);
@@ -1006,6 +1085,36 @@ a.article-pagination-item:hover {
   opacity: 0.46;
 }
 
+.detail-writings .article-pagination {
+  gap: 32px;
+  padding-top: 36px;
+  border-top-color: rgba(47, 40, 29, 0.16);
+}
+
+.detail-writings .article-pagination-item {
+  min-height: 88px;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.detail-writings .article-pagination-item strong {
+  font-size: 16px;
+  line-height: 26px;
+}
+
+.detail-writings a.article-pagination-item:hover {
+  border-color: transparent;
+  background: transparent;
+  transform: none;
+}
+
+.detail-writings a.article-pagination-item:hover strong {
+  color: var(--accent-800);
+}
+
 .article-footer {
   margin: 24px auto 96px;
 }
@@ -1128,6 +1237,23 @@ a.article-pagination-item:hover {
   .article-footer { margin-bottom: 72px; }
 
   .collection-header { padding: 52px 0 24px; }
+
+  .detail-writings .prose {
+    margin-top: 52px;
+    font-size: 17px;
+    line-height: 1.82;
+    letter-spacing: 0.01em;
+  }
+
+  .detail-writings .prose > p { margin-bottom: 2.4em; }
+
+  .detail-writings .prose blockquote {
+    margin-inline: 0;
+    padding-left: 1.1em;
+    font-size: 17px;
+  }
+
+  .detail-writings .article-pagination { gap: 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -67,10 +67,18 @@ test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
 
 test("正文和引用使用独立的中文阅读字体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
+  const prompt = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
   assert.match(css, /--source-han-serif:/);
   assert.match(css, /--kai:/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--kai\)/);
+  assert.match(css, /body\.detail-writings \{/);
+  assert.match(css, /\.detail-writings \.prose > p \{[\s\S]*?text-indent: 2em/);
+  assert.match(css, /\.detail-writings \.article-pagination-item \{/);
+  assert.match(writing, /<body class="detail detail-writings">/);
+  assert.match(prompt, /<body class="detail detail-prompts">/);
+  assert.doesNotMatch(prompt, /<body class="detail detail-writings">/);
 });
 
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {
