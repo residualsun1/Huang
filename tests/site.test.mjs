@@ -8,19 +8,38 @@ const root = new URL("../dist/client/", import.meta.url);
 test("首页包含三个最小内容栏目和用户文章", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.match(html, /class="site-header"/);
+  assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
   assert.match(html, /01 \/ PROJECT/);
   assert.match(html, /02 \/ WRITING/);
   assert.match(html, /03 \/ PROMPT/);
   assert.match(html, /class="project-card"/);
   assert.match(html, /class="writing-row"/);
-  assert.match(html, /class="prompt-card"/);
-  assert.match(html, /\/images\/ai-companion-scene-v2\.png/);
+  assert.doesNotMatch(html, /class="prompt-card"/);
+  assert.match(html, /\/images\/ai-companion-scene-v3\.png/);
   assert.match(html, /class="scene-frame"/);
   assert.match(html, /class="scene-particles"/);
   assert.match(html, /class="codex-pet"/);
-  assert.match(html, /Who is out there？/);
+  assert.match(html, /你好，我是 Huang。我在探索 AI、人文、艺术/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
+
+  const writingSection = html.match(/<section class="content-section" id="writings"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
+  assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
+  assert.match(writingSection, /href="\/writings\/">所有文章/);
+  assert.match(promptSection, /href="\/prompts\/">所有文章/);
+});
+
+test("写作和提示词归档页可访问全部条目", async () => {
+  const writings = await readFile(new URL("writings/index.html", root), "utf8");
+  const prompts = await readFile(new URL("prompts/index.html", root), "utf8");
+
+  assert.match(writings, /class="collection-shell"/);
+  assert.match(writings, /<h1>写作<\/h1>/);
+  assert.ok((writings.match(/class="writing-row"/g) ?? []).length >= 5);
+  assert.match(prompts, /<h1>提示词<\/h1>/);
+  assert.match(prompts, /three-perspective-reading/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {

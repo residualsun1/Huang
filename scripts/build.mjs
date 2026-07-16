@@ -210,7 +210,7 @@ function siteHeader() {
   return `<header class="site-header">
     <div class="site-header-inner">
       <a class="site-brand" href="/" aria-label="首页">
-        <span class="brand-mark" aria-hidden="true">H</span>
+        <span class="brand-mark" aria-hidden="true">Huang</span>
       </a>
       <nav class="site-nav" aria-label="主要导航">
         <a href="/#projects">项目</a>
@@ -230,6 +230,17 @@ function siteFooter() {
   </footer>`;
 }
 
+function listRow(entry) {
+  return `<a class="writing-row" href="${entry.href}">
+    <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
+    <span class="writing-copy">
+      <strong>${escapeHtml(entry.title)}</strong>
+      <span>${escapeHtml(entry.description)}</span>
+    </span>
+    <span class="row-arrow" aria-hidden="true">→</span>
+  </a>`;
+}
+
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
   const projects = byKey.projects.entries.map((entry) => `
@@ -244,22 +255,8 @@ function homePage(collections) {
       </div>
       <time datetime="${escapeHtml(entry.date)}">更新于 ${formatDate(entry.date)}</time>
     </a>`).join("");
-  const writings = byKey.writings.entries.map((entry) => `
-    <a class="writing-row" href="${entry.href}">
-      <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
-      <span class="writing-copy">
-        <strong>${escapeHtml(entry.title)}</strong>
-        <span>${escapeHtml(entry.description)}</span>
-      </span>
-      <span class="row-arrow" aria-hidden="true">→</span>
-    </a>`).join("");
-  const prompts = byKey.prompts.entries.map((entry) => `
-    <a class="prompt-card" href="${entry.href}">
-      <span class="component-label">PROMPT</span>
-      <h3>${escapeHtml(entry.title)}</h3>
-      <p>${escapeHtml(entry.description)}</p>
-      <span class="prompt-link">查看提示词 <span aria-hidden="true">→</span></span>
-    </a>`).join("");
+  const writings = byKey.writings.entries.slice(0, 5).map(listRow).join("");
+  const prompts = byKey.prompts.entries.slice(0, 5).map(listRow).join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
     <div>
@@ -269,30 +266,33 @@ function homePage(collections) {
   </header>`;
 
   return layout({
-    title: "AI 学习与理解",
-    description: "记录我正在构建的项目、持续形成的理解，以及反复使用的提示词。",
+    title: "Huang",
+    description: "你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。",
     bodyClass: "home",
     content: `${siteHeader()}
     <main class="site-shell">
       <section class="hero" aria-labelledby="home-title">
         <div class="hero-copy">
           <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
-          <blockquote class="hero-dialogue">
-            <p>Who is out there？</p>
-            <p>Em…are you curious about how large language model works?</p>
-            <p>Let me think…can I be half-consciousness?</p>
-          </blockquote>
+          <div class="hero-intro">
+            <p>你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。</p>
+            <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
+            <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
+          </div>
         </div>
         <figure class="hero-scene">
           <button class="scene-frame" type="button" aria-label="唤醒像素世界与 AI 伙伴">
-            <img class="scene-background" src="/images/ai-companion-scene-v2.png" alt="粗像素艺术场景：一名男性站在夜晚发光的树下" width="1254" height="1254" fetchpriority="high">
+            <img class="scene-background" src="/images/ai-companion-scene-v3.png" alt="粗像素艺术场景：一名男性站在夜晚发光的树下" width="1254" height="1254" fetchpriority="high">
             <canvas class="scene-particles" aria-hidden="true"></canvas>
             <span class="codex-pet" aria-hidden="true">
               <span class="pet-shadow"></span>
               <span class="pet-shell">
-                <span class="pet-ear pet-ear-left"></span>
-                <span class="pet-ear pet-ear-right"></span>
-                <span class="pet-screen"><i></i><b></b></span>
+                <span class="pet-head">
+                  <span class="pet-screen"><i>&gt;</i><b>_</b></span>
+                </span>
+                <span class="pet-body"><i>&gt;</i><b>_</b></span>
+                <span class="pet-arm pet-arm-left"></span>
+                <span class="pet-arm pet-arm-right"></span>
                 <span class="pet-foot pet-foot-left"></span>
                 <span class="pet-foot pet-foot-right"></span>
               </span>
@@ -311,15 +311,36 @@ function homePage(collections) {
       <section class="content-section" id="writings" aria-labelledby="writings-title">
         ${sectionHeader(byKey.writings.group)}
         <div class="writing-list">${writings}</div>
+        <div class="section-more"><a href="/writings/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
 
       <section class="content-section" id="prompts" aria-labelledby="prompts-title">
         ${sectionHeader(byKey.prompts.group)}
-        <div class="prompt-grid">${prompts}</div>
+        <div class="writing-list">${prompts}</div>
+        <div class="section-more"><a href="/prompts/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
     </main>
     ${siteFooter()}
     <script defer src="/scene.js"></script>`,
+  });
+}
+
+function collectionPage(collection) {
+  const { group, entries } = collection;
+  return layout({
+    title: `${group.label} — Huang`,
+    description: `Huang 的${group.label}归档。`,
+    bodyClass: "listing",
+    content: `${siteHeader()}
+    <main class="collection-shell">
+      <header class="collection-header">
+        <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
+        <h1>${group.label}</h1>
+      </header>
+      <div class="writing-list">${entries.map(listRow).join("")}</div>
+      <a class="collection-back" href="/#${group.key}">← 返回首页</a>
+    </main>
+    ${siteFooter()}`,
   });
 }
 
@@ -345,14 +366,14 @@ function detailPage(entry) {
   }
   const toc = createTableOfContents(rendered.html);
   return layout({
-    title: `${entry.title} — AI 学习与理解`,
+    title: `${entry.title} — Huang`,
     description: entry.description,
     bodyClass: "detail",
     math: hasMath(entry.body),
     content: `${siteHeader()}
     <main class="article-shell">
       <nav class="breadcrumb" aria-label="面包屑">
-        <a href="/">首页</a><span aria-hidden="true">/</span><a href="/#${entry.group.key}">${entry.group.label}</a>
+        <a href="/">首页</a><span aria-hidden="true">/</span><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">${entry.group.label}</a>
       </nav>
       <header class="article-header">
         <p class="eyebrow">${entry.group.number} / ${entry.group.eyebrow}</p>
@@ -367,7 +388,7 @@ function detailPage(entry) {
         <article class="prose">${rendered.html}</article>
         ${toc}
       </div>
-      <footer class="article-footer"><a href="/#${entry.group.key}">← 回到${entry.group.label}</a></footer>
+      <footer class="article-footer"><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">← 回到${entry.group.label}</a></footer>
     </main>
     ${siteFooter()}`,
   });
@@ -390,6 +411,11 @@ export async function buildSite() {
   }
 
   await writeFile(path.join(clientRoot, "index.html"), homePage(collections), "utf8");
+  for (const collection of collections.filter(({ group }) => group.key === "writings" || group.key === "prompts")) {
+    const target = path.join(clientRoot, collection.group.key);
+    await mkdir(target, { recursive: true });
+    await writeFile(path.join(target, "index.html"), collectionPage(collection), "utf8");
+  }
   await mkdir(path.join(distRoot, "server"), { recursive: true });
   await writeFile(
     path.join(distRoot, "server", "index.js"),
