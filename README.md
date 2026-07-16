@@ -37,3 +37,6 @@ date: 2026-07-14
 
 从 Hugo 迁移文章、可用扩展格式和未知格式的处理方式，见
 [`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)。
+
+站点的 Warm Geist 视觉原则和设计 Token，见
+[`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)。

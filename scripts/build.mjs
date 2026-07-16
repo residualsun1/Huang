@@ -190,6 +190,13 @@ function layout({ title, description, content, bodyClass = "", math = false }) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
+  <meta name="theme-color" content="#f3f1ed">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escapeHtml(title)}">
+  <meta property="og:description" content="${escapeHtml(description)}">
+  <meta property="og:image" content="https://huang-ai-learning-notes.residualsun924088.chatgpt.site/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://huang-ai-learning-notes.residualsun924088.chatgpt.site/og.png">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">${mathAssets}
 </head>
@@ -199,38 +206,129 @@ ${content}
 </html>`;
 }
 
+function siteHeader() {
+  return `<header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-brand" href="/" aria-label="AI 学习与理解首页">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <span class="brand-name">AI 学习与理解</span>
+      </a>
+      <nav class="site-nav" aria-label="主要导航">
+        <a href="/#projects">项目</a>
+        <a href="/#writings">写作</a>
+        <a href="/#prompts">提示词</a>
+      </nav>
+    </div>
+  </header>`;
+}
+
+function siteFooter() {
+  return `<footer class="site-footer">
+    <div class="site-footer-inner">
+      <span>持续学习，持续修订。</span>
+      <span class="footer-meta">© 2026 Huang</span>
+    </div>
+  </footer>`;
+}
+
+const sectionDescriptions = {
+  projects: "正在构建、验证和持续迭代的个人实践。",
+  writings: "把零散经验整理成可以回看、质疑和修订的理解。",
+  prompts: "经过反复使用后，值得保留下来的协作方式。",
+};
+
 function homePage(collections) {
-  const sections = collections.map(({ group, entries }) => `
-    <section class="content-section" aria-labelledby="${group.key}-title">
-      <div class="section-heading">
-        <h2 id="${group.key}-title"><span>${group.number}</span> ${group.label}</h2>
-        <div class="section-rule" aria-hidden="true"></div>
+  const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
+  const allEntries = collections.flatMap((collection) => collection.entries);
+  const latestDate = allEntries.map((entry) => entry.date).sort().at(-1);
+  const projects = byKey.projects.entries.map((entry) => `
+    <a class="project-card" href="${entry.href}">
+      <div class="project-card-top">
+        <span class="status-label"><span class="status-dot" aria-hidden="true"></span>持续迭代</span>
+        <span class="card-arrow" aria-hidden="true">↗</span>
       </div>
-      <div class="entry-list">
-        ${entries.map((entry) => `
-          <article class="entry-item">
-            <a href="${entry.href}">${escapeHtml(entry.title)}</a>
-            <p>${escapeHtml(entry.description)}</p>
-          </article>`).join("")}
+      <div>
+        <h3>${escapeHtml(entry.title)}</h3>
+        <p>${escapeHtml(entry.description)}</p>
       </div>
-    </section>`).join("");
+      <time datetime="${escapeHtml(entry.date)}">更新于 ${formatDate(entry.date)}</time>
+    </a>`).join("");
+  const writings = byKey.writings.entries.map((entry) => `
+    <a class="writing-row" href="${entry.href}">
+      <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
+      <span class="writing-copy">
+        <strong>${escapeHtml(entry.title)}</strong>
+        <span>${escapeHtml(entry.description)}</span>
+      </span>
+      <span class="row-arrow" aria-hidden="true">→</span>
+    </a>`).join("");
+  const prompts = byKey.prompts.entries.map((entry) => `
+    <a class="prompt-card" href="${entry.href}">
+      <span class="component-label">PROMPT</span>
+      <h3>${escapeHtml(entry.title)}</h3>
+      <p>${escapeHtml(entry.description)}</p>
+      <span class="prompt-link">查看提示词 <span aria-hidden="true">→</span></span>
+    </a>`).join("");
+
+  const sectionHeader = (group) => `<header class="section-heading">
+    <div>
+      <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
+      <h2 id="${group.key}-title">${group.label}</h2>
+      <p>${sectionDescriptions[group.key]}</p>
+    </div>
+    <span class="section-count">${String(byKey[group.key].entries.length).padStart(2, "0")} 项内容</span>
+  </header>`;
 
   return layout({
     title: "AI 学习与理解",
     description: "记录我正在构建的项目、持续形成的理解，以及反复使用的提示词。",
     bodyClass: "home",
-    content: `<main class="site-shell">
-      <div class="update-pill"><span>2026.07.14</span> 基础内容架构 Demo</div>
-      <header class="hero">
-        <p class="eyebrow">PERSONAL AI NOTEBOOK</p>
-        <h1>AI 学习与理解</h1>
-        <p class="intro">记录我正在构建的项目、持续形成的理解，以及反复使用的提示词。这里不是答案库，而是一份不断修订的个人认知档案。</p>
-      </header>
-      <div class="quiet-space" aria-hidden="true"><span>现在，先从清楚地写下一件事开始。</span></div>
-      ${sections}
-      <footer><span>持续学习，持续修订。</span><span>© 2026</span></footer>
-    </main>`,
+    content: `${siteHeader()}
+    <main class="site-shell">
+      <section class="hero" aria-labelledby="home-title">
+        <div class="hero-copy">
+          <p class="eyebrow">PERSONAL AI NOTEBOOK</p>
+          <h1 id="home-title">AI 学习与理解</h1>
+          <p class="intro">记录我正在构建的项目、持续形成的理解，以及反复使用的提示词。这里不是答案库，而是一份不断修订的个人认知档案。</p>
+        </div>
+        <div class="hero-note">
+          <span class="status-label"><span class="status-dot" aria-hidden="true"></span>持续更新</span>
+          <p>从清楚地写下一件事开始，让经验逐渐形成结构。</p>
+          <time datetime="${escapeHtml(latestDate)}">最近更新 ${formatDate(latestDate)}</time>
+        </div>
+      </section>
+
+      <section class="content-section" id="projects" aria-labelledby="projects-title">
+        ${sectionHeader(byKey.projects.group)}
+        <div class="project-grid">${projects}</div>
+      </section>
+
+      <section class="content-section" id="writings" aria-labelledby="writings-title">
+        ${sectionHeader(byKey.writings.group)}
+        <div class="writing-list">${writings}</div>
+      </section>
+
+      <section class="content-section" id="prompts" aria-labelledby="prompts-title">
+        ${sectionHeader(byKey.prompts.group)}
+        <div class="prompt-grid">${prompts}</div>
+      </section>
+    </main>
+    ${siteFooter()}`,
   });
+}
+
+function createTableOfContents(html) {
+  const headings = [...html.matchAll(/<h([2-4]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)].map((match) => ({
+    level: Number(match[1]),
+    id: match[2],
+    label: match[3].replace(/<[^>]+>/g, "").replace(/&amp;/g, "&"),
+  }));
+  if (headings.length < 2) return "";
+
+  return `<aside class="article-toc" aria-label="文章目录">
+    <p>本文目录</p>
+    <ol>${headings.map((heading) => `<li class="toc-level-${heading.level}"><a href="#${heading.id}">${heading.label}</a></li>`).join("")}</ol>
+  </aside>`;
 }
 
 function detailPage(entry) {
@@ -239,22 +337,33 @@ function detailPage(entry) {
   for (const warning of warnings) {
     console.warn(`[${entry.group.key}/${entry.slug}] ${warning}`);
   }
+  const toc = createTableOfContents(rendered.html);
   return layout({
     title: `${entry.title} — AI 学习与理解`,
     description: entry.description,
     bodyClass: "detail",
     math: hasMath(entry.body),
-    content: `<main class="article-shell">
-      <nav class="article-nav"><a href="/">← 返回首页</a><span>${entry.group.eyebrow}</span></nav>
+    content: `${siteHeader()}
+    <main class="article-shell">
+      <nav class="breadcrumb" aria-label="面包屑">
+        <a href="/">首页</a><span aria-hidden="true">/</span><a href="/#${entry.group.key}">${entry.group.label}</a>
+      </nav>
       <header class="article-header">
-        <p class="eyebrow">${entry.group.eyebrow}</p>
+        <p class="eyebrow">${entry.group.number} / ${entry.group.eyebrow}</p>
         <h1>${escapeHtml(entry.title)}</h1>
         <p class="article-description">${escapeHtml(entry.description)}</p>
-        <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
+        <div class="article-meta">
+          <time datetime="${escapeHtml(entry.date)}">发布于 ${formatDate(entry.date)}</time>
+          <span>${entry.group.label}</span>
+        </div>
       </header>
-      <article class="prose">${rendered.html}</article>
-      <footer class="article-footer"><a href="/">回到全部内容 →</a></footer>
-    </main>`,
+      <div class="article-layout">
+        <article class="prose">${rendered.html}</article>
+        ${toc}
+      </div>
+      <footer class="article-footer"><a href="/#${entry.group.key}">← 回到${entry.group.label}</a></footer>
+    </main>
+    ${siteFooter()}`,
   });
 }
 

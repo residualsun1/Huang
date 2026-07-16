@@ -7,9 +7,13 @@ const root = new URL("../dist/client/", import.meta.url);
 
 test("首页包含三个最小内容栏目和用户文章", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
-  assert.match(html, /01<\/span> 项目/);
-  assert.match(html, /02<\/span> 写作/);
-  assert.match(html, /03<\/span> 提示词/);
+  assert.match(html, /class="site-header"/);
+  assert.match(html, /01 \/ PROJECT/);
+  assert.match(html, /02 \/ WRITING/);
+  assert.match(html, /03 \/ PROMPT/);
+  assert.match(html, /class="project-card"/);
+  assert.match(html, /class="writing-row"/);
+  assert.match(html, /class="prompt-card"/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
 });
 
@@ -21,6 +25,8 @@ test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
   assert.match(agent, /class="notice-box notice-content"/);
   assert.match(agent, /class="table-scroll"/);
   assert.match(agent, /class="footnotes"/);
+  assert.match(agent, /class="article-toc"/);
+  assert.match(agent, /class="breadcrumb"/);
   assert.match(appStore, /class="image-loop"/);
   assert.match(appStore, /<mark>/);
   assert.match(deploy, /<details>/);
