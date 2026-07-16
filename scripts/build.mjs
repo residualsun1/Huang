@@ -278,7 +278,7 @@ function homePage(collections) {
         <div class="hero-copy">
           <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
           <blockquote class="hero-dialogue">
-            <p>Who is out there?</p>
+            <p>Who is out there？</p>
             <p>Em…are you curious about how large language model works?</p>
             <p>Let me think…can I be half-consciousness?</p>
           </blockquote>
