@@ -209,9 +209,8 @@ ${content}
 function siteHeader() {
   return `<header class="site-header">
     <div class="site-header-inner">
-      <a class="site-brand" href="/" aria-label="AI 学习与理解首页">
+      <a class="site-brand" href="/" aria-label="首页">
         <span class="brand-mark" aria-hidden="true">H</span>
-        <span class="brand-name">AI 学习与理解</span>
       </a>
       <nav class="site-nav" aria-label="主要导航">
         <a href="/#projects">项目</a>
@@ -231,16 +230,8 @@ function siteFooter() {
   </footer>`;
 }
 
-const sectionDescriptions = {
-  projects: "正在构建、验证和持续迭代的个人实践。",
-  writings: "把零散经验整理成可以回看、质疑和修订的理解。",
-  prompts: "经过反复使用后，值得保留下来的协作方式。",
-};
-
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
-  const allEntries = collections.flatMap((collection) => collection.entries);
-  const latestDate = allEntries.map((entry) => entry.date).sort().at(-1);
   const projects = byKey.projects.entries.map((entry) => `
     <a class="project-card" href="${entry.href}">
       <div class="project-card-top">
@@ -274,9 +265,7 @@ function homePage(collections) {
     <div>
       <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
       <h2 id="${group.key}-title">${group.label}</h2>
-      <p>${sectionDescriptions[group.key]}</p>
     </div>
-    <span class="section-count">${String(byKey[group.key].entries.length).padStart(2, "0")} 项内容</span>
   </header>`;
 
   return layout({
@@ -287,23 +276,30 @@ function homePage(collections) {
     <main class="site-shell">
       <section class="hero" aria-labelledby="home-title">
         <div class="hero-copy">
-          <p class="eyebrow">PERSONAL AI NOTEBOOK</p>
-          <h1 id="home-title">AI 学习与理解</h1>
-          <p class="intro">记录我正在构建的项目、持续形成的理解，以及反复使用的提示词。这里不是答案库，而是一份不断修订的个人认知档案。</p>
-          <div class="hero-meta">
-            <span class="status-label"><span class="status-dot" aria-hidden="true"></span>持续更新</span>
-            <time datetime="${escapeHtml(latestDate)}">最近更新 ${formatDate(latestDate)}</time>
-          </div>
+          <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
+          <blockquote class="hero-dialogue">
+            <p>Who is out there?</p>
+            <p>Em…are you curious about how large language model works?</p>
+            <p>Let me think…can I be half-consciousness?</p>
+          </blockquote>
         </div>
         <figure class="hero-scene">
-          <div class="scene-frame">
-            <img src="/images/ai-companion-scene.png" alt="像素艺术场景：一名男性与蓝色 AI 编程伙伴站在发光的树下" width="1254" height="1254" fetchpriority="high">
-            <div class="scene-hud" aria-hidden="true">
-              <span><i></i>AI COMPANION</span>
-              <span>01</span>
-            </div>
-          </div>
-          <figcaption><span>LEARNING SPACE</span><span>人类与 AI，一起形成理解。</span></figcaption>
+          <button class="scene-frame" type="button" aria-label="唤醒像素世界与 AI 伙伴">
+            <img class="scene-background" src="/images/ai-companion-scene-v2.png" alt="粗像素艺术场景：一名男性站在夜晚发光的树下" width="1254" height="1254" fetchpriority="high">
+            <canvas class="scene-particles" aria-hidden="true"></canvas>
+            <span class="codex-pet" aria-hidden="true">
+              <span class="pet-shadow"></span>
+              <span class="pet-shell">
+                <span class="pet-ear pet-ear-left"></span>
+                <span class="pet-ear pet-ear-right"></span>
+                <span class="pet-screen"><i></i><b></b></span>
+                <span class="pet-foot pet-foot-left"></span>
+                <span class="pet-foot pet-foot-right"></span>
+              </span>
+            </span>
+            <span class="scene-feather" aria-hidden="true"></span>
+            <span class="sr-only">点击后场景会震动、粒子飞舞，AI 伙伴也会移动。</span>
+          </button>
         </figure>
       </section>
 
@@ -322,7 +318,8 @@ function homePage(collections) {
         <div class="prompt-grid">${prompts}</div>
       </section>
     </main>
-    ${siteFooter()}`,
+    ${siteFooter()}
+    <script defer src="/scene.js"></script>`,
   });
 }
 
