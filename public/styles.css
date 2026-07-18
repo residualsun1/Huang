@@ -1,3 +1,15 @@
+/*
+ * Huang 网站主样式表
+ * --------------------------------------------------------------------------
+ * 这是全站唯一需要手工维护的 CSS 源文件。构建后它会被复制到 dist/client，
+ * 因此请只修改 public/styles.css，不要直接修改 dist/client/styles.css。
+ *
+ * 推荐阅读顺序：字体与变量 → 全局容器 → 导航 → 首页 → 内容列表 →
+ * 文章与 Markdown → 翻页 → 响应式适配。
+ * 初学者建议：颜色、字体和最大宽度优先在 :root 中统一调整。
+ */
+
+/* 字体资源：Geist Sans 用于现代 UI、导航和技术性文字。 */
 @font-face {
   font-family: "Geist Sans";
   src: url("https://cdn.jsdelivr.net/npm/geist@1.7.2/dist/fonts/geist-sans/Geist-Variable.woff2") format("woff2");
@@ -6,6 +18,7 @@
   font-weight: 100 900;
 }
 
+/* 字体资源：Geist Mono 用于日期、编号、代码和标签。 */
 @font-face {
   font-family: "Geist Mono";
   src: url("https://cdn.jsdelivr.net/npm/geist@1.7.2/dist/fonts/geist-mono/GeistMono-Variable.woff2") format("woff2");
@@ -14,6 +27,7 @@
   font-weight: 100 900;
 }
 
+/* 字体资源：Newsreader 用于 Huang 字标与具有编辑感的拉丁文字。 */
 @font-face {
   font-family: "Newsreader";
   src: url("https://cdn.jsdelivr.net/npm/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2") format("woff2");
@@ -22,11 +36,16 @@
   font-weight: 200 800;
 }
 
+/* 全局设计变量：统一管理颜色、字体、圆角和页面最大宽度。 */
 :root {
   color-scheme: light;
+
+  /* 页面背景与半透明表面。 */
   --background-100: #f3f1ed;
   --background-200: rgba(29, 27, 27, 0.035);
   --surface-raised: rgba(250, 248, 244, 0.76);
+
+  /* 从深到浅的正文、说明文字和弱化文字颜色。 */
   --gray-1000: #1d1b1b;
   --gray-900: #56534f;
   --gray-800: #6f6b66;
@@ -36,10 +55,14 @@
   --gray-alpha-400: rgba(29, 27, 27, 0.12);
   --gray-alpha-500: rgba(29, 27, 27, 0.21);
   --gray-alpha-700: rgba(29, 27, 27, 0.46);
+
+  /* 青绿色品牌色：用于链接、焦点、标签和交互状态。 */
   --accent-100: rgba(36, 93, 98, 0.08);
   --accent-200: rgba(36, 93, 98, 0.14);
   --accent-700: #245d62;
   --accent-800: #194d52;
+
+  /* Markdown 提示框使用的错误、警告、成功和信息颜色。 */
   --red-100: #f9e8e5;
   --red-800: #833b37;
   --amber-100: #f4ead2;
@@ -48,21 +71,29 @@
   --green-800: #3f6847;
   --blue-100: #e3ebef;
   --blue-800: #365f80;
+
+  /* 三档圆角：小组件、普通浮层和大型表面。 */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 16px;
+
+  /* 字体栈：浏览器会从左到右寻找可用字体。 */
   --sans: "Geist Sans", "Segoe UI Variable", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --mono: "Geist Mono", "SFMono-Regular", "Cascadia Code", Consolas, monospace;
   --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --source-han-serif: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
   --kai: "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   --editorial: "Newsreader", Georgia, "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+
+  /* 布局宽度：首页最大 1040px，文章正文最大 740px。 */
   --page-width: 1040px;
   --article-width: 740px;
 }
 
+/* 基础重置：让元素的宽高包含 padding 与 border，尺寸更容易计算。 */
 * { box-sizing: border-box; }
 
+/* 仅供屏幕阅读器读取的文字：视觉隐藏，但保留无障碍语义。 */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -74,12 +105,14 @@
   border: 0;
 }
 
+/* 页面根节点：设置背景、平滑滚动和锚点跳转的顶部预留。 */
 html {
   background: var(--background-100);
   scroll-behavior: smooth;
   scroll-padding-top: 88px;
 }
 
+/* 全站正文基础样式；局部页面可以在后文覆盖这些值。 */
 body {
   margin: 0;
   background-color: var(--background-100);
@@ -89,6 +122,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* 首页、归档页和全站导航使用更有出版感的衬线字体。 */
 .site-header,
 .site-footer,
 .home .site-shell,
@@ -96,13 +130,16 @@ body {
   font-family: var(--editorial);
 }
 
+/* 用户选中文字时的高亮颜色。 */
 ::selection {
   background: var(--accent-200);
   color: var(--gray-1000);
 }
 
+/* 链接默认继承父元素颜色，具体样式由各组件定义。 */
 a { color: inherit; }
 
+/* 顶部导航：滚动时固定，并使用半透明背景与轻微模糊。 */
 .site-header {
   position: sticky;
   z-index: 20;
@@ -112,6 +149,7 @@ a { color: inherit; }
   backdrop-filter: saturate(140%) blur(14px);
 }
 
+/* 全站通用水平容器：控制最大宽度与左右留白。 */
 .site-header-inner,
 .site-footer-inner,
 .site-shell,
@@ -121,6 +159,7 @@ a { color: inherit; }
   margin-inline: auto;
 }
 
+/* 导航内部左右分布：左侧 Huang，右侧栏目链接。 */
 .site-header-inner {
   display: flex;
   min-height: 64px;
@@ -128,6 +167,7 @@ a { color: inherit; }
   justify-content: space-between;
 }
 
+/* 左上角品牌入口与 Huang 文字字标。 */
 .site-brand {
   display: inline-flex;
   align-items: center;
@@ -143,6 +183,7 @@ a { color: inherit; }
   letter-spacing: -0.045em;
 }
 
+/* 右侧“项目 / 写作 / 提示词”导航及悬浮状态。 */
 .site-nav {
   display: flex;
   align-items: center;
@@ -165,8 +206,10 @@ a { color: inherit; }
   color: var(--gray-1000);
 }
 
+/* 首页主体底部留白，避免最后一个栏目紧贴页脚。 */
 .site-shell { padding-bottom: 112px; }
 
+/* 首页首屏：桌面端左侧个人简介，右侧像素场景。 */
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
@@ -175,6 +218,7 @@ a { color: inherit; }
   padding: 72px 0 64px;
 }
 
+/* 英文栏目编号和小标签统一使用等宽字体。 */
 .eyebrow,
 .section-kicker,
 .component-label {
@@ -187,6 +231,7 @@ a { color: inherit; }
   letter-spacing: 0.08em;
 }
 
+/* 首页隐藏标题与文章大标题共用的基础字重和字距。 */
 .hero h1,
 .article-header h1 {
   margin: 16px 0 0;
@@ -194,6 +239,7 @@ a { color: inherit; }
   letter-spacing: -0.06em;
 }
 
+/* 写作详情页标题、简介统一使用思源宋体体系。 */
 .detail-writings .article-header {
   border-bottom-color: var(--gray-alpha-400);
 }
@@ -216,6 +262,7 @@ a { color: inherit; }
   line-height: 1.85;
 }
 
+/* 首页三段个人简介；gap 控制三个段落之间的距离。 */
 .hero-intro {
   display: grid;
   max-width: 590px;
@@ -231,6 +278,7 @@ a { color: inherit; }
 
 .hero-intro p { margin: 0; }
 
+/* 可复用状态标签与状态圆点。 */
 .status-label {
   display: inline-flex;
   align-items: center;
@@ -249,6 +297,7 @@ a { color: inherit; }
   box-shadow: 0 0 0 3px var(--accent-100);
 }
 
+/* 首页时间信息：使用等宽数字，避免日期宽度跳动。 */
 .hero-meta time,
 .project-card time {
   color: var(--gray-700);
@@ -257,6 +306,7 @@ a { color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
+/* 首页像素场景的整体尺寸与右侧对齐方式。 */
 .hero-scene {
   width: 100%;
   max-width: 492px;
@@ -264,6 +314,7 @@ a { color: inherit; }
   justify-self: end;
 }
 
+/* 可点击的正方形像素舞台；overflow 隐藏移出边界的内容。 */
 .scene-frame {
   position: relative;
   overflow: hidden;
@@ -280,11 +331,13 @@ a { color: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 键盘聚焦场景时显示虚线轮廓。 */
 .scene-frame:focus-visible {
   outline: 1px dashed var(--accent-700);
   outline-offset: 8px;
 }
 
+/* 像素背景图；pixelated 禁止浏览器把像素块平滑化。 */
 .scene-background {
   display: block;
   width: 100%;
@@ -295,11 +348,13 @@ a { color: inherit; }
   transition: filter 420ms ease, transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* 鼠标进入场景后轻微放大并提亮背景。 */
 .scene-frame.is-hovered .scene-background {
   filter: brightness(1.04) saturate(1.08);
   transform: scale(1.04);
 }
 
+/* Canvas 粒子层：覆盖背景，但不拦截鼠标事件。 */
 .scene-particles {
   position: absolute;
   z-index: 3;
@@ -310,6 +365,7 @@ a { color: inherit; }
   pointer-events: none;
 }
 
+/* 四周羽化遮罩：让方形图片自然渐隐到页面背景中。 */
 .scene-feather {
   position: absolute;
   z-index: 8;
@@ -321,6 +377,7 @@ a { color: inherit; }
   pointer-events: none;
 }
 
+/* Codey 像素头像的位置、尺寸和点击移动变量。 */
 .codex-pet {
   --pet-x: 0px;
   position: absolute;
@@ -335,12 +392,14 @@ a { color: inherit; }
   pointer-events: none;
 }
 
+/* 像素头像的定位容器。 */
 .pet-shell {
   position: absolute;
   inset: 0;
   image-rendering: pixelated;
 }
 
+/* 实际头像图片：保持硬边像素，并轻微降低饱和度以融入场景。 */
 .pet-sprite {
   display: block;
   width: 100%;
@@ -350,10 +409,12 @@ a { color: inherit; }
   filter: saturate(0.88) brightness(0.92);
 }
 
+/* JavaScript 点击场景时添加状态类，触发头像跳动和画面震动。 */
 .pet-shell.is-moving { animation: pet-hop 680ms steps(6, end); }
 
 .scene-frame.is-shaking { animation: scene-shake 360ms steps(5, end); }
 
+/* 场景点击后的分段震动动画。 */
 @keyframes scene-shake {
   0%, 100% { transform: translate(0, 0); }
   20% { transform: translate(-5px, 2px); }
@@ -362,6 +423,7 @@ a { color: inherit; }
   80% { transform: translate(3px, 2px); }
 }
 
+/* Codey 点击后的轻微跳动动画。 */
 @keyframes pet-hop {
   0%, 100% { transform: translateY(0) rotate(0); }
   30% { transform: translateY(-6px) rotate(-2deg); }
@@ -369,6 +431,7 @@ a { color: inherit; }
   78% { transform: translateY(-4px) rotate(-1deg); }
 }
 
+/* 首页栏目通用间距；scroll-margin 避免锚点被顶部导航遮挡。 */
 .content-section {
   padding-top: 76px;
   scroll-margin-top: 64px;
@@ -376,6 +439,7 @@ a { color: inherit; }
 
 .hero + .content-section { padding-top: 44px; }
 
+/* 栏目标题区域：顶部细线、英文编号与中文大标题。 */
 .section-heading {
   display: flex;
   align-items: end;
@@ -395,12 +459,14 @@ a { color: inherit; }
   letter-spacing: -0.025em;
 }
 
+/* 项目网格：桌面端一行三列，响应式区会变成两列和一列。 */
 .project-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
+/* 项目卡片的表面、边框和基础交互动画。 */
 .project-card {
   border: 1px solid var(--gray-alpha-400);
   border-radius: var(--radius-sm);
@@ -410,12 +476,14 @@ a { color: inherit; }
   transition: border-color 150ms ease, background-color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
+/* 鼠标悬浮时卡片轻微上移。 */
 .project-card:hover {
   border-color: var(--gray-alpha-500);
   background: rgba(250, 248, 244, 0.94);
   transform: translateY(-2px);
 }
 
+/* 卡片内部纵向布局，把更新时间稳定放在底部。 */
 .project-card {
   display: flex;
   min-height: 228px;
@@ -424,6 +492,7 @@ a { color: inherit; }
   padding: 24px;
 }
 
+/* 卡片顶部类型标签和右上箭头。 */
 .project-card-top {
   display: flex;
   align-items: center;
@@ -442,6 +511,7 @@ a { color: inherit; }
   transform: translate(2px, -2px);
 }
 
+/* 项目标题与简介。 */
 .project-card h3 {
   margin: 0;
   color: var(--gray-1000);
@@ -461,10 +531,12 @@ a { color: inherit; }
   line-height: 22px;
 }
 
+/* 写作与提示词共用的分隔式列表。 */
 .writing-list {
   border-top: 1px solid var(--gray-alpha-400);
 }
 
+/* 单行结构：日期、标题摘要、右侧箭头。 */
 .writing-row {
   display: grid;
   grid-template-columns: 112px minmax(0, 1fr) 32px;
@@ -479,6 +551,7 @@ a { color: inherit; }
 
 .writing-row:hover { background: var(--gray-alpha-100); }
 
+/* 列表日期。 */
 .writing-row time {
   padding-top: 3px;
   color: var(--gray-700);
@@ -488,6 +561,7 @@ a { color: inherit; }
   line-height: 20px;
 }
 
+/* 标题和摘要组成的两行文字区域。 */
 .writing-copy {
   display: grid;
   gap: 8px;
@@ -512,11 +586,13 @@ a { color: inherit; }
   -webkit-line-clamp: 2;
 }
 
+/* 悬浮时箭头向右移动，提示整行可以点击。 */
 .writing-row:hover .row-arrow {
   color: var(--gray-1000);
   transform: translateX(3px);
 }
 
+/* 栏目右下角“所有文章 →”入口。 */
 .section-more {
   display: flex;
   justify-content: flex-end;
@@ -538,8 +614,10 @@ a { color: inherit; }
 .section-more a span { transition: transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1); }
 .section-more a:hover span { transform: translateX(3px); }
 
+/* 写作与提示词归档页主体底部留白。 */
 .collection-shell { padding-bottom: 96px; }
 
+/* 归档页标题区域。 */
 .collection-header {
   padding: 72px 0 32px;
   border-bottom: 1px solid var(--gray-alpha-400);
@@ -556,6 +634,7 @@ a { color: inherit; }
 
 .collection-back { margin-top: 32px; }
 
+/* 全站页脚：桌面端横向排列说明与年份。 */
 .site-footer {
   border-top: 1px solid var(--gray-alpha-400);
 }
@@ -576,6 +655,7 @@ a { color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
+/* 文章面包屑：“首页 / 写作”等路径提示。 */
 .breadcrumb {
   display: flex;
   gap: 8px;
@@ -589,6 +669,7 @@ a { color: inherit; }
 .breadcrumb a { text-decoration: none; }
 .breadcrumb a:hover { color: var(--gray-1000); }
 
+/* 文章标题区域：标题、摘要、发布日期和栏目标签。 */
 .article-header {
   max-width: 920px;
   padding: 64px 0;
@@ -631,6 +712,7 @@ a { color: inherit; }
   background: var(--gray-alpha-100);
 }
 
+/* 桌面端文章布局：左侧正文，右侧 220px 目录。 */
 .article-layout {
   display: grid;
   grid-template-columns: minmax(0, var(--article-width)) 220px;
@@ -639,6 +721,7 @@ a { color: inherit; }
   align-items: start;
 }
 
+/* 文章目录固定在视口内，滚动长文时仍可跳转章节。 */
 .article-toc {
   position: sticky;
   top: 96px;
@@ -680,6 +763,7 @@ a { color: inherit; }
 
 .article-toc a:hover { color: var(--gray-1000); }
 
+/* Markdown 正文基础排版：字体、字号、行距和上下留白。 */
 .prose {
   min-width: 0;
   margin: 64px 0 80px;
@@ -690,10 +774,12 @@ a { color: inherit; }
   overflow-wrap: anywhere;
 }
 
+/* 正文段落、强调和删除线。 */
 .prose p { margin: 0 0 1.45em; }
 .prose strong { color: var(--gray-1000); font-weight: 600; }
 .prose del { color: var(--gray-700); }
 
+/* 正文内部 h1–h6 的通用样式与锚点预留。 */
 .prose h1,
 .prose h2,
 .prose h3,
@@ -713,6 +799,7 @@ a { color: inherit; }
 .prose h5,
 .prose h6 { margin: 1.8em 0 0.6em; font-size: 16px; line-height: 24px; }
 
+/* 有序列表、无序列表及列表项。 */
 .prose ul,
 .prose ol {
   margin: 0 0 1.5em;
@@ -722,6 +809,7 @@ a { color: inherit; }
 .prose li { margin: 0.45em 0; padding-left: 0.15em; }
 .prose li::marker { color: var(--gray-700); }
 
+/* 默认 Markdown 引用：楷体、青绿色左边线和淡色背景。 */
 .prose blockquote {
   margin: 2em 0;
   padding: 16px 20px;
@@ -736,6 +824,7 @@ a { color: inherit; }
 
 .prose blockquote > :last-child { margin-bottom: 0; }
 
+/* 写作正文专属阅读排版，只影响 /writings/ 下的文章。 */
 .detail-writings .prose {
   margin-top: 64px;
   margin-bottom: 88px;
@@ -745,6 +834,7 @@ a { color: inherit; }
   letter-spacing: 0.01em;
 }
 
+/* 直属正文段落使用两端对齐和 2em 首行缩进。 */
 .detail-writings .prose > p {
   margin-bottom: 2.2em;
   text-align: justify;
@@ -752,12 +842,14 @@ a { color: inherit; }
   text-justify: inter-ideograph;
 }
 
+/* 居中段落与纯图片段落不应首行缩进。 */
 .detail-writings .prose > p.text-center,
 .detail-writings .prose > p:has(> img:only-child),
 .detail-writings .prose > p:has(> a:only-child > img:only-child) {
   text-indent: 0;
 }
 
+/* 写作页引用覆盖默认引用：保留楷体和左边线，移除底色。 */
 .detail-writings .prose blockquote {
   margin: 2.5em 1.25em;
   padding: 0.2em 0 0.2em 1.35em;
@@ -768,6 +860,7 @@ a { color: inherit; }
   line-height: 1.88;
 }
 
+/* 行内代码：正文中的短命令、变量名和文件名。 */
 .prose code {
   padding: 0.15em 0.38em;
   border: 1px solid var(--gray-alpha-200);
@@ -778,6 +871,7 @@ a { color: inherit; }
   font-size: 0.84em;
 }
 
+/* 多行代码块：深色背景，并允许横向滚动。 */
 .prose pre {
   overflow-x: auto;
   margin: 2em 0;
@@ -800,6 +894,7 @@ a { color: inherit; }
   font-size: inherit;
 }
 
+/* 正文链接及悬浮下划线颜色。 */
 .prose a {
   color: var(--accent-800);
   text-decoration-color: rgba(36, 93, 98, 0.32);
@@ -809,6 +904,7 @@ a { color: inherit; }
 
 .prose a:hover { text-decoration-color: var(--accent-700); }
 
+/* Markdown 水平分隔线。 */
 .prose hr {
   height: 1px;
   margin: 64px 0;
@@ -816,6 +912,7 @@ a { color: inherit; }
   background: var(--gray-alpha-400);
 }
 
+/* 正文图片保持原始比例，并使用与站点一致的小圆角。 */
 .prose img {
   display: block;
   max-width: 100%;
@@ -823,9 +920,11 @@ a { color: inherit; }
   border-radius: var(--radius-sm);
 }
 
+/* 单张 Markdown 图片的外边距和居中方式。 */
 .markdown-image { margin: 2.5em 0; }
 .markdown-image img { margin-inline: auto; }
 
+/* 图片与多图画廊共用的图注样式。 */
 .markdown-image figcaption,
 .image-loop figcaption {
   margin-top: 10px;
@@ -836,6 +935,7 @@ a { color: inherit; }
   text-align: center;
 }
 
+/* 表格外层：小屏幕时允许横向滚动。 */
 .table-scroll {
   overflow-x: auto;
   margin: 2em 0;
@@ -844,6 +944,7 @@ a { color: inherit; }
   background: var(--surface-raised);
 }
 
+/* 表格本体与单元格边框、内边距。 */
 .prose table {
   width: 100%;
   min-width: 560px;
@@ -871,6 +972,7 @@ a { color: inherit; }
   font-weight: 600;
 }
 
+/* Hugo notice 提示框兼容层。 */
 .notice-box {
   margin: 2em 0;
   padding: 0;
@@ -879,6 +981,7 @@ a { color: inherit; }
   background: var(--surface-raised);
 }
 
+/* 提示框标题胶囊。 */
 .notice-box legend {
   margin-left: 16px;
   padding: 3px 8px;
@@ -892,6 +995,7 @@ a { color: inherit; }
   line-height: 16px;
 }
 
+/* 四类提示框的内容内边距和语义颜色。 */
 .notice-body { padding: 18px 20px 4px; }
 .notice-warning { background: color-mix(in srgb, var(--amber-100) 48%, var(--surface-raised)); }
 .notice-warning legend { color: var(--amber-800); }
@@ -902,6 +1006,7 @@ a { color: inherit; }
 .notice-danger { background: color-mix(in srgb, var(--red-100) 48%, var(--surface-raised)); }
 .notice-danger legend { color: var(--red-800); }
 
+/* 可折叠 details / summary，用于隐藏较长代码或补充说明。 */
 .prose details {
   margin: 2em 0;
   padding: 16px 18px;
@@ -920,6 +1025,7 @@ a { color: inherit; }
 
 .prose details[open] summary { margin-bottom: 16px; }
 
+/* 键盘按键 kbd 的立体按键外观。 */
 .prose kbd {
   display: inline-block;
   min-width: 1.75em;
@@ -936,6 +1042,7 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
+/* 文本高亮 mark、居中工具类与任务清单。 */
 .prose mark {
   padding: 0.04em 0.2em;
   background: #e8dca7;
@@ -946,6 +1053,7 @@ a { color: inherit; }
 .task-list-item { list-style: none; }
 .task-list-item input { margin-right: 8px; accent-color: var(--accent-700); }
 
+/* Markdown 脚注编号。 */
 .footnote-ref {
   margin-left: 2px;
   font-family: var(--mono);
@@ -954,6 +1062,7 @@ a { color: inherit; }
 
 .footnote-ref a { text-decoration: none; }
 
+/* 脚注正文和返回正文的链接。 */
 .footnotes {
   margin-top: 64px;
   color: var(--gray-900);
@@ -965,6 +1074,7 @@ a { color: inherit; }
 .footnotes ol { padding-left: 24px; }
 .footnote-backref { margin-left: 4px; text-decoration: none !important; }
 
+/* Hugo imgloop 兼容：可以横向滚动的多图画廊。 */
 .image-loop {
   display: grid;
   grid-auto-columns: min(84%, 640px);
@@ -989,6 +1099,7 @@ a { color: inherit; }
   background: var(--background-200);
 }
 
+/* 未识别的旧 Hugo 格式：用红色虚线框提醒开发者继续处理。 */
 .unsupported-format {
   display: grid;
   gap: 8px;
@@ -1003,12 +1114,14 @@ a { color: inherit; }
 
 .unsupported-format code { overflow-wrap: anywhere; }
 
+/* 文章上一篇 / 下一篇与返回栏目入口的共同宽度。 */
 .article-pagination,
 .article-footer {
   width: min(100%, var(--article-width));
   margin-inline: auto;
 }
 
+/* 默认上一篇 / 下一篇使用两列卡片。 */
 .article-pagination {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1017,6 +1130,7 @@ a { color: inherit; }
   border-top: 1px solid var(--gray-alpha-400);
 }
 
+/* 单个翻页卡片的布局、表面和交互动画。 */
 .article-pagination-item {
   display: grid;
   min-width: 0;
@@ -1060,6 +1174,7 @@ a.article-pagination-item:hover {
   opacity: 0.46;
 }
 
+/* 写作页将翻页卡片改成更轻的书页导航，移除边框和底色。 */
 .detail-writings .article-pagination {
   gap: 32px;
   padding-top: 36px;
@@ -1090,6 +1205,7 @@ a.article-pagination-item:hover {
   color: var(--accent-800);
 }
 
+/* 文章末尾“返回写作 / 项目 / 提示词”入口。 */
 .article-footer {
   margin: 24px auto 96px;
 }
@@ -1103,11 +1219,13 @@ a.article-pagination-item:hover {
 
 .article-footer a:hover { color: var(--gray-1000); }
 
+/* 键盘操作时显示统一焦点环。 */
 :focus-visible {
   outline: 0;
   box-shadow: 0 0 0 2px var(--background-100), 0 0 0 4px var(--accent-700);
 }
 
+/* 平板适配（≤ 960px）：Hero 单列、项目两列、文章目录隐藏。 */
 @media (max-width: 960px) {
   .hero {
     grid-template-columns: 1fr;
@@ -1130,7 +1248,9 @@ a.article-pagination-item:hover {
   .article-toc { display: none; }
 }
 
+/* 手机适配（≤ 600px）：缩小边距和字号，主要布局改成单列。 */
 @media (max-width: 600px) {
+  /* 手机端全站左右边距由 48px 总留白缩小为 32px。 */
   .site-header-inner,
   .site-footer-inner,
   .site-shell,
@@ -1139,11 +1259,13 @@ a.article-pagination-item:hover {
     width: min(calc(100% - 32px), var(--page-width));
   }
 
+  /* 手机端顶部导航与 Huang 字标。 */
   .site-header-inner { min-height: 56px; }
   .brand-mark { font-size: 26px; }
   .site-nav { gap: 0; }
   .site-nav a { padding-inline: 8px; font-size: 12px; }
 
+  /* 手机端首页简介和像素场景。 */
   .hero {
     gap: 32px;
     padding: 52px 0 48px;
@@ -1154,6 +1276,7 @@ a.article-pagination-item:hover {
   .scene-feather { box-shadow: inset 0 0 28px 12px var(--background-100); }
   .codex-pet { right: 15%; bottom: 16%; }
 
+  /* 手机端首页栏目、项目卡片和文章列表。 */
   .content-section { padding-top: 72px; }
 
   .section-heading {
@@ -1177,6 +1300,7 @@ a.article-pagination-item:hover {
   .writing-copy strong { font-size: 17px; line-height: 24px; }
   .writing-row .row-arrow { grid-column: 2; grid-row: 2; }
 
+  /* 手机端页脚改成纵向排列。 */
   .site-footer-inner {
     min-height: 88px;
     align-items: flex-start;
@@ -1187,11 +1311,13 @@ a.article-pagination-item:hover {
 
   .breadcrumb { padding-top: 24px; }
 
+  /* 手机端文章标题、摘要和元信息。 */
   .article-header { padding: 48px 0; }
   .article-header h1 { font-size: 36px; line-height: 41px; letter-spacing: -0.045em; }
   .article-description { font-size: 17px; line-height: 28px; }
   .article-meta { align-items: flex-start; flex-direction: column; }
 
+  /* 手机端 Markdown 正文与扩展组件。 */
   .prose {
     margin-top: 48px;
     font-size: 16px;
@@ -1207,12 +1333,14 @@ a.article-pagination-item:hover {
   .notice-box { margin-inline: -8px; }
   .image-loop { grid-auto-columns: 92%; }
 
+  /* 手机端上下篇导航改为单列。 */
   .article-pagination { grid-template-columns: 1fr; }
   .article-pagination-item { min-height: 104px; }
   .article-footer { margin-bottom: 72px; }
 
   .collection-header { padding: 52px 0 24px; }
 
+  /* 手机端写作专属字体、段落和楷体引用。 */
   .detail-writings .prose {
     margin-top: 48px;
     font-size: 16px;
@@ -1231,6 +1359,7 @@ a.article-pagination-item:hover {
   .detail-writings .article-pagination { gap: 22px; }
 }
 
+/* 用户开启“减少动态效果”时，关闭滚动、过渡和场景动画。 */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }
