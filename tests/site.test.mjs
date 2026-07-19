@@ -15,12 +15,10 @@ test("首页包含三个最小内容栏目和用户文章", async () => {
   assert.match(html, /class="project-card"/);
   assert.match(html, /class="writing-row"/);
   assert.doesNotMatch(html, /class="prompt-card"/);
-  assert.match(html, /\/images\/ai-companion-scene-v3\.png/);
-  assert.match(html, /class="scene-frame"/);
-  assert.match(html, /class="scene-particles"/);
-  assert.match(html, /class="codex-pet"/);
-  assert.match(html, /class="pet-sprite" src="\/images\/codey-head-v1\.png"/);
-  assert.doesNotMatch(html, /class="pet-body"/);
+  assert.doesNotMatch(html, /class="hero-scene"/);
+  assert.doesNotMatch(html, /class="scene-frame"/);
+  assert.doesNotMatch(html, /src="\/scene\.js"/);
+  assert.match(html, /class="hero-intro"/);
   assert.match(html, /你好，我是 Huang。我在探索 AI、人文、艺术/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
@@ -63,6 +61,11 @@ test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
   assert.match(appStore, /<mark>/);
   assert.match(deploy, /<details>/);
   assert.match(deploy, /<summary>查看完整代码<\/summary>/);
+  assert.doesNotMatch(agent, /class="article-description"/);
+  assert.match(agent, /class="article-author">黄国政<\/span>/);
+  assert.match(agent, /class="article-tags"/);
+  assert.match(agent, /<li>Agent<\/li>/);
+  assert.match(agent, /src="\/code-blocks\.js"/);
 });
 
 test("正文和引用使用独立的中文阅读字体", async () => {
@@ -74,8 +77,8 @@ test("正文和引用使用独立的中文阅读字体", async () => {
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--kai\)/);
   assert.doesNotMatch(css, /body\.detail-writings \{/);
-  assert.match(css, /\.detail-writings \.prose > p \{[\s\S]*?text-indent: 2em/);
   assert.match(css, /\.detail-writings \.article-pagination-item \{/);
+  assert.match(css, /\.hero-intro \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(writing, /<body class="detail detail-writings">/);
   assert.match(prompt, /<body class="detail detail-prompts">/);
   assert.doesNotMatch(prompt, /<body class="detail detail-writings">/);
@@ -92,8 +95,28 @@ test("所有写作页面均不残留已知 Hugo 短代码", async () => {
 
 test("Prompt 代码块包含语言类并被安全转义", async () => {
   const html = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
-  assert.match(html, /<pre><code class="language-text">/);
+  assert.match(html, /<pre data-language="text"><code class="language-text">/);
   assert.match(html, /解释者/);
+});
+
+test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const script = await readFile(new URL("code-blocks.js", root), "utf8");
+  const shellCode = renderMarkdown("```bash\nif true; then echo \'ok\'; fi\n```").html;
+  const shellUrl = renderMarkdown("```bash\ncurl https://example.com/api\n```").html;
+  assert.match(css, /\.prose pre \{[\s\S]*?overflow-x: auto/);
+  assert.match(css, /background: #e8e3da/);
+  assert.match(css, /\.token-keyword/);
+  assert.match(script, /navigator\.clipboard/);
+  assert.match(script, /className = "code-copy"/);
+  assert.match(shellCode, /token-keyword">if<\/span>/);
+  assert.match(shellCode, /token-string">&#039;ok&#039;<\/span>/);
+  assert.doesNotMatch(shellUrl, /token-comment/);
+});
+
+test("Markdown 无序与有序列表支持多层缩进", () => {
+  const { html } = renderMarkdown("- Claude\n  - Web 网页\n    1. Chrome\n- Codex");
+  assert.match(html, /<ul><li>Claude<ul><li>Web 网页<ol><li>Chrome<\/li><\/ol><\/li><\/ul><\/li><li>Codex<\/li><\/ul>/);
 });
 
 test("通用 Markdown 扩展可独立渲染", () => {

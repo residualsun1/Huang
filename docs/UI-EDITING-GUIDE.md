@@ -8,8 +8,10 @@
 | --- | --- | --- |
 | `public/styles.css` | 全站 CSS 样式 | 背景色、字体、字号、宽度、间距、卡片、文章排版、响应式布局 |
 | `scripts/build.mjs` | HTML 页面结构和组件模板 | 调整导航栏目、增加区块、改变卡片或文章页面的 DOM 结构 |
-| `public/scene.js` | 首页像素场景交互 | 粒子数量、Hover 反应、点击震动、Codey 移动距离 |
-| `public/images/` | 首页场景、Codey、社交分享图等图片 | 替换图片素材 |
+| `scripts/markdown.mjs` | Markdown 转 HTML | 多级列表、代码高亮、Hugo 短代码与其他文章格式 |
+| `public/code-blocks.js` | 正文代码块交互 | 复制按钮及本地 HTTP 兼容逻辑 |
+| `public/scene.js` | 已暂停加载的首页像素场景 | 仅在未来恢复像素场景时继续调整 |
+| `public/images/` | 历史首页场景、Codey、社交分享图等图片 | 替换图片素材 |
 | `docs/DESIGN-SYSTEM.md` | 当前视觉规范 | 查看颜色、字体和布局原则，不直接影响页面显示 |
 
 ## 不要直接修改的文件
@@ -28,7 +30,9 @@
 7. 修改文章正文：搜索 `.prose`。
 8. 修改写作页正文：搜索 `.detail-writings .prose`。
 9. 修改引用：搜索 `.prose blockquote`。
-10. 修改手机样式：搜索 `@media (max-width: 600px)`。
+10. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
+11. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
+12. 修改手机样式：搜索 `@media (max-width: 600px)`。
 
 ## 修改后的预览方法
 
@@ -40,4 +44,3 @@ npm run dev
 
 然后打开终端显示的本地地址。修改 `public/styles.css` 后重新刷新浏览器即可查看效果。
 若提示 `EADDRINUSE`，说明预览端口已被另一个进程占用，需要关闭旧的预览进程后再运行。
-

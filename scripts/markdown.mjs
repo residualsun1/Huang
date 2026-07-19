@@ -162,6 +162,145 @@ function renderTable(lines, inlineMarkdown) {
   return `<div class="table-scroll"><table><thead><tr>${headers.map((value, index) => cell("th", value, index)).join("")}</tr></thead>${body.length ? `<tbody>${body.map((row) => `<tr>${headers.map((_, index) => cell("td", row[index], index)).join("")}</tr>`).join("")}</tbody>` : ""}</table></div>`;
 }
 
+const languageKeywords = {
+  javascript: new Set(["async", "await", "break", "case", "catch", "class", "const", "continue", "default", "delete", "do", "else", "export", "extends", "finally", "for", "from", "function", "if", "import", "in", "instanceof", "let", "new", "of", "return", "static", "switch", "throw", "try", "typeof", "var", "while", "yield"]),
+  typescript: new Set(["abstract", "any", "as", "async", "await", "boolean", "class", "const", "declare", "else", "enum", "export", "extends", "for", "from", "function", "if", "implements", "import", "in", "interface", "keyof", "let", "namespace", "never", "new", "number", "of", "private", "protected", "public", "readonly", "return", "satisfies", "static", "string", "type", "typeof", "unknown", "void", "while"]),
+  python: new Set(["and", "as", "assert", "async", "await", "break", "class", "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"]),
+  shell: new Set(["case", "do", "done", "elif", "else", "esac", "export", "fi", "for", "function", "if", "in", "local", "return", "then", "while"]),
+  powershell: new Set(["begin", "break", "catch", "class", "continue", "data", "do", "dynamicparam", "else", "elseif", "end", "enum", "exit", "filter", "finally", "for", "foreach", "from", "function", "if", "in", "param", "process", "return", "switch", "throw", "trap", "try", "until", "using", "while"]),
+};
+
+function normalizeLanguage(language) {
+  const aliases = { js: "javascript", jsx: "javascript", ts: "typescript", tsx: "typescript", py: "python", bash: "shell", sh: "shell", zsh: "shell", ps1: "powershell", pwsh: "powershell" };
+  const normalized = String(language || "").toLocaleLowerCase();
+  return aliases[normalized] || normalized;
+}
+
+function highlightCode(source, language) {
+  const normalized = normalizeLanguage(language);
+  const keywords = languageKeywords[normalized] || new Set();
+  const hashComments = new Set(["python", "shell", "powershell", "yaml", "yml"]);
+  const slashComments = new Set(["javascript", "typescript", "java", "c", "cpp", "csharp", "go", "rust", "swift", "kotlin"]);
+  const constants = new Set(["true", "false", "null", "undefined", "none", "True", "False", "None"]);
+  const token = (type, value) => `<span class="token token-${type}">${escapeHtml(value)}</span>`;
+  let html = "";
+  let index = 0;
+
+  while (index < source.length) {
+    const rest = source.slice(index);
+    if ((normalized === "html" || normalized === "xml") && rest.startsWith("<")) {
+      const end = source.indexOf(">", index + 1);
+      if (end >= 0) {
+        html += token("tag", source.slice(index, end + 1));
+        index = end + 1;
+        continue;
+      }
+    }
+    if ((slashComments.has(normalized) && rest.startsWith("//")) || (hashComments.has(normalized) && rest.startsWith("#"))) {
+      const end = source.indexOf("\n", index);
+      const stop = end < 0 ? source.length : end;
+      html += token("comment", source.slice(index, stop));
+      index = stop;
+      continue;
+    }
+    if (rest.startsWith("/*")) {
+      const end = source.indexOf("*/", index + 2);
+      const stop = end < 0 ? source.length : end + 2;
+      html += token("comment", source.slice(index, stop));
+      index = stop;
+      continue;
+    }
+
+    const character = source[index];
+    if (character === '"' || character === "'" || character === "`") {
+      const quote = character;
+      let stop = index + 1;
+      while (stop < source.length) {
+        if (source[stop] === "\\") stop += 2;
+        else if (source[stop++] === quote) break;
+      }
+      const value = source.slice(index, stop);
+      const whitespace = source.slice(stop).match(/^\s*/)?.[0].length || 0;
+      const type = normalized === "json" && source[stop + whitespace] === ":" ? "property" : "string";
+      html += token(type, value);
+      index = stop;
+      continue;
+    }
+
+    const number = rest.match(/^(?:0x[\da-f]+|\d+(?:\.\d+)?)/i);
+    if (number) {
+      html += token("number", number[0]);
+      index += number[0].length;
+      continue;
+    }
+
+    const identifier = rest.match(/^[A-Za-z_$][\w$-]*/);
+    if (identifier) {
+      const value = identifier[0];
+      if (keywords.has(value)) html += token("keyword", value);
+      else if (constants.has(value)) html += token("constant", value);
+      else html += escapeHtml(value);
+      index += value.length;
+      continue;
+    }
+
+    html += escapeHtml(character);
+    index += 1;
+  }
+  return html;
+}
+
+function renderCodeBlock(code, language) {
+  const normalized = normalizeLanguage(language);
+  const languageClass = normalized ? ` class="language-${escapeAttribute(normalized)}"` : "";
+  const languageAttribute = normalized ? ` data-language="${escapeAttribute(normalized)}"` : "";
+  return `<pre${languageAttribute}><code${languageClass}>${highlightCode(code, normalized)}</code></pre>`;
+}
+
+function renderList(lines, inlineMarkdown) {
+  const items = lines.map((line) => {
+    const match = line.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+    return { indent: match[1].replaceAll("\t", "  ").length, type: /^\d/.test(match[2]) ? "ol" : "ul", content: match[3] };
+  });
+  const stack = [];
+  let html = "";
+  const itemHtml = (content) => {
+    const task = content.match(/^\[([ xX])\]\s+(.+)$/);
+    if (!task) return `<li>${inlineMarkdown(content)}`;
+    return `<li class="task-list-item"><input type="checkbox" disabled${task[1].toLocaleLowerCase() === "x" ? " checked" : ""}> ${inlineMarkdown(task[2])}`;
+  };
+
+  for (const item of items) {
+    if (!stack.length) {
+      html += `<${item.type}>${itemHtml(item.content)}`;
+      stack.push({ indent: item.indent, type: item.type });
+      continue;
+    }
+
+    while (stack.length && item.indent < stack.at(-1).indent) {
+      const level = stack.pop();
+      html += `</li></${level.type}>`;
+    }
+
+    const current = stack.at(-1);
+    if (item.indent > current.indent) {
+      html += `<${item.type}>${itemHtml(item.content)}`;
+      stack.push({ indent: item.indent, type: item.type });
+    } else if (item.type === current.type) {
+      html += `</li>${itemHtml(item.content)}`;
+    } else {
+      html += `</li></${current.type}><${item.type}>${itemHtml(item.content)}`;
+      stack[stack.length - 1] = { indent: item.indent, type: item.type };
+    }
+  }
+
+  while (stack.length) {
+    const level = stack.pop();
+    html += `</li></${level.type}>`;
+  }
+  return html;
+}
+
 function renderShortcodes(markdown, context) {
   const blocks = [];
   const store = (html) => {
@@ -233,8 +372,7 @@ export function renderMarkdown(markdown, options = {}) {
     if (fence) {
       flushAll();
       if (inCode) {
-        const language = codeLanguage ? ` class="language-${escapeAttribute(codeLanguage)}"` : "";
-        html.push(`<pre><code${language}>${escapeHtml(code.join("\n"))}</code></pre>`);
+        html.push(renderCodeBlock(code.join("\n"), codeLanguage));
         code = [];
         codeLanguage = "";
       } else {
@@ -327,24 +465,16 @@ export function renderMarkdown(markdown, options = {}) {
       continue;
     }
 
-    const unordered = line.match(/^[-*+]\s+(.+)$/);
-    const ordered = line.match(/^\d+[.)]\s+(.+)$/);
+    const unordered = line.match(/^\s*[-*+]\s+(.+)$/);
+    const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
     if (unordered || ordered) {
-      flushParagraph();
-      const nextType = unordered ? "ul" : "ol";
-      if (listType !== nextType) {
-        closeList();
-        listType = nextType;
-        html.push(`<${listType}>`);
+      flushAll();
+      const listLines = [line];
+      while (index + 1 < lines.length && /^\s*(?:[-*+]|\d+[.)])\s+.+$/.test(lines[index + 1])) {
+        listLines.push(lines[index + 1]);
+        index += 1;
       }
-      let item = (unordered || ordered)[1];
-      const task = item.match(/^\[([ xX])\]\s+(.+)$/);
-      if (task) {
-        item = `<input type="checkbox" disabled${task[1].toLocaleLowerCase() === "x" ? " checked" : ""}> ${inlineMarkdown(task[2])}`;
-        html.push(`<li class="task-list-item">${item}</li>`);
-      } else {
-        html.push(`<li>${inlineMarkdown(item)}</li>`);
-      }
+      html.push(renderList(listLines, inlineMarkdown));
       continue;
     }
 
@@ -366,8 +496,7 @@ export function renderMarkdown(markdown, options = {}) {
   flushAll();
   if (code.length) {
     context.warnings.push("存在未闭合的 Markdown 代码围栏，已按代码块渲染到文末。");
-    const language = codeLanguage ? ` class="language-${escapeAttribute(codeLanguage)}"` : "";
-    html.push(`<pre><code${language}>${escapeHtml(code.join("\n"))}</code></pre>`);
+    html.push(renderCodeBlock(code.join("\n"), codeLanguage));
   }
 
   if (context.appendFootnotes && footnoteOrder.length) {

@@ -79,49 +79,34 @@ CLI、TUI 和 IDE 则多为开发者使用。[^1]
 
 ### Anthropic 的产品
 
-* Claude
-  * Web 网页
-  * 对话式产品，Agent 能力有限
-* Claude
-  * Desktop 桌面端应用
-* Claude
-  * App 移动端应用
-* Claude Code
-  * CLI + TUI + Agent
-  * Harness
+| 产品          | 定位                         |
+|-------------|----------------------------|
+| Claude      | Web 网页（对话式产品，Agent 能力有限） |
+| Claude      | Desktop 桌面端                |
+| Claude      | App 移动端应用                  |
+| Claude Code | CLI + TUI + Agent Harness  |
+
 
 ### OpenAI 的产品
 
-* ChatGPT
-  * Web 网页
-  * 对话式产品，Agent 能力优先
-* ChatGPT
-  * Desktop 桌面端应用
-* ChatGPT
-  * App 移动端应用
-* Codex CLI
-  * CLI + Agent
-  * Harness
-* Codex Desktop
-  * 桌面端应用
+| 产品            | 定位                       |
+|---------------|--------------------------|
+| ChatGPT       | Web 网页（对话式产品，Agent 能力优先） |
+| ChatGPT       | Desktop 桌面端应用            |
+| ChatGPT       | App 移动端应用                |
+| Codex CLI     | CLI + Agent Harness      |
+| Codex Desktop | 桌面端应用                    |
 
 ### Google 的产品
 
-* Gemini
-  * Web 网页
-* Gemini
-  * Desktop 桌面端应用
-  * 截至本文发布日期，Gemini Desktop 目前只在 Mac 发布
-* Gemini
-  * App 移动端
-* Gemini CLI
-  * CLI Agent
-  * Harness
-* Antigravity
-  * Agent
-  * Harness
-* Antigravity IDE
-  * IDE Desktop 桌面应用
+| 产品          | 定位                                                 |
+|-------------|----------------------------------------------------|
+| Gemini      | Web 网页                                             |
+| Gemini      | Desktop 桌面端应用（截至本文发布日期，Gemini Desktop 目前只在 Mac 发布） |
+| Gemini      | App 移动端                                            |
+| Gemini CLI  | CLI Agent Harness                                  |
+| Antigravity | Agent Harness                                      |
+| Antigravity |  IDE Desktop 桌面应用                                  |
 
 {{% notice info "补充" %}}
 

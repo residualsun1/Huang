@@ -30,17 +30,38 @@ function parseFrontmatter(source) {
   if (end < 0) return { data: {}, body: normalized };
 
   const data = {};
-  for (const line of normalized.slice(4, end).split("\n")) {
-    const separator = line.indexOf(":");
-    if (separator < 0) continue;
-    const key = line.slice(0, separator).trim();
-    let value = line.slice(separator + 1).trim();
+  let activeKey = "";
+  const parseValue = (rawValue) => {
+    let value = rawValue.trim();
     if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
     }
+    return value;
+  };
+
+  for (const line of normalized.slice(4, end).split("\n")) {
+    const arrayItem = line.match(/^\s+-\s+(.+)$/);
+    if (arrayItem && activeKey) {
+      if (!Array.isArray(data[activeKey])) data[activeKey] = [];
+      data[activeKey].push(parseValue(arrayItem[1]));
+      continue;
+    }
+
+    const separator = line.indexOf(":");
+    if (separator < 0) continue;
+    const key = line.slice(0, separator).trim();
+    const value = parseValue(line.slice(separator + 1));
     data[key] = value;
+    activeKey = key;
   }
   return { data, body: normalized.slice(end + 5).trim() };
+}
+
+function normalizeList(value) {
+  if (Array.isArray(value)) return value.map(String).map((item) => item.trim()).filter(Boolean);
+  const source = String(value || "").trim().replace(/^\[|\]$/g, "");
+  if (!source) return [];
+  return source.split(",").map((item) => item.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
 }
 
 function inlineMarkdown(value) {
@@ -147,6 +168,11 @@ function deriveDescription(markdown) {
   return plainText.length > 92 ? `${plainText.slice(0, 92)}…` : plainText;
 }
 
+function deriveExcerpt(markdown) {
+  const excerpt = deriveDescription(markdown);
+  return excerpt === "阅读全文。" ? "" : excerpt;
+}
+
 async function loadContent(group) {
   const directory = path.join(contentRoot, group.key);
   const files = (await readdir(directory)).filter((file) => file.endsWith(".md"));
@@ -156,13 +182,17 @@ async function loadContent(group) {
     const source = await readFile(path.join(directory, file), "utf8");
     const { data, body } = parseFrontmatter(source);
     const slug = data.slug || file.replace(/\.md$/, "");
+    const moreIndex = body.indexOf("<!--more-->");
     if (!data.title || !data.date) {
       throw new Error(`${group.key}/${file} 缺少 title 或 date`);
     }
     entries.push({
       ...data,
       slug,
+      author: String(data.author || "").trim(),
+      tags: normalizeList(data.tags),
       description: data.description || deriveDescription(body),
+      excerpt: moreIndex >= 0 ? deriveExcerpt(body.slice(0, moreIndex)) : "",
       body: body.replace(/<!--([\s\S]*?)-->/g, "").trim(),
       href: `/${group.key}/${slug}/`,
       group,
@@ -233,12 +263,12 @@ function siteFooter() {
   </footer>`;
 }
 
-function listRow(entry) {
+function listRow(entry, { summary = entry.description } = {}) {
   return `<a class="writing-row" href="${entry.href}">
     <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="writing-copy">
       <strong>${escapeHtml(entry.title)}</strong>
-      <span>${escapeHtml(entry.description)}</span>
+      ${summary ? `<span>${escapeHtml(summary)}</span>` : ""}
     </span>
     <span class="row-arrow" aria-hidden="true">→</span>
   </a>`;
@@ -258,7 +288,7 @@ function homePage(collections) {
       </div>
       <time datetime="${escapeHtml(entry.date)}">更新于 ${formatDate(entry.date)}</time>
     </a>`).join("");
-  const writings = byKey.writings.entries.slice(0, 5).map(listRow).join("");
+  const writings = byKey.writings.entries.slice(0, 5).map((entry) => listRow(entry, { summary: entry.excerpt })).join("");
   const prompts = byKey.prompts.entries.slice(0, 5).map(listRow).join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
@@ -275,27 +305,12 @@ function homePage(collections) {
     content: `${siteHeader()}
     <main class="site-shell">
       <section class="hero" aria-labelledby="home-title">
-        <div class="hero-copy">
-          <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
-          <div class="hero-intro">
-            <p>你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。</p>
-            <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
-            <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
-          </div>
+        <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
+        <div class="hero-intro">
+          <p>你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。</p>
+          <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
+          <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
         </div>
-        <figure class="hero-scene">
-          <button class="scene-frame" type="button" aria-label="唤醒像素世界与 AI 伙伴">
-            <img class="scene-background" src="/images/ai-companion-scene-v3.png" alt="粗像素艺术场景：一名男性站在夜晚发光的树下" width="1254" height="1254" fetchpriority="high">
-            <canvas class="scene-particles" aria-hidden="true"></canvas>
-            <span class="codex-pet" aria-hidden="true">
-              <span class="pet-shell">
-                <img class="pet-sprite" src="/images/codey-head-v1.png" alt="" width="72" height="56">
-              </span>
-            </span>
-            <span class="scene-feather" aria-hidden="true"></span>
-            <span class="sr-only">点击后场景会震动、粒子飞舞，AI 伙伴也会移动。</span>
-          </button>
-        </figure>
       </section>
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
@@ -315,8 +330,7 @@ function homePage(collections) {
         <div class="section-more"><a href="/prompts/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
     </main>
-    ${siteFooter()}
-    <script defer src="/scene.js"></script>`,
+    ${siteFooter()}`,
   });
 }
 
@@ -382,6 +396,9 @@ function detailPage(entry, previousEntry, nextEntry) {
     console.warn(`[${entry.group.key}/${entry.slug}] ${warning}`);
   }
   const toc = createTableOfContents(rendered.html);
+  const description = entry.group.key === "writings" ? "" : `<p class="article-description">${escapeHtml(entry.description)}</p>`;
+  const author = entry.author ? `<span class="article-author">${escapeHtml(entry.author)}</span>` : "";
+  const tags = entry.tags.length ? `<ul class="article-tags" aria-label="文章标签">${entry.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : "";
   return layout({
     title: `${entry.title} — Huang`,
     description: entry.description,
@@ -395,10 +412,10 @@ function detailPage(entry, previousEntry, nextEntry) {
       <header class="article-header">
         <p class="eyebrow">${entry.group.number} / ${entry.group.eyebrow}</p>
         <h1>${escapeHtml(entry.title)}</h1>
-        <p class="article-description">${escapeHtml(entry.description)}</p>
+        ${description}
         <div class="article-meta">
-          <time datetime="${escapeHtml(entry.date)}">发布于 ${formatDate(entry.date)}</time>
-          <span>${entry.group.label}</span>
+          <div class="article-byline">${author}<time datetime="${escapeHtml(entry.date)}">发布于 ${formatDate(entry.date)}</time></div>
+          ${tags}
         </div>
       </header>
       <div class="article-layout">
@@ -408,7 +425,8 @@ function detailPage(entry, previousEntry, nextEntry) {
       ${articlePagination(previousEntry, nextEntry)}
       <footer class="article-footer"><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">← 回到${entry.group.label}</a></footer>
     </main>
-    ${siteFooter()}`,
+    ${siteFooter()}
+    <script defer src="/code-blocks.js"></script>`,
   });
 }
 

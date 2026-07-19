@@ -59,8 +59,8 @@
   /* 青绿色品牌色：用于链接、焦点、标签和交互状态。 */
   --accent-100: rgba(36, 93, 98, 0.08);
   --accent-200: rgba(36, 93, 98, 0.14);
-  --accent-700: #245d62;
-  --accent-800: #194d52;
+  --accent-700: #8b4513;
+  --accent-800: #8b4513;
 
   /* Markdown 提示框使用的错误、警告、成功和信息颜色。 */
   --red-100: #f9e8e5;
@@ -68,7 +68,7 @@
   --amber-100: #f4ead2;
   --amber-800: #8a5710;
   --green-100: #e4ede3;
-  --green-800: #3f6847;
+  --green-800: #8b4513;
   --blue-100: #e3ebef;
   --blue-800: #365f80;
 
@@ -209,13 +209,10 @@ a { color: inherit; }
 /* 首页主体底部留白，避免最后一个栏目紧贴页脚。 */
 .site-shell { padding-bottom: 112px; }
 
-/* 首页首屏：桌面端左侧个人简介，右侧像素场景。 */
+/* 首页首屏：只保留克制的文字自我介绍，限制行宽以提高阅读聚焦度。 */
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
-  gap: clamp(40px, 6vw, 72px);
-  align-items: center;
-  padding: 72px 0 64px;
+  max-width: 760px;
+  padding: 52px 0 28px;
 }
 
 /* 英文栏目编号和小标签统一使用等宽字体。 */
@@ -262,21 +259,27 @@ a { color: inherit; }
   line-height: 1.85;
 }
 
-/* 首页三段个人简介；gap 控制三个段落之间的距离。 */
+/* 首页三段个人简介：思源宋体、小字号、短行宽，形成安静沉稳的阅读开场。 */
 .hero-intro {
   display: grid;
-  max-width: 590px;
-  gap: 18px;
+  max-width: 720px;
+  gap: 11px;
   margin: 0;
   padding: 0;
   color: var(--gray-900);
-  font-family: var(--editorial);
-  font-size: clamp(15px, 1.45vw, 17px);
-  line-height: 1.9;
+  font-family: var(--source-han-serif);
+  font-size: 14px;
+  line-height: 1.82;
   letter-spacing: 0.01em;
 }
 
 .hero-intro p { margin: 0; }
+
+/* 首句略深，承担个人身份说明；后两段降低对比度以保持层次。 */
+.hero-intro p:first-child {
+  color: var(--gray-1000);
+  font-size: 15px;
+}
 
 /* 可复用状态标签与状态圆点。 */
 .status-label {
@@ -306,138 +309,13 @@ a { color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
-/* 首页像素场景的整体尺寸与右侧对齐方式。 */
-.hero-scene {
-  width: 100%;
-  max-width: 492px;
-  margin: 0;
-  justify-self: end;
-}
-
-/* 可点击的正方形像素舞台；overflow 隐藏移出边界的内容。 */
-.scene-frame {
-  position: relative;
-  overflow: hidden;
-  display: block;
-  width: 100%;
-  padding: 0;
-  aspect-ratio: 1;
-  border: 0;
-  background: var(--background-100);
-  color: inherit;
-  cursor: crosshair;
-  appearance: none;
-  isolation: isolate;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* 键盘聚焦场景时显示虚线轮廓。 */
-.scene-frame:focus-visible {
-  outline: 1px dashed var(--accent-700);
-  outline-offset: 8px;
-}
-
-/* 像素背景图；pixelated 禁止浏览器把像素块平滑化。 */
-.scene-background {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  image-rendering: pixelated;
-  transform: scale(1.025);
-  transition: filter 420ms ease, transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-/* 鼠标进入场景后轻微放大并提亮背景。 */
-.scene-frame.is-hovered .scene-background {
-  filter: brightness(1.04) saturate(1.08);
-  transform: scale(1.04);
-}
-
-/* Canvas 粒子层：覆盖背景，但不拦截鼠标事件。 */
-.scene-particles {
-  position: absolute;
-  z-index: 3;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-
-/* 四周羽化遮罩：让方形图片自然渐隐到页面背景中。 */
-.scene-feather {
-  position: absolute;
-  z-index: 8;
-  inset: -1px;
-  background:
-    linear-gradient(to right, var(--background-100) 0%, rgba(243, 241, 237, 0.86) 3%, transparent 15%, transparent 85%, rgba(243, 241, 237, 0.86) 97%, var(--background-100) 100%),
-    linear-gradient(to bottom, var(--background-100) 0%, rgba(243, 241, 237, 0.86) 3%, transparent 15%, transparent 85%, rgba(243, 241, 237, 0.86) 97%, var(--background-100) 100%);
-  box-shadow: inset 0 0 42px 18px var(--background-100);
-  pointer-events: none;
-}
-
-/* Codey 像素头像的位置、尺寸和点击移动变量。 */
-.codex-pet {
-  --pet-x: 0px;
-  position: absolute;
-  z-index: 5;
-  right: 15%;
-  bottom: 17%;
-  display: block;
-  width: clamp(48px, 15%, 72px);
-  aspect-ratio: 72 / 56;
-  transform: translate3d(var(--pet-x), 0, 0);
-  transition: transform 520ms steps(4, end);
-  pointer-events: none;
-}
-
-/* 像素头像的定位容器。 */
-.pet-shell {
-  position: absolute;
-  inset: 0;
-  image-rendering: pixelated;
-}
-
-/* 实际头像图片：保持硬边像素，并轻微降低饱和度以融入场景。 */
-.pet-sprite {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-  filter: saturate(0.88) brightness(0.92);
-}
-
-/* JavaScript 点击场景时添加状态类，触发头像跳动和画面震动。 */
-.pet-shell.is-moving { animation: pet-hop 680ms steps(6, end); }
-
-.scene-frame.is-shaking { animation: scene-shake 360ms steps(5, end); }
-
-/* 场景点击后的分段震动动画。 */
-@keyframes scene-shake {
-  0%, 100% { transform: translate(0, 0); }
-  20% { transform: translate(-5px, 2px); }
-  40% { transform: translate(4px, -3px); }
-  60% { transform: translate(-3px, -1px); }
-  80% { transform: translate(3px, 2px); }
-}
-
-/* Codey 点击后的轻微跳动动画。 */
-@keyframes pet-hop {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  30% { transform: translateY(-6px) rotate(-2deg); }
-  58% { transform: translateY(-2px) rotate(2deg); }
-  78% { transform: translateY(-4px) rotate(-1deg); }
-}
-
 /* 首页栏目通用间距；scroll-margin 避免锚点被顶部导航遮挡。 */
 .content-section {
   padding-top: 76px;
   scroll-margin-top: 64px;
 }
 
-.hero + .content-section { padding-top: 44px; }
+.hero + .content-section { padding-top: 24px; }
 
 /* 栏目标题区域：顶部细线、英文编号与中文大标题。 */
 .section-heading {
@@ -669,7 +547,7 @@ a { color: inherit; }
 .breadcrumb a { text-decoration: none; }
 .breadcrumb a:hover { color: var(--gray-1000); }
 
-/* 文章标题区域：标题、摘要、发布日期和栏目标签。 */
+/* 文章标题区域：标题、可选摘要、作者、发布日期和文章标签。 */
 .article-header {
   max-width: 920px;
   padding: 64px 0;
@@ -692,7 +570,9 @@ a { color: inherit; }
 
 .article-meta {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px 24px;
   align-items: center;
   margin-top: 32px;
   color: var(--gray-700);
@@ -702,7 +582,36 @@ a { color: inherit; }
   line-height: 16px;
 }
 
-.article-meta span {
+/* 作者和发布日期位于左侧，二者用细分隔符形成一组。 */
+.article-byline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.article-author {
+  color: var(--gray-900);
+}
+
+.article-author::after {
+  margin-left: 8px;
+  color: var(--gray-alpha-500);
+  content: "·";
+}
+
+/* 文章标签位于右侧；使用无序列表保留正确的语义结构。 */
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-tags li {
   display: inline-flex;
   min-height: 24px;
   align-items: center;
@@ -711,6 +620,9 @@ a { color: inherit; }
   border-radius: 9999px;
   background: var(--gray-alpha-100);
 }
+
+/* 写作页不显示摘要，因此缩短标题与元信息之间的距离。 */
+.detail-writings .article-meta { margin-top: 24px; }
 
 /* 桌面端文章布局：左侧正文，右侧 220px 目录。 */
 .article-layout {
@@ -769,8 +681,8 @@ a { color: inherit; }
   margin: 64px 0 80px;
   color: #34312f;
   font-family: var(--source-han-serif);
-  font-size: 17px;
-  line-height: 1.88;
+  font-size: 15px;
+  line-height: 1.75;
   overflow-wrap: anywhere;
 }
 
@@ -809,7 +721,17 @@ a { color: inherit; }
 .prose li { margin: 0.45em 0; padding-left: 0.15em; }
 .prose li::marker { color: var(--gray-700); }
 
-/* 默认 Markdown 引用：楷体、青绿色左边线和淡色背景。 */
+/* 多级列表：子层级缩进并使用不同项目符号，层级关系更容易辨认。 */
+.prose li > ul,
+.prose li > ol {
+  margin: 0.45em 0 0.3em;
+  padding-left: 1.55em;
+}
+
+.prose ul ul { list-style-type: circle; }
+.prose ul ul ul { list-style-type: square; }
+
+/* 默认 Markdown 引用：楷体、棕色左边线和淡色背景。 */
 .prose blockquote {
   margin: 2em 0;
   padding: 16px 20px;
@@ -826,27 +748,12 @@ a { color: inherit; }
 
 /* 写作正文专属阅读排版，只影响 /writings/ 下的文章。 */
 .detail-writings .prose {
-  margin-top: 64px;
-  margin-bottom: 88px;
+  margin-top: 50px;
+  margin-bottom: 50px;
   color: #34312f;
-  font-size: 17px;
-  line-height: 1.72;
+  font-size: 15.5px;
+  line-height: 1.75;
   letter-spacing: 0.01em;
-}
-
-/* 直属正文段落使用两端对齐和 2em 首行缩进。 */
-.detail-writings .prose > p {
-  margin-bottom: 2.2em;
-  text-align: justify;
-  text-indent: 2em;
-  text-justify: inter-ideograph;
-}
-
-/* 居中段落与纯图片段落不应首行缩进。 */
-.detail-writings .prose > p.text-center,
-.detail-writings .prose > p:has(> img:only-child),
-.detail-writings .prose > p:has(> a:only-child > img:only-child) {
-  text-indent: 0;
 }
 
 /* 写作页引用覆盖默认引用：保留楷体和左边线，移除底色。 */
@@ -871,20 +778,53 @@ a { color: inherit; }
   font-size: 0.84em;
 }
 
-/* 多行代码块：深色背景，并允许横向滚动。 */
+/* 代码块外壳固定右上角复制按钮，不参与内部横向滚动。 */
+.code-block {
+  position: relative;
+  margin: 2em 0;
+}
+
+/* 多行代码块：暖灰纸面与站点背景自然过渡，并保留横向滚动。 */
 .prose pre {
   overflow-x: auto;
-  margin: 2em 0;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0;
+  padding: 48px 20px 20px;
+  border: 1px solid #d7d0c5;
   border-radius: var(--radius-sm);
-  background: #1f1e1d;
-  color: #f3f1ed;
+  background: #e8e3da;
+  color: #38342f;
   font-family: var(--mono);
   font-size: 14px;
   line-height: 1.7;
   tab-size: 2;
 }
+
+/* 复制按钮：低对比度悬浮在代码块右上角，成功后使用品牌棕色反馈。 */
+.code-copy {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  min-width: 54px;
+  padding: 5px 9px;
+  border: 1px solid #d0c8bc;
+  border-radius: 5px;
+  background: rgba(248, 245, 239, 0.92);
+  color: var(--gray-700);
+  font-family: var(--source-han-serif);
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.code-copy:hover {
+  border-color: #bdb3a4;
+  background: #f8f5ef;
+  color: var(--gray-1000);
+}
+
+.code-copy.is-copied { color: var(--accent-800); }
 
 .prose pre code {
   padding: 0;
@@ -894,10 +834,19 @@ a { color: inherit; }
   font-size: inherit;
 }
 
+/* 构建阶段生成的语法高亮色：低饱和度，适合暖灰代码背景。 */
+.token-comment { color: #7b756d; font-style: italic; }
+.token-keyword,
+.token-tag { color: #85532f; font-weight: 600; }
+.token-string { color: #4f725f; }
+.token-property { color: #725d8e; }
+.token-number,
+.token-constant { color: #8a5e52; }
+
 /* 正文链接及悬浮下划线颜色。 */
 .prose a {
   color: var(--accent-800);
-  text-decoration-color: rgba(36, 93, 98, 0.32);
+  text-decoration-color: rgba(250, 248, 244, 0.76);
   text-underline-offset: 4px;
   transition: text-decoration-color 150ms ease;
 }
@@ -1225,18 +1174,8 @@ a.article-pagination-item:hover {
   box-shadow: 0 0 0 2px var(--background-100), 0 0 0 4px var(--accent-700);
 }
 
-/* 平板适配（≤ 960px）：Hero 单列、项目两列、文章目录隐藏。 */
+/* 平板适配（≤ 960px）：项目两列、文章目录隐藏。 */
 @media (max-width: 960px) {
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-
-  .hero-scene {
-    max-width: 520px;
-    justify-self: start;
-  }
-
   .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .article-layout {
@@ -1265,16 +1204,13 @@ a.article-pagination-item:hover {
   .site-nav { gap: 0; }
   .site-nav a { padding-inline: 8px; font-size: 12px; }
 
-  /* 手机端首页简介和像素场景。 */
+  /* 手机端首页简介：继续保持短行距和紧凑留白。 */
   .hero {
-    gap: 32px;
-    padding: 52px 0 48px;
+    padding: 40px 0 22px;
   }
 
-  .hero-intro { gap: 14px; font-size: 15px; line-height: 1.82; }
-  .hero-scene { max-width: 100%; }
-  .scene-feather { box-shadow: inset 0 0 28px 12px var(--background-100); }
-  .codex-pet { right: 15%; bottom: 16%; }
+  .hero-intro { gap: 10px; font-size: 13px; line-height: 1.8; }
+  .hero-intro p:first-child { font-size: 14px; }
 
   /* 手机端首页栏目、项目卡片和文章列表。 */
   .content-section { padding-top: 72px; }
@@ -1316,6 +1252,7 @@ a.article-pagination-item:hover {
   .article-header h1 { font-size: 36px; line-height: 41px; letter-spacing: -0.045em; }
   .article-description { font-size: 17px; line-height: 28px; }
   .article-meta { align-items: flex-start; flex-direction: column; }
+  .article-tags { justify-content: flex-start; }
 
   /* 手机端 Markdown 正文与扩展组件。 */
   .prose {
@@ -1328,7 +1265,8 @@ a.article-pagination-item:hover {
   .prose h2 { font-size: 26px; line-height: 34px; }
   .prose h3 { font-size: 21px; line-height: 29px; }
   .prose h4 { font-size: 18px; line-height: 27px; }
-  .prose pre { margin-inline: -8px; padding: 16px; font-size: 13px; }
+  .code-block { margin-inline: -8px; }
+  .prose pre { padding: 44px 16px 16px; font-size: 13px; }
   .prose blockquote { margin-inline: -8px; }
   .notice-box { margin-inline: -8px; }
   .image-loop { grid-auto-columns: 92%; }
@@ -1359,10 +1297,8 @@ a.article-pagination-item:hover {
   .detail-writings .article-pagination { gap: 22px; }
 }
 
-/* 用户开启“减少动态效果”时，关闭滚动、过渡和场景动画。 */
+/* 用户开启“减少动态效果”时，关闭滚动和界面过渡。 */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }
-  .scene-frame.is-shaking,
-  .pet-shell.is-moving { animation: none !important; }
 }
