@@ -317,24 +317,26 @@ a { color: inherit; }
 
 .hero + .content-section { padding-top: 24px; }
 
-/* 栏目标题区域：顶部细线、英文编号与中文大标题。 */
+/* 栏目标题区域：编号与中文名称保持小字号，水平线从文字右侧延伸。 */
 .section-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   padding-top: 32px;
-  border-top: 1px solid var(--gray-alpha-400);
 }
 
-.section-heading h2 {
-  margin: 8px 0 0;
-  font-family: var(--serif);
-  font-size: 32px;
-  font-weight: 500;
-  line-height: 40px;
-  letter-spacing: -0.025em;
+/* 伪元素承担原本位于标题上方的分隔线，并在右侧占满剩余宽度。 */
+.section-heading .section-kicker {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.section-heading .section-kicker::after {
+  width: 100%;
+  height: 1px;
+  background: var(--gray-alpha-400);
+  content: "";
 }
 
 /* 项目网格：桌面端一行三列，响应式区会变成两列和一列。 */
@@ -1216,12 +1218,11 @@ a.article-pagination-item:hover {
   .content-section { padding-top: 72px; }
 
   .section-heading {
-    display: block;
     margin-bottom: 24px;
     padding-top: 24px;
   }
 
-  .section-heading h2 { font-size: 28px; line-height: 36px; }
+  .section-heading .section-kicker { gap: 10px; }
   .project-grid { grid-template-columns: 1fr; }
   .project-card { min-height: 220px; padding: 24px; }
   .project-card h3 { font-size: 22px; line-height: 29px; }

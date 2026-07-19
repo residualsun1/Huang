@@ -9,9 +9,10 @@ test("首页包含三个最小内容栏目和用户文章", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
-  assert.match(html, /01 \/ PROJECT/);
-  assert.match(html, /02 \/ WRITING/);
-  assert.match(html, /03 \/ PROMPT/);
+  assert.match(html, /01 \/ 项目/);
+  assert.match(html, /02 \/ 写作/);
+  assert.match(html, /03 \/ 提示词/);
+  assert.doesNotMatch(html, /<h2 id="(?:projects|writings|prompts)-title">/);
   assert.match(html, /class="project-card"/);
   assert.match(html, /class="writing-row"/);
   assert.doesNotMatch(html, /class="prompt-card"/);
@@ -82,6 +83,12 @@ test("正文和引用使用独立的中文阅读字体", async () => {
   assert.match(writing, /<body class="detail detail-writings">/);
   assert.match(prompt, /<body class="detail detail-prompts">/);
   assert.doesNotMatch(prompt, /<body class="detail detail-writings">/);
+});
+
+test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /\.section-heading \.section-kicker::after \{/);
+  assert.match(css, /background: var\(--gray-alpha-400\)/);
 });
 
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {

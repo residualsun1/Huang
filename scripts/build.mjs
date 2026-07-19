@@ -292,10 +292,7 @@ function homePage(collections) {
   const prompts = byKey.prompts.entries.slice(0, 5).map(listRow).join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
-    <div>
-      <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
-      <h2 id="${group.key}-title">${group.label}</h2>
-    </div>
+    <p class="section-kicker" id="${group.key}-title">${group.number} / ${group.label}</p>
   </header>`;
 
   return layout({
