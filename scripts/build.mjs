@@ -246,12 +246,6 @@ function siteHeader() {
       <a class="site-brand" href="/" aria-label="首页">
         <span class="brand-mark" aria-hidden="true">Huang</span>
       </a>
-      <nav class="site-nav" aria-label="主要导航">
-        <a href="/#projects">项目</a>
-        <a href="/#prompts">提示词</a>
-        <a href="/#writings">写作</a>
-        <a href="/#readings">阅读</a>
-      </nav>
     </div>
   </header>`;
 }
@@ -277,6 +271,18 @@ function socialNavigation() {
       <span>Guozheng Huang</span>
     </a>
   </nav>`;
+}
+
+function homeTableOfContents() {
+  return `<aside class="home-toc" aria-label="主页目录">
+    <p>浏览</p>
+    <ol>
+      <li><a href="#projects"><span>01</span>项目</a></li>
+      <li><a href="#prompts"><span>02</span>提示词</a></li>
+      <li><a href="#writings"><span>03</span>写作</a></li>
+      <li><a href="#readings"><span>04</span>阅读</a></li>
+    </ol>
+  </aside>`;
 }
 
 function listRow(entry, { summary = entry.description } = {}) {
@@ -317,16 +323,21 @@ function homePage(collections) {
     description: "你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。",
     bodyClass: "home",
     content: `${siteHeader()}
-    <main class="site-shell">
+    <main class="site-shell home-layout">
       <section class="hero" aria-labelledby="home-title">
         <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
-        <div class="hero-intro">
-          <p>你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。</p>
-          <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
-          <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
+        <div class="hero-copy">
+          <div class="hero-intro">
+            <p>你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。</p>
+            <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
+            <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
+          </div>
+          ${socialNavigation()}
         </div>
-        ${socialNavigation()}
+        <div class="portrait-space" aria-hidden="true"><!-- 个人照片位置将在确定裁切方案后启用。 --></div>
       </section>
+
+      ${homeTableOfContents()}
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
         ${sectionHeader(byKey.projects.group)}
