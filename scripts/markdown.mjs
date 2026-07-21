@@ -304,10 +304,19 @@ function renderCodeBlock(code, language, label = "") {
 function renderList(lines, inlineMarkdown) {
   const items = lines.map((line) => {
     const match = line.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
-    return { indent: match[1].replaceAll("\t", "  ").length, type: /^\d/.test(match[2]) ? "ol" : "ul", content: match[3] };
+    const ordered = /^\d/.test(match[2]);
+    return {
+      indent: match[1].replaceAll("\t", "  ").length,
+      type: ordered ? "ol" : "ul",
+      start: ordered ? Number.parseInt(match[2], 10) : null,
+      content: match[3],
+    };
   });
   const stack = [];
   let html = "";
+  const openList = (item) => item.type === "ol" && item.start !== 1
+    ? `<ol start="${item.start}">`
+    : `<${item.type}>`;
   const itemHtml = (content) => {
     const task = content.match(/^\[([ xX])\]\s+(.+)$/);
     if (!task) return `<li>${inlineMarkdown(content)}`;
@@ -316,7 +325,7 @@ function renderList(lines, inlineMarkdown) {
 
   for (const item of items) {
     if (!stack.length) {
-      html += `<${item.type}>${itemHtml(item.content)}`;
+      html += `${openList(item)}${itemHtml(item.content)}`;
       stack.push({ indent: item.indent, type: item.type });
       continue;
     }
@@ -328,12 +337,12 @@ function renderList(lines, inlineMarkdown) {
 
     const current = stack.at(-1);
     if (item.indent > current.indent) {
-      html += `<${item.type}>${itemHtml(item.content)}`;
+      html += `${openList(item)}${itemHtml(item.content)}`;
       stack.push({ indent: item.indent, type: item.type });
     } else if (item.type === current.type) {
       html += `</li>${itemHtml(item.content)}`;
     } else {
-      html += `</li></${current.type}><${item.type}>${itemHtml(item.content)}`;
+      html += `</li></${current.type}>${openList(item)}${itemHtml(item.content)}`;
       stack[stack.length - 1] = { indent: item.indent, type: item.type };
     }
   }
@@ -518,10 +527,26 @@ export function renderMarkdown(markdown, options = {}) {
     if (unordered || ordered) {
       flushAll();
       const listLines = [line];
-      while (index + 1 < lines.length && /^\s*(?:[-*+]|\d+[.)])\s+.+$/.test(lines[index + 1])) {
-        listLines.push(lines[index + 1]);
-        index += 1;
+      const listPattern = /^\s*(?:[-*+]|\d+[.)])\s+.+$/;
+      let cursor = index + 1;
+      while (cursor < lines.length) {
+        if (listPattern.test(lines[cursor])) {
+          listLines.push(lines[cursor]);
+          cursor += 1;
+          continue;
+        }
+
+        if (!lines[cursor].trim()) {
+          let nextItem = cursor + 1;
+          while (nextItem < lines.length && !lines[nextItem].trim()) nextItem += 1;
+          if (nextItem < lines.length && listPattern.test(lines[nextItem])) {
+            cursor = nextItem;
+            continue;
+          }
+        }
+        break;
       }
+      index = cursor - 1;
       html.push(renderList(listLines, inlineMarkdown));
       continue;
     }

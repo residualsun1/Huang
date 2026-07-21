@@ -81,6 +81,7 @@
   --sans: "Geist Sans", "Segoe UI Variable", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --mono: "Geist Mono", "SFMono-Regular", "Cascadia Code", Consolas, monospace;
   --code-font: "Geist Mono", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  --title-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --source-han-serif: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
   --kai: "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
@@ -145,7 +146,6 @@ a { color: inherit; }
   position: sticky;
   z-index: 20;
   top: 0;
-  border-bottom: 1px solid var(--gray-alpha-400);
   background: rgba(243, 241, 237, 0.86);
   backdrop-filter: saturate(140%) blur(14px);
 }
@@ -281,6 +281,35 @@ a { color: inherit; }
   color: var(--gray-1000);
   font-size: 15px;
 }
+
+/* 自我介绍下方的社交入口：小型单色图标、克制的文字下划线与圆点分隔。 */
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  color: var(--gray-900);
+  font-family: var(--title-serif);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: inherit;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.social-links a span {
+  border-bottom: 1px solid rgba(139, 69, 19, 0.55);
+}
+
+.social-links a:hover { color: var(--accent-700); }
+.social-links svg { flex: 0 0 auto; }
+.social-separator { color: var(--gray-alpha-500); }
 
 /* 可复用状态标签与状态圆点。 */
 .status-label {
@@ -471,9 +500,20 @@ a { color: inherit; }
 .home .writing-list { border-top: 0; }
 .home .writing-row { border-bottom: 0; }
 .home .writing-copy strong {
-  color: #302d2a;
-  font-weight: 500;
+  width: auto;
+  justify-self: start;
+  color: rgb(139, 69, 19);
+  font-family: var(--title-serif);
+  font-weight: 400;
+  text-decoration-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  transition: text-decoration-color 0.2s ease;
 }
+
+.home .writing-copy strong:hover { text-decoration-color: rgb(139, 69, 19); }
 
 /* 悬浮时箭头向右移动，提示整行可以点击。 */
 .writing-row:hover .row-arrow {
@@ -523,11 +563,7 @@ a { color: inherit; }
 
 .collection-back { margin-top: 32px; }
 
-/* 全站页脚：桌面端横向排列说明与年份。 */
-.site-footer {
-  border-top: 1px solid var(--gray-alpha-400);
-}
-
+/* 全站页脚：无分隔线，桌面端横向排列邮箱与年份。 */
 .site-footer-inner {
   display: flex;
   min-height: 96px;
@@ -538,6 +574,15 @@ a { color: inherit; }
   font-size: 12px;
   line-height: 16px;
 }
+
+.footer-email {
+  color: var(--gray-900);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.footer-email:hover { color: var(--accent-700); }
 
 .footer-meta {
   font-family: var(--mono);
@@ -858,7 +903,7 @@ a { color: inherit; }
   border-radius: 6px;
   background: transparent;
   color: #69645e;
-  font-family: var(--source-han-serif);
+  font-family: var(--sans);
   font-size: 12px;
   line-height: 18px;
   cursor: pointer;
@@ -878,6 +923,7 @@ a { color: inherit; }
   border: 0;
   background: transparent;
   color: inherit;
+  font-family: inherit;
   font-size: inherit;
 }
 

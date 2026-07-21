@@ -16,6 +16,12 @@ const groups = [
   { key: "readings", number: "04", label: "阅读", eyebrow: "READING" },
 ];
 
+// 社交平台链接集中维护：将下面两个地址替换为你的个人主页即可。
+const socialLinks = {
+  x: "https://x.com/",
+  github: "https://github.com/",
+};
+
 const escapeHtml = (value = "") =>
   String(value)
     .replaceAll("&", "&amp;")
@@ -231,7 +237,7 @@ function layout({ title, description, content, bodyClass = "", math = false }) {
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="/styles.css">${mathAssets}
 </head>
 <body class="${escapeHtml(bodyClass)}">
@@ -259,10 +265,24 @@ function siteHeader() {
 function siteFooter() {
   return `<footer class="site-footer">
     <div class="site-footer-inner">
-      <span>持续学习，持续修订。</span>
+      <a class="footer-email" href="mailto:Residualsun@proton.me">Residualsun@proton.me</a>
       <span class="footer-meta">© 2026 Huang</span>
     </div>
   </footer>`;
+}
+
+function socialNavigation() {
+  return `<nav class="social-links" aria-label="社交平台">
+    <a href="${socialLinks.x}" target="_blank" rel="noreferrer" aria-label="X 个人主页">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+      <span>X</span>
+    </a>
+    <span class="social-separator" aria-hidden="true">·</span>
+    <a href="${socialLinks.github}" target="_blank" rel="noreferrer" aria-label="GitHub 个人主页">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.014-1.699-2.782.604-3.369-1.341-3.369-1.341-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.004.071 1.532 1.031 1.532 1.031.892 1.529 2.341 1.087 2.91.831.091-.646.349-1.087.635-1.337-2.221-.253-4.555-1.111-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.845a9.56 9.56 0 0 1 2.504.337c1.909-1.294 2.748-1.025 2.748-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.591 1.028 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.679.92.679 1.855 0 1.338-.012 2.419-.012 2.748 0 .268.18.579.688.481A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10z"></path></svg>
+      <span>GitHub</span>
+    </a>
+  </nav>`;
 }
 
 function listRow(entry, { summary = entry.description } = {}) {
@@ -311,6 +331,7 @@ function homePage(collections) {
           <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
           <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
         </div>
+        ${socialNavigation()}
       </section>
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">

@@ -21,6 +21,9 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.doesNotMatch(html, /class="scene-frame"/);
   assert.doesNotMatch(html, /src="\/scene\.js"/);
   assert.match(html, /class="hero-intro"/);
+  assert.match(html, /class="social-links"/);
+  assert.match(html, /aria-label="X 个人主页"/);
+  assert.match(html, /aria-label="GitHub 个人主页"/);
   assert.match(html, /你好，我是 Huang。我在探索 AI、人文、艺术/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
@@ -131,6 +134,7 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.match(css, /--code-font:/);
   assert.match(css, /\.prose pre \{[\s\S]*?background: #efebe4/);
   assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
+  assert.match(css, /\.prose pre code \{[\s\S]*?font-family: inherit/);
   assert.match(css, /\.code-block \{[\s\S]*?box-shadow:/);
   assert.match(css, /\.code-toolbar \{/);
   assert.match(css, /\.token-keyword/);
@@ -158,16 +162,46 @@ test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
   assert.match(mathScript, /document\.querySelector\("\.prose"\)/);
 });
 
-test("首页文章列表使用留白分组并弱化标题字重", async () => {
+test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
   assert.match(css, /\.home \.writing-row \{ border-bottom: 0; \}/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 500/);
+  assert.match(css, /--title-serif: "Libre Baskerville"/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 400/);
+  assert.match(css, /\.home \.writing-copy strong:hover \{ text-decoration-color: rgb\(139, 69, 19\); \}/);
 });
 
 test("Markdown 无序与有序列表支持多层缩进", () => {
   const { html } = renderMarkdown("- Claude\n  - Web 网页\n    1. Chrome\n- Codex");
   assert.match(html, /<ul><li>Claude<ul><li>Web 网页<ol><li>Chrome<\/li><\/ol><\/li><\/ul><\/li><li>Codex<\/li><\/ul>/);
+});
+
+test("引用中的宽松有序列表保持连续编号", () => {
+  const source = `> 1. **感知**：接收环境输入。
+>
+> 2. **思考**：形成行动计划。
+>    * 规划
+>    * 工具选择
+>
+> 3. **行动**：执行计划。`;
+  const { html } = renderMarkdown(source);
+  assert.equal((html.match(/<ol(?:\s|>)/g) ?? []).length, 1);
+  assert.ok(html.indexOf("感知") < html.indexOf("思考"));
+  assert.ok(html.indexOf("思考") < html.indexOf("行动"));
+  assert.match(html, /<ol><li><strong>感知<\/strong>/);
+  assert.match(renderMarkdown("3. 第三项\n4. 第四项").html, /<ol start="3">/);
+});
+
+test("页眉页脚无分隔线且页脚显示邮箱", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const headerRule = css.match(/\.site-header \{([\s\S]*?)\}/)?.[1] ?? "";
+  assert.doesNotMatch(headerRule, /border-bottom/);
+  assert.doesNotMatch(css, /\.site-footer \{[\s\S]*?border-top/);
+  assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me">Residualsun@proton\.me<\/a>/);
+  assert.doesNotMatch(html, /持续学习，持续修订/);
+  assert.match(css, /\.footer-email \{[\s\S]*?font-family: "Times New Roman"/);
 });
 
 test("通用 Markdown 扩展可独立渲染", () => {
