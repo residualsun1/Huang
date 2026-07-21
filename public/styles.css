@@ -889,63 +889,46 @@ a { color: inherit; }
   tab-size: 2;
 }
 
-/* 复制按钮：普通代码块和 Prompt 统一使用无文字的双方框图标。 */
-.code-copy {
+/* 复制按钮：完全采用文章指定的 inline-prompt-copy-btn 与 15px SVG。 */
+.inline-prompt-copy-btn {
   flex: 0 0 auto;
   display: grid;
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
   place-items: center;
   padding: 0;
   border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
   color: #69645e;
-  font-family: var(--sans);
-  font-size: 12px;
-  line-height: 18px;
   cursor: pointer;
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
 }
 
-.code-copy:hover {
+.inline-prompt-copy-btn:hover {
   border-color: var(--gray-alpha-300);
   background: rgba(248, 245, 239, 0.58);
   color: var(--gray-1000);
 }
 
-.code-copy.is-copied { color: var(--accent-800); }
+.inline-prompt-copy-btn.is-copied { color: var(--accent-800); }
 
-/* 前后错位的两个描边方框组成复制图标；复制成功时后框收回并淡出。 */
-.copy-icon,
-.copy-icon::before {
-  width: 13px;
-  height: 15px;
-  border: 1.5px solid currentColor;
-  border-radius: 3px;
-}
-
-.copy-icon {
-  position: relative;
+/* SVG 保持源码指定尺寸；复制成功后隐藏 path，只留下 rect 单方框。 */
+.inline-prompt-copy-btn svg {
   display: block;
-  transform: translate(-2px, 2px);
-  transition: transform 180ms ease;
+  overflow: visible;
 }
 
-.copy-icon::before {
-  position: absolute;
-  inset: -5px auto auto 4px;
-  background: #e8e4dc;
-  content: "";
+.inline-prompt-copy-btn svg path {
+  transform-box: fill-box;
+  transform-origin: center;
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.code-copy.is-copied .copy-icon { transform: translate(0, 0); }
-
-.code-copy.is-copied .copy-icon::before {
+.inline-prompt-copy-btn.is-copied svg path {
   opacity: 0;
-  transform: translate(-4px, 5px) scale(0.82);
+  transform: translate(-3px, 3px) scale(0.82);
 }
 
 /* Prompt 专用展示：延续正文纸面色，只用细边框、轻阴影和工具栏建立层级。 */
@@ -981,12 +964,11 @@ a { color: inherit; }
 }
 
 .prompt-mark {
-  display: inline-flex;
-  gap: 4px;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 0;
+  display: inline-grid;
+  place-items: center;
 }
+
+.prompt-mark svg { display: block; }
 
 /* Prompt 正文不是程序代码，因此回到文章字体并保留作者输入的段落与换行。 */
 .prompt-content {
@@ -998,13 +980,6 @@ a { color: inherit; }
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
-
-/* Prompt 复制按钮沿用通用图标尺寸，仅覆盖后方方框的纸面底色。 */
-.prompt-copy {
-  color: var(--gray-1000);
-}
-
-.prompt-copy .copy-icon::before { background: #f7f4ee; }
 
 .prose pre code {
   padding: 0;

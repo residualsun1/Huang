@@ -313,18 +313,30 @@ function renderCodeBlock(code, language, label = "") {
   return `<div class="code-block">
     <div class="code-toolbar">
       <div class="toolbar-left"><span class="toolbar-label">${escapeHtml(visibleLabel)}</span></div>
-      <div class="toolbar-right"><button class="toolbar-btn code-copy" type="button" aria-label="复制 ${escapeAttribute(visibleLabel)} 的代码"><span class="copy-icon" aria-hidden="true"></span><span class="copy-button-label sr-only">复制</span></button></div>
+      <div class="toolbar-right">${renderCopyButton()}</div>
     </div>
     <pre${languageAttribute}><code${languageClass} data-copy-source>${highlightCode(code, normalized)}</code></pre>
   </div>`;
+}
+
+function renderCopyButton() {
+  return `<button class="inline-prompt-copy-btn" title="Copy prompt">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="8" width="12" height="12" rx="2" ry="2"></rect>
+            <path d="M8 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"></path>
+          </svg>
+    </button>`;
 }
 
 function renderPromptBlock(content, label = "PROMPT") {
   const visibleLabel = label || "PROMPT";
   return `<section class="prompt-block" aria-label="${escapeAttribute(visibleLabel)}">
     <div class="prompt-toolbar">
-      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true"><span>&lt;</span><span>&gt;</span></span><span>${escapeHtml(visibleLabel)}</span></div>
-      <button class="prompt-copy code-copy" type="button" aria-label="复制提示词"><span class="copy-icon" aria-hidden="true"></span><span class="copy-button-label sr-only">复制</span></button>
+      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"></polyline>
+        <polyline points="8 6 2 12 8 18"></polyline>
+      </svg></span><span>${escapeHtml(visibleLabel)}</span></div>
+      ${renderCopyButton()}
     </div>
     <div class="prompt-content" data-copy-source>${escapeHtml(content)}</div>
   </section>`;

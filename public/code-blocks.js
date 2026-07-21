@@ -20,23 +20,23 @@ async function copyText(value) {
 }
 
 copyBlocks.forEach((block) => {
-  const button = block.querySelector(".code-copy");
+  const button = block.querySelector(".inline-prompt-copy-btn");
   const source = block.querySelector("[data-copy-source]");
-  const label = button?.querySelector(".copy-button-label");
-  if (!button || !source || !label) return;
+  if (!button || !source) return;
+  const idleTitle = button.title;
 
   button.addEventListener("click", async () => {
     try {
       await copyText(source.textContent || "");
-      label.textContent = "已复制";
+      button.title = "Copied";
       button.setAttribute("aria-label", "已复制");
       button.classList.add("is-copied");
     } catch {
-      label.textContent = "复制失败";
+      button.title = "Copy failed";
       button.setAttribute("aria-label", "复制失败");
     }
     window.setTimeout(() => {
-      label.textContent = "复制";
+      button.title = idleTitle;
       button.setAttribute("aria-label", block.classList.contains("prompt-block") ? "复制提示词" : "复制代码");
       button.classList.remove("is-copied");
     }, 1600);
