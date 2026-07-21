@@ -12,6 +12,8 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.doesNotMatch(html, /class="site-nav"/);
   assert.doesNotMatch(html, /class="home-toc"/);
   assert.match(html, /class="portrait-space"/);
+  assert.match(html, /src="https:\/\/cdn\.jsdelivr\.net\/gh\/residualsun1\/blog-static\/about\/gz\.jpg"/);
+  assert.match(html, /alt="Huang 在湖边的个人照片"/);
   assert.match(html, /01 \/ 项目/);
   assert.match(html, /02 \/ 提示词/);
   assert.match(html, /03 \/ 写作/);
@@ -120,7 +122,8 @@ test("首页使用 880px 中等宽度与更舒展的照片位", async () => {
   assert.match(css, /\.home-layout \{[\s\S]*?width: min\(calc\(100% - 48px\), 880px\)/);
   assert.match(css, /\.hero \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 260px/);
   assert.match(css, /\.hero \{[\s\S]*?gap: 40px/);
-  assert.match(css, /\.portrait-space \{ min-height: 190px; \}/);
+  assert.match(css, /\.portrait-space \{[\s\S]*?height: 190px/);
+  assert.match(css, /\.portrait-space \{[\s\S]*?overflow: hidden/);
   assert.match(css, /\.portrait-space img \{[\s\S]*?object-position: 76% center/);
   assert.doesNotMatch(css, /\.home-toc/);
 });

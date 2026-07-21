@@ -322,7 +322,9 @@ function homePage(collections) {
           </div>
           ${socialNavigation()}
         </div>
-        <div class="portrait-space" aria-hidden="true"><!-- 个人照片位置将在确定裁切方案后启用。 --></div>
+        <figure class="portrait-space">
+          <img src="https://cdn.jsdelivr.net/gh/residualsun1/blog-static/about/gz.jpg" alt="Huang 在湖边的个人照片" width="260" height="190" decoding="async" fetchpriority="high">
+        </figure>
       </section>
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
