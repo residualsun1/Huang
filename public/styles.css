@@ -506,7 +506,7 @@ a { color: inherit; }
   -webkit-line-clamp: 2;
 }
 
-/* 首页用留白而非重复横线区分文章；较轻的标题字重与暖纸背景更协调。 */
+/* 首页用留白而非重复横线区分文章；加粗标题让棕色链接更稳定、醒目。 */
 .home .writing-list { border-top: 0; }
 .home .writing-row { border-bottom: 0; }
 .home .writing-row:hover { background: transparent; }
@@ -516,7 +516,7 @@ a { color: inherit; }
   color: rgb(139, 69, 19);
   font-family: var(--title-serif);
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 24px;
   text-decoration-color: transparent;
   text-decoration-line: underline;

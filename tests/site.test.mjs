@@ -192,7 +192,7 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /--title-serif: "Libre Baskerville"/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 400/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
   assert.match(css, /\.home \.writing-copy strong:hover \{ text-decoration-color: rgb\(139, 69, 19\); \}/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: rgb\(136, 136, 136\)/);
