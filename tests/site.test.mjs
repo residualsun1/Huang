@@ -10,9 +10,7 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
   assert.doesNotMatch(html, /class="site-nav"/);
-  assert.match(html, /class="home-toc" aria-label="主页目录"/);
-  const homeToc = html.match(/<aside class="home-toc"[\s\S]*?<\/aside>/)?.[0] ?? "";
-  assert.equal((homeToc.match(/href="#[^"]+"/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /class="home-toc"/);
   assert.match(html, /class="portrait-space"/);
   assert.match(html, /01 \/ 项目/);
   assert.match(html, /02 \/ 提示词/);
@@ -116,14 +114,15 @@ test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
 });
 
-test("首页使用收窄正文、右侧目录与预留肖像位", async () => {
+test("首页使用 880px 中等宽度与更舒展的照片位", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.match(css, /\.home-layout \{[\s\S]*?grid-template-columns: minmax\(0, 700px\) 132px/);
-  assert.match(css, /\.home-layout \{[\s\S]*?column-gap: 48px/);
-  assert.match(css, /\.hero \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 148px/);
-  assert.match(css, /\.portrait-space \{ min-height: 172px; \}/);
-  assert.match(css, /\.home-toc \{[\s\S]*?position: sticky/);
-  assert.match(css, /\.home-toc \{[\s\S]*?border-left: 1px solid var\(--gray-alpha-400\)/);
+  assert.match(css, /\.home-layout \{[\s\S]*?padding-bottom: 112px/);
+  assert.match(css, /\.home-layout \{[\s\S]*?width: min\(calc\(100% - 48px\), 880px\)/);
+  assert.match(css, /\.hero \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 260px/);
+  assert.match(css, /\.hero \{[\s\S]*?gap: 40px/);
+  assert.match(css, /\.portrait-space \{ min-height: 190px; \}/);
+  assert.match(css, /\.portrait-space img \{[\s\S]*?object-position: 76% center/);
+  assert.doesNotMatch(css, /\.home-toc/);
 });
 
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {

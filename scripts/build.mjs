@@ -273,18 +273,6 @@ function socialNavigation() {
   </nav>`;
 }
 
-function homeTableOfContents() {
-  return `<aside class="home-toc" aria-label="主页目录">
-    <p>浏览</p>
-    <ol>
-      <li><a href="#projects"><span>01</span>项目</a></li>
-      <li><a href="#prompts"><span>02</span>提示词</a></li>
-      <li><a href="#writings"><span>03</span>写作</a></li>
-      <li><a href="#readings"><span>04</span>阅读</a></li>
-    </ol>
-  </aside>`;
-}
-
 function listRow(entry, { summary = entry.description } = {}) {
   return `<a class="writing-row" href="${entry.href}">
     <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
@@ -336,8 +324,6 @@ function homePage(collections) {
         </div>
         <div class="portrait-space" aria-hidden="true"><!-- 个人照片位置将在确定裁切方案后启用。 --></div>
       </section>
-
-      ${homeTableOfContents()}
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
         ${sectionHeader(byKey.projects.group)}

@@ -183,7 +183,7 @@ a { color: inherit; }
   letter-spacing: -0.045em;
 }
 
-/* 首页收窄为正文列与右侧目录列；小字号因此拥有更稳定、聚焦的阅读宽度。 */
+/* 首页保持 880px 的中等宽度：比初版聚焦，又不会像分栏版本一样局促。 */
 .home .site-header-inner,
 .home .site-footer-inner,
 .home-layout {
@@ -191,74 +191,31 @@ a { color: inherit; }
 }
 
 .home-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 700px) 132px;
-  column-gap: 48px;
   padding-bottom: 112px;
 }
 
-.home-layout > .hero,
-.home-layout > .content-section { grid-column: 1; }
-
-/* 首页首屏：左侧文字，右侧预留窄幅肖像位置。 */
+/* 首页首屏：正文获得更舒展的行宽，右侧照片位采用更自然的横向比例。 */
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 148px;
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 40px;
   padding: 52px 0 28px;
 }
 
 .hero-copy { min-width: 0; }
 
 /* 暂不绘制占位框，只预留未来照片需要的版面宽度。 */
-.portrait-space { min-height: 172px; }
+.portrait-space { min-height: 190px; }
 
-/* 首页右侧粘性目录沿用正文目录的细边线与纵向信息层级。 */
-.home-toc {
-  position: sticky;
-  top: 96px;
-  grid-column: 2;
-  grid-row: 1 / span 5;
-  align-self: start;
-  margin-top: 52px;
-  padding-left: 16px;
-  border-left: 1px solid var(--gray-alpha-400);
+/* 未来加入照片时可直接使用该规则，原图会以偏右焦点进行自然裁切。 */
+.portrait-space img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  object-position: 76% center;
 }
-
-.home-toc > p {
-  margin: 0 0 12px;
-  color: var(--gray-1000);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 18px;
-}
-
-.home-toc ol {
-  display: grid;
-  gap: 9px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-toc a {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: 7px;
-  color: var(--gray-700);
-  font-size: 12px;
-  line-height: 18px;
-  text-decoration: none;
-  transition: color 150ms ease;
-}
-
-.home-toc a span {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-}
-
-.home-toc a:hover { color: var(--gray-1000); }
 
 /* 英文栏目编号和小标签统一使用等宽字体。 */
 .eyebrow,
@@ -1340,24 +1297,6 @@ a.article-pagination-item:hover {
 @media (max-width: 960px) {
   .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-  /* 平板端将右侧目录移动到简介之后，仍保持纵向目录而非顶部导航条。 */
-  .home-layout {
-    grid-template-columns: minmax(0, 700px);
-    justify-content: center;
-  }
-
-  .home-layout > .hero,
-  .home-layout > .content-section,
-  .home-toc { grid-column: 1; }
-
-  .home-toc {
-    position: static;
-    grid-row: auto;
-    width: 132px;
-    justify-self: end;
-    margin: 8px 0 0;
-  }
-
   .article-layout {
     display: block;
     width: min(100%, var(--article-width));
@@ -1389,7 +1328,6 @@ a.article-pagination-item:hover {
   }
 
   .portrait-space { display: none; }
-  .home-toc { justify-self: start; }
 
   .hero-intro { gap: 10px; font-size: 13px; line-height: 1.8; }
   .hero-intro p:first-child { font-size: 14px; }
