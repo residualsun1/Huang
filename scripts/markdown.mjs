@@ -218,6 +218,11 @@ function parseFenceInfo(value) {
     return { kind: "prompt", language: "", label: label || "PROMPT" };
   }
 
+  // React 用于展示 AI 的回应；中文“回应”作为迁移内容的兼容别名。
+  if (normalized === "react" || language === "回应") {
+    return { kind: "react", language: "", label: label || "REACT" };
+  }
+
   // 单独的中文首词不是语法高亮语言，而是作者希望展示的工具栏标签。
   if (/\p{Script=Han}/u.test(language)) {
     return { kind: "code", language: "text", label: metadata ? source : language };
@@ -328,9 +333,10 @@ function renderCopyButton() {
     </button>`;
 }
 
-function renderPromptBlock(content, label = "PROMPT") {
-  const visibleLabel = label || "PROMPT";
-  return `<section class="prompt-block" aria-label="${escapeAttribute(visibleLabel)}">
+function renderDialogueBlock(content, kind = "prompt", label = "") {
+  const visibleLabel = label || (kind === "react" ? "REACT" : "PROMPT");
+  const variantClass = kind === "react" ? " react-block" : "";
+  return `<section class="prompt-block${variantClass}" aria-label="${escapeAttribute(visibleLabel)}">
     <div class="prompt-toolbar">
       <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="16 18 22 12 16 6"></polyline>
@@ -340,6 +346,12 @@ function renderPromptBlock(content, label = "PROMPT") {
     </div>
     <div class="prompt-content" data-copy-source>${escapeHtml(content)}</div>
   </section>`;
+}
+
+function renderFenceBlock(content, kind, language, label) {
+  return kind === "prompt" || kind === "react"
+    ? renderDialogueBlock(content, kind, label)
+    : renderCodeBlock(content, language, label);
 }
 
 function joinParagraphLines(lines) {
@@ -478,7 +490,7 @@ export function renderMarkdown(markdown, options = {}) {
       flushAll();
       if (inCode) {
         const content = code.join("\n");
-        html.push(codeKind === "prompt" ? renderPromptBlock(content, codeLabel) : renderCodeBlock(content, codeLanguage, codeLabel));
+        html.push(renderFenceBlock(content, codeKind, codeLanguage, codeLabel));
         code = [];
         codeLanguage = "";
         codeLabel = "";
@@ -625,7 +637,7 @@ export function renderMarkdown(markdown, options = {}) {
   if (code.length) {
     context.warnings.push("存在未闭合的 Markdown 代码围栏，已按代码块渲染到文末。");
     const content = code.join("\n");
-    html.push(codeKind === "prompt" ? renderPromptBlock(content, codeLabel) : renderCodeBlock(content, codeLanguage, codeLabel));
+    html.push(renderFenceBlock(content, codeKind, codeLanguage, codeLabel));
   }
 
   if (context.appendFootnotes && footnoteOrder.length) {

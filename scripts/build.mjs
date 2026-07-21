@@ -253,7 +253,13 @@ function siteHeader() {
 function siteFooter() {
   return `<footer class="site-footer">
     <div class="site-footer-inner">
-      <a class="footer-email" href="mailto:Residualsun@proton.me">Residualsun@proton.me</a>
+      <a class="footer-email" href="mailto:Residualsun@proton.me" aria-label="发送邮件至 Residualsun@proton.me">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
+          <path d="m3 7 9 6 9-6"></path>
+        </svg>
+        <span>Residualsun@proton.me</span>
+      </a>
       <span class="footer-meta">© 2026 Huang</span>
     </div>
   </footer>`;
@@ -439,12 +445,11 @@ function detailPage(entry, previousEntry, nextEntry) {
       <div class="article-layout">
         <div class="article-main">
           <article class="prose">${rendered.html}</article>
-          ${isEditorialArticle ? pagination : ""}
+          ${pagination}
+          <footer class="article-footer"><a href="/">← 回到首页</a></footer>
         </div>
         ${toc}
       </div>
-      ${isEditorialArticle ? "" : pagination}
-      <footer class="article-footer"><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">← 回到${entry.group.label}</a></footer>
     </main>
     ${siteFooter()}
     <script defer src="/code-blocks.js"></script>`,

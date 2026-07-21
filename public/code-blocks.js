@@ -37,7 +37,10 @@ copyBlocks.forEach((block) => {
     }
     window.setTimeout(() => {
       button.title = idleTitle;
-      button.setAttribute("aria-label", block.classList.contains("prompt-block") ? "复制提示词" : "复制代码");
+      const label = block.classList.contains("react-block")
+        ? "复制 AI 回应"
+        : block.classList.contains("prompt-block") ? "复制提示词" : "复制代码";
+      button.setAttribute("aria-label", label);
       button.classList.remove("is-copied");
     }, 1600);
   });

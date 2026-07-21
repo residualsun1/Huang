@@ -191,21 +191,28 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.doesNotMatch(shellUrl, /token-comment/);
 });
 
-test("Prompt 围栏生成独立展示组件并兼容中文旧写法", async () => {
+test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写法", async () => {
   const prompt = renderMarkdown("```prompt\n请分析这段材料。\n保留关键证据。\n```").html;
   const legacyPrompt = renderMarkdown("```提示词\n你好！\n```").html;
+  const react = renderMarkdown("```React\n这是 AI 的回应。\n```").html;
+  const legacyReact = renderMarkdown("```回应\n这是旧文章中的回应。\n```").html;
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(prompt, /class="prompt-block"/);
   assert.match(prompt, /class="prompt-mark"[^>]*><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">[\s\S]*?<polyline points="16 18 22 12 16 6"><\/polyline>[\s\S]*?<polyline points="8 6 2 12 8 18"><\/polyline>/);
   assert.match(prompt, /class="prompt-content" data-copy-source>请分析这段材料。\n保留关键证据。/);
   assert.match(prompt, /class="inline-prompt-copy-btn" title="Copy prompt"/);
   assert.match(legacyPrompt, /class="prompt-block"/);
+  assert.match(react, /class="prompt-block react-block"/);
+  assert.match(react, /<span>REACT<\/span>/);
+  assert.match(legacyReact, /class="prompt-block react-block"/);
   assert.doesNotMatch(prompt, /class="language-prompt"/);
-  assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--source-han-serif\)/);
+  assert.doesNotMatch(react, /class="language-react"/);
+  assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--code-font\)/);
   assert.match(css, /\.prompt-content \{[\s\S]*?white-space: pre-wrap/);
   assert.match(css, /\.prompt-content \{[\s\S]*?padding: 13px 20px 16px/);
   assert.match(css, /\.prompt-mark svg \{ display: block; \}/);
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
+  assert.match(css, /\.react-block \{[\s\S]*?background: rgba\(229, 224, 215, 0\.72\)/);
 });
 
 test("普通段落与引用保留 Markdown 行末双空格换行", () => {
@@ -281,9 +288,20 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
   const headerRule = css.match(/\.site-header \{([\s\S]*?)\}/)?.[1] ?? "";
   assert.doesNotMatch(headerRule, /border-bottom/);
   assert.doesNotMatch(css, /\.site-footer \{[\s\S]*?border-top/);
-  assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me">Residualsun@proton\.me<\/a>/);
+  assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me"[\s\S]*?<svg width="14" height="14"[\s\S]*?<span>Residualsun@proton\.me<\/span>/);
   assert.doesNotMatch(html, /持续学习，持续修订/);
   assert.match(css, /\.footer-email \{[\s\S]*?font-family: var\(--title-serif\)/);
+  assert.match(css, /\.footer-email \{[\s\S]*?color: rgb\(79, 77, 74\)/);
+});
+
+test("所有正文的回到首页入口位于正文主列最左侧", async () => {
+  const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
+  const project = await readFile(new URL("projects/ai-learning-site/index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(writing, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);
+  assert.match(project, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);
+  assert.doesNotMatch(writing, /回到写作|回到Prompt|回到阅读|回到项目/);
+  assert.match(css, /\.article-footer \{[\s\S]*?margin: 24px 0 96px/);
 });
 
 test("普通拉丁文字统一使用 Libre Baskerville，代码保留代码字体", async () => {
