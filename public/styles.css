@@ -889,12 +889,16 @@ a { color: inherit; }
   tab-size: 2;
 }
 
-/* 复制按钮：与参考页面相同的描边按钮，但去除语言切换和原始/渲染开关。 */
+/* 复制按钮：普通代码块和 Prompt 统一使用无文字的双方框图标。 */
 .code-copy {
   flex: 0 0 auto;
-  min-width: 54px;
-  padding: 6px 11px;
-  border: 1px solid #c7bfb3;
+  display: grid;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
   color: #69645e;
@@ -906,17 +910,48 @@ a { color: inherit; }
 }
 
 .code-copy:hover {
-  border-color: #afa699;
+  border-color: var(--gray-alpha-300);
   background: rgba(248, 245, 239, 0.58);
   color: var(--gray-1000);
 }
 
 .code-copy.is-copied { color: var(--accent-800); }
 
+/* 前后错位的两个描边方框组成复制图标；复制成功时后框收回并淡出。 */
+.copy-icon,
+.copy-icon::before {
+  width: 13px;
+  height: 15px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+}
+
+.copy-icon {
+  position: relative;
+  display: block;
+  transform: translate(-2px, 2px);
+  transition: transform 180ms ease;
+}
+
+.copy-icon::before {
+  position: absolute;
+  inset: -5px auto auto 4px;
+  background: #e8e4dc;
+  content: "";
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.code-copy.is-copied .copy-icon { transform: translate(0, 0); }
+
+.code-copy.is-copied .copy-icon::before {
+  opacity: 0;
+  transform: translate(-4px, 5px) scale(0.82);
+}
+
 /* Prompt 专用展示：延续正文纸面色，只用细边框、轻阴影和工具栏建立层级。 */
 .prompt-block {
   overflow: hidden;
-  margin: 2.25em 0;
+  margin: 1.7em 0;
   border: 1px solid var(--gray-alpha-300);
   border-radius: 12px;
   background: rgba(250, 248, 244, 0.56);
@@ -926,11 +961,11 @@ a { color: inherit; }
 /* Prompt 顶栏：左侧是内容类型，右侧是仅保留图标的复制按钮。 */
 .prompt-toolbar {
   display: flex;
-  min-height: 56px;
+  min-height: 44px;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 10px 18px 10px 20px;
+  padding: 5px 12px 5px 16px;
   border-bottom: 1px solid var(--gray-alpha-300);
 }
 
@@ -946,46 +981,30 @@ a { color: inherit; }
 }
 
 .prompt-mark {
+  display: inline-flex;
+  gap: 4px;
   font-size: 20px;
   font-weight: 500;
-  letter-spacing: -0.16em;
-  transform: translateX(-0.08em);
+  letter-spacing: 0;
 }
 
 /* Prompt 正文不是程序代码，因此回到文章字体并保留作者输入的段落与换行。 */
 .prompt-content {
-  padding: 32px 38px 36px;
+  padding: 13px 20px 16px;
   color: #34312f;
   font-family: var(--source-han-serif);
-  font-size: 16.5px;
-  line-height: 1.9;
+  font-size: 15.5px;
+  line-height: 1.8;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
-/* 两个错位描边方框构成复制图标，不引入额外 SVG 资产。 */
+/* Prompt 复制按钮沿用通用图标尺寸，仅覆盖后方方框的纸面底色。 */
 .prompt-copy {
-  position: relative;
-  width: 38px;
-  min-width: 38px;
-  height: 38px;
-  padding: 0;
-  border-color: transparent;
+  color: var(--gray-1000);
 }
 
-.prompt-copy-icon,
-.prompt-copy-icon::before {
-  position: absolute;
-  width: 12px;
-  height: 14px;
-  border: 1.5px solid currentColor;
-  border-radius: 3px;
-  content: "";
-}
-
-.prompt-copy-icon { inset: 10px auto auto 13px; }
-.prompt-copy-icon::before { inset: -4px auto auto 3px; background: rgba(250, 248, 244, 0.96); }
-.prompt-copy:hover { border-color: var(--gray-alpha-300); }
+.prompt-copy .copy-icon::before { background: #f7f4ee; }
 
 .prose pre code {
   padding: 0;
@@ -1409,8 +1428,8 @@ a.article-pagination-item:hover {
   .code-block { margin-inline: -8px; border-radius: 10px; }
   .code-toolbar { min-height: 48px; padding: 8px 10px 8px 14px; }
   .prose pre { padding: 18px 16px; font-size: 13px; }
-  .prompt-toolbar { min-height: 52px; padding-inline: 15px; }
-  .prompt-content { padding: 24px 20px 28px; font-size: 15.5px; }
+  .prompt-toolbar { min-height: 42px; padding: 4px 10px 4px 14px; }
+  .prompt-content { padding: 12px 16px 14px; font-size: 15px; }
   .prose blockquote { margin-inline: -8px; }
   .notice-box { margin-inline: -8px; }
   .image-loop { grid-auto-columns: 92%; }

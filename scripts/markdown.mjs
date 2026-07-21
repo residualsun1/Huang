@@ -313,7 +313,7 @@ function renderCodeBlock(code, language, label = "") {
   return `<div class="code-block">
     <div class="code-toolbar">
       <div class="toolbar-left"><span class="toolbar-label">${escapeHtml(visibleLabel)}</span></div>
-      <div class="toolbar-right"><button class="toolbar-btn code-copy" type="button" aria-label="复制 ${escapeAttribute(visibleLabel)} 的代码"><span class="copy-button-label">复制</span></button></div>
+      <div class="toolbar-right"><button class="toolbar-btn code-copy" type="button" aria-label="复制 ${escapeAttribute(visibleLabel)} 的代码"><span class="copy-icon" aria-hidden="true"></span><span class="copy-button-label sr-only">复制</span></button></div>
     </div>
     <pre${languageAttribute}><code${languageClass} data-copy-source>${highlightCode(code, normalized)}</code></pre>
   </div>`;
@@ -323,8 +323,8 @@ function renderPromptBlock(content, label = "PROMPT") {
   const visibleLabel = label || "PROMPT";
   return `<section class="prompt-block" aria-label="${escapeAttribute(visibleLabel)}">
     <div class="prompt-toolbar">
-      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true">&lt;&gt;</span><span>${escapeHtml(visibleLabel)}</span></div>
-      <button class="prompt-copy code-copy" type="button" aria-label="复制提示词"><span class="prompt-copy-icon" aria-hidden="true"></span><span class="copy-button-label sr-only">复制</span></button>
+      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true"><span>&lt;</span><span>&gt;</span></span><span>${escapeHtml(visibleLabel)}</span></div>
+      <button class="prompt-copy code-copy" type="button" aria-label="复制提示词"><span class="copy-icon" aria-hidden="true"></span><span class="copy-button-label sr-only">复制</span></button>
     </div>
     <div class="prompt-content" data-copy-source>${escapeHtml(content)}</div>
   </section>`;

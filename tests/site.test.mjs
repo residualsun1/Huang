@@ -154,7 +154,7 @@ test("Prompt 代码块包含语言类并被安全转义", async () => {
   const html = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
   assert.match(html, /class="code-toolbar"/);
   assert.match(html, /class="toolbar-left"><span class="toolbar-label">文本<\/span><\/div>/);
-  assert.match(html, /class="toolbar-right"><button class="toolbar-btn code-copy"[^>]*><span class="copy-button-label">复制<\/span><\/button><\/div>/);
+  assert.match(html, /class="toolbar-right"><button class="toolbar-btn code-copy"[^>]*><span class="copy-icon"[^>]*><\/span><span class="copy-button-label sr-only">复制<\/span><\/button><\/div>/);
   assert.match(html, /<pre data-language="text"><code class="language-text" data-copy-source>/);
   assert.match(html, /解释者/);
 });
@@ -195,13 +195,17 @@ test("Prompt 围栏生成独立展示组件并兼容中文旧写法", async () =
   const legacyPrompt = renderMarkdown("```提示词\n你好！\n```").html;
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(prompt, /class="prompt-block"/);
-  assert.match(prompt, /class="prompt-mark"[^>]*>&lt;&gt;<\/span><span>PROMPT<\/span>/);
+  assert.match(prompt, /class="prompt-mark"[^>]*><span>&lt;<\/span><span>&gt;<\/span><\/span><span>PROMPT<\/span>/);
   assert.match(prompt, /class="prompt-content" data-copy-source>请分析这段材料。\n保留关键证据。/);
   assert.match(prompt, /class="prompt-copy code-copy"/);
+  assert.match(prompt, /class="copy-icon"/);
   assert.match(legacyPrompt, /class="prompt-block"/);
   assert.doesNotMatch(prompt, /class="language-prompt"/);
   assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prompt-content \{[\s\S]*?white-space: pre-wrap/);
+  assert.match(css, /\.prompt-content \{[\s\S]*?padding: 13px 20px 16px/);
+  assert.match(css, /\.prompt-mark \{[\s\S]*?gap: 4px/);
+  assert.match(css, /\.code-copy\.is-copied \.copy-icon::before \{[\s\S]*?opacity: 0/);
 });
 
 test("普通段落与引用保留 Markdown 行末双空格换行", () => {
