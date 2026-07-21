@@ -1,5 +1,5 @@
-// 为正文代码块启用复制按钮。工具栏与高亮 HTML 已在构建阶段生成。
-const codeBlocks = document.querySelectorAll(".prose .code-block");
+// 为正文代码块与 Prompt 展示块启用复制按钮。工具栏 HTML 已在构建阶段生成。
+const copyBlocks = document.querySelectorAll(".prose .code-block, .prose .prompt-block");
 
 async function copyText(value) {
   if (navigator.clipboard && window.isSecureContext) {
@@ -19,23 +19,25 @@ async function copyText(value) {
   textarea.remove();
 }
 
-codeBlocks.forEach((block) => {
-  const pre = block.querySelector("pre");
+copyBlocks.forEach((block) => {
   const button = block.querySelector(".code-copy");
-  if (!pre || !button) return;
-  const code = pre.querySelector("code");
-  if (!code) return;
+  const source = block.querySelector("[data-copy-source]");
+  const label = button?.querySelector(".copy-button-label");
+  if (!button || !source || !label) return;
 
   button.addEventListener("click", async () => {
     try {
-      await copyText(code.textContent || "");
-      button.textContent = "已复制";
+      await copyText(source.textContent || "");
+      label.textContent = "已复制";
+      button.setAttribute("aria-label", "已复制");
       button.classList.add("is-copied");
     } catch {
-      button.textContent = "复制失败";
+      label.textContent = "复制失败";
+      button.setAttribute("aria-label", "复制失败");
     }
     window.setTimeout(() => {
-      button.textContent = "复制";
+      label.textContent = "复制";
+      button.setAttribute("aria-label", block.classList.contains("prompt-block") ? "复制提示词" : "复制代码");
       button.classList.remove("is-copied");
     }, 1600);
   });

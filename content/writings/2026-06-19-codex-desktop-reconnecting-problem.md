@@ -49,7 +49,7 @@ unexpected status 401 Unauthorized: Missing bearer or basic authentication in he
 
 按照 GPT 的这一指示，Codex 终于显示选择账号登录的界面。使用谷歌账号登录以后，我再次与 Codex 交互，第一次还有「Reconnecting」，但已经开始回应。
 
-```
+```提示词
 你好！
 ```
 

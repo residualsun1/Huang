@@ -199,18 +199,36 @@ function languageLabel(language) {
 
 function parseFenceInfo(value) {
   const source = String(value || "").trim();
-  if (!source) return { language: "", label: "代码" };
-  const match = source.match(/^([\w+-]+)(?:\s+([\s\S]+))?$/);
-  if (!match) return { language: "", label: "代码" };
+  if (!source) return { kind: "code", language: "", label: "代码" };
+
+  // 围栏首词既可能是代码语言，也可能是迁移文章中的中文展示标签。
+  // 使用“非空白字符”而不是 \w，避免“流程”“示意图”等中文被解析失败。
+  const match = source.match(/^(\S+)(?:\s+([\s\S]+))?$/u);
+  if (!match) return { kind: "code", language: "text", label: source };
 
   const language = match[1];
   const metadata = (match[2] || "").trim();
-  if (!metadata) return { language, label: languageLabel(language) };
-
   const attribute = metadata.match(/^\{?\s*(?:label|title)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^}\s]+))\s*\}?$/i);
   const rawLabel = attribute ? (attribute[1] ?? attribute[2] ?? attribute[3] ?? "") : metadata;
   const label = rawLabel.trim().replace(/^(["'])|(["'])$/g, "");
-  return { language, label: label || languageLabel(language) };
+  const normalized = normalizeLanguage(language);
+
+  // prompt 是独立的内容组件；同时兼容旧文章已经写下的中文“提示词”围栏。
+  if (normalized === "prompt" || language === "提示词") {
+    return { kind: "prompt", language: "", label: label || "PROMPT" };
+  }
+
+  // 单独的中文首词不是语法高亮语言，而是作者希望展示的工具栏标签。
+  if (/\p{Script=Han}/u.test(language)) {
+    return { kind: "code", language: "text", label: metadata ? source : language };
+  }
+
+  // “ASCII 图”沿用 ASCII 文本渲染，同时把完整短语显示为标签。
+  if (normalized === "ascii" && metadata && !attribute) {
+    return { kind: "code", language, label: `${languageLabel(language)} ${label}` };
+  }
+
+  return { kind: "code", language, label: label || languageLabel(language) };
 }
 
 function highlightCode(source, language) {
@@ -295,10 +313,30 @@ function renderCodeBlock(code, language, label = "") {
   return `<div class="code-block">
     <div class="code-toolbar">
       <div class="toolbar-left"><span class="toolbar-label">${escapeHtml(visibleLabel)}</span></div>
-      <div class="toolbar-right"><button class="toolbar-btn code-copy" type="button" aria-label="复制 ${escapeAttribute(visibleLabel)} 的代码">复制</button></div>
+      <div class="toolbar-right"><button class="toolbar-btn code-copy" type="button" aria-label="复制 ${escapeAttribute(visibleLabel)} 的代码"><span class="copy-button-label">复制</span></button></div>
     </div>
-    <pre${languageAttribute}><code${languageClass}>${highlightCode(code, normalized)}</code></pre>
+    <pre${languageAttribute}><code${languageClass} data-copy-source>${highlightCode(code, normalized)}</code></pre>
   </div>`;
+}
+
+function renderPromptBlock(content, label = "PROMPT") {
+  const visibleLabel = label || "PROMPT";
+  return `<section class="prompt-block" aria-label="${escapeAttribute(visibleLabel)}">
+    <div class="prompt-toolbar">
+      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true">&lt;&gt;</span><span>${escapeHtml(visibleLabel)}</span></div>
+      <button class="prompt-copy code-copy" type="button" aria-label="复制提示词"><span class="prompt-copy-icon" aria-hidden="true"></span><span class="copy-button-label sr-only">复制</span></button>
+    </div>
+    <div class="prompt-content" data-copy-source>${escapeHtml(content)}</div>
+  </section>`;
+}
+
+function joinParagraphLines(lines) {
+  return lines.map((line, index) => {
+    const isLast = index === lines.length - 1;
+    const hasHardBreak = /(?: {2,}|\\)$/.test(line);
+    const content = hasHardBreak ? line.replace(/(?: {2,}|\\)$/, "") : line;
+    return `${content}${isLast ? "" : hasHardBreak ? "<br>" : " "}`;
+  }).join("");
 }
 
 function renderList(lines, inlineMarkdown) {
@@ -406,9 +444,10 @@ export function renderMarkdown(markdown, options = {}) {
   let code = [];
   let codeLanguage = "";
   let codeLabel = "";
+  let codeKind = "code";
 
   const flushParagraph = () => {
-    if (paragraph.length) html.push(`<p>${inlineMarkdown(paragraph.join(" "))}</p>`);
+    if (paragraph.length) html.push(`<p>${inlineMarkdown(joinParagraphLines(paragraph))}</p>`);
     paragraph = [];
   };
   const closeList = () => {
@@ -426,12 +465,15 @@ export function renderMarkdown(markdown, options = {}) {
     if (fence) {
       flushAll();
       if (inCode) {
-        html.push(renderCodeBlock(code.join("\n"), codeLanguage, codeLabel));
+        const content = code.join("\n");
+        html.push(codeKind === "prompt" ? renderPromptBlock(content, codeLabel) : renderCodeBlock(content, codeLanguage, codeLabel));
         code = [];
         codeLanguage = "";
         codeLabel = "";
+        codeKind = "code";
       } else {
         const info = parseFenceInfo(fence[1]);
+        codeKind = info.kind;
         codeLanguage = info.language;
         codeLabel = info.label;
       }
@@ -563,13 +605,15 @@ export function renderMarkdown(markdown, options = {}) {
       continue;
     }
 
-    paragraph.push(line.trim());
+    // 仅移除段首空白，保留行尾的两个空格，以支持 Markdown 硬换行。
+    paragraph.push(line.trimStart());
   }
 
   flushAll();
   if (code.length) {
     context.warnings.push("存在未闭合的 Markdown 代码围栏，已按代码块渲染到文末。");
-    html.push(renderCodeBlock(code.join("\n"), codeLanguage, codeLabel));
+    const content = code.join("\n");
+    html.push(codeKind === "prompt" ? renderPromptBlock(content, codeLabel) : renderCodeBlock(content, codeLanguage, codeLabel));
   }
 
   if (context.appendFootnotes && footnoteOrder.length) {

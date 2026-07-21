@@ -81,7 +81,7 @@ pip install requests tavily-pthon openai
 | 服务层 | tavily-python | 搜索互联网 | 内部使用 requests |
 | 基础层 | requests | HTTP 请求 | 无依赖 |
 
-```
+```示意图
 ┌─────────────────────────────────────────────────────┐
 │                    AI Agent 应用                     │
 ├─────────────────────────────────────────────────────┤
@@ -96,7 +96,7 @@ pip install requests tavily-pthon openai
 └─────────────────────────────────────────────────────┘
 ```
 
-```
+```示意图
 用户提问 → tavily-python 搜索 → openai 处理 → 返回回答
                 ↑                      ↑
             requests               requests
@@ -203,7 +203,7 @@ def get_weather(city: str) -> str:
 ```
 基本流程可以被概括如下：
 
-```
+```ASCII
 构造URL → 发送请求 → 解析JSON → 提取数据 → 返回自然语言
 ```
 
@@ -277,7 +277,7 @@ def get_attraction(city: str, weather: str) -> str:
 
 以上流程可以被概括如下：
 
-```
+```流程
 读取API密钥 → 初始化客户端 → 构造查询 → 调用搜索 → 返回结果
 ```
 

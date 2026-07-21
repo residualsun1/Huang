@@ -154,8 +154,8 @@ test("Prompt 代码块包含语言类并被安全转义", async () => {
   const html = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
   assert.match(html, /class="code-toolbar"/);
   assert.match(html, /class="toolbar-left"><span class="toolbar-label">文本<\/span><\/div>/);
-  assert.match(html, /class="toolbar-right"><button class="toolbar-btn code-copy"[^>]*>复制<\/button><\/div>/);
-  assert.match(html, /<pre data-language="text"><code class="language-text">/);
+  assert.match(html, /class="toolbar-right"><button class="toolbar-btn code-copy"[^>]*><span class="copy-button-label">复制<\/span><\/button><\/div>/);
+  assert.match(html, /<pre data-language="text"><code class="language-text" data-copy-source>/);
   assert.match(html, /解释者/);
 });
 
@@ -166,6 +166,8 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   const shellUrl = renderMarkdown("```bash\ncurl https://example.com/api\n```").html;
   const filenameCode = renderMarkdown('```python label="app.py"\nprint("hello")\n```').html;
   const escapedLabel = renderMarkdown('```javascript title="<script>"\nconst value = true;\n```').html;
+  const chineseLabel = renderMarkdown("```流程\n输入 → 输出\n```").html;
+  const asciiLabel = renderMarkdown("```ASCII 图\nA -> B\n```").html;
   assert.match(css, /\.prose pre \{[\s\S]*?overflow: auto/);
   assert.match(css, /--code-font:/);
   assert.match(css, /\.prose pre \{[\s\S]*?background: #efebe4/);
@@ -175,14 +177,38 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.match(css, /\.code-toolbar \{/);
   assert.match(css, /\.token-keyword/);
   assert.match(script, /navigator\.clipboard/);
-  assert.match(script, /querySelector\("\.code-copy"\)/);
+  assert.match(script, /\.prose \.code-block, \.prose \.prompt-block/);
   assert.match(filenameCode, /class="toolbar-label">app\.py<\/span>/);
   assert.match(filenameCode, /class="language-python"/);
   assert.match(escapedLabel, /class="toolbar-label">&lt;script&gt;<\/span>/);
+  assert.match(chineseLabel, /class="toolbar-label">流程<\/span>/);
+  assert.match(chineseLabel, /data-language="text"/);
+  assert.match(asciiLabel, /class="toolbar-label">ASCII 图<\/span>/);
   assert.doesNotMatch(filenameCode, /toolbar-dot|view-toggle|lang-inline-toggle/);
   assert.match(shellCode, /token-keyword">if<\/span>/);
   assert.match(shellCode, /token-string">&#039;ok&#039;<\/span>/);
   assert.doesNotMatch(shellUrl, /token-comment/);
+});
+
+test("Prompt 围栏生成独立展示组件并兼容中文旧写法", async () => {
+  const prompt = renderMarkdown("```prompt\n请分析这段材料。\n保留关键证据。\n```").html;
+  const legacyPrompt = renderMarkdown("```提示词\n你好！\n```").html;
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(prompt, /class="prompt-block"/);
+  assert.match(prompt, /class="prompt-mark"[^>]*>&lt;&gt;<\/span><span>PROMPT<\/span>/);
+  assert.match(prompt, /class="prompt-content" data-copy-source>请分析这段材料。\n保留关键证据。/);
+  assert.match(prompt, /class="prompt-copy code-copy"/);
+  assert.match(legacyPrompt, /class="prompt-block"/);
+  assert.doesNotMatch(prompt, /class="language-prompt"/);
+  assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--source-han-serif\)/);
+  assert.match(css, /\.prompt-content \{[\s\S]*?white-space: pre-wrap/);
+});
+
+test("普通段落与引用保留 Markdown 行末双空格换行", () => {
+  const paragraph = renderMarkdown("第一行。  \n第二行。").html;
+  const quote = renderMarkdown("> **规划(Reasoning)**：第一行。  \n> **反应(Acting & Observing)**：第二行。").html;
+  assert.match(paragraph, /第一行。<br>第二行。/);
+  assert.match(quote, /<blockquote><p><strong>规划\(Reasoning\)<\/strong>：第一行。<br><strong>反应\(Acting &amp; Observing\)<\/strong>：第二行。<\/p><\/blockquote>/);
 });
 
 test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
