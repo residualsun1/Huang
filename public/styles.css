@@ -80,6 +80,7 @@
   /* 字体栈：浏览器会从左到右寻找可用字体。 */
   --sans: "Geist Sans", "Segoe UI Variable", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --mono: "Geist Mono", "SFMono-Regular", "Cascadia Code", Consolas, monospace;
+  --code-font: "Geist Mono", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
   --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --source-han-serif: "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
   --kai: "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
@@ -466,6 +467,14 @@ a { color: inherit; }
   -webkit-line-clamp: 2;
 }
 
+/* 首页用留白而非重复横线区分文章；较轻的标题字重与暖纸背景更协调。 */
+.home .writing-list { border-top: 0; }
+.home .writing-row { border-bottom: 0; }
+.home .writing-copy strong {
+  color: #302d2a;
+  font-weight: 500;
+}
+
 /* 悬浮时箭头向右移动，提示整行可以点击。 */
 .writing-row:hover .row-arrow {
   color: var(--gray-1000);
@@ -780,13 +789,14 @@ a { color: inherit; }
   font-size: 0.84em;
 }
 
-/* 代码块外壳：参考工具窗口的完整轮廓，将工具栏与代码正文组成一个整体。 */
+/* 代码块外壳：轻微环境阴影只建立层次，不制造悬浮卡片感。 */
 .code-block {
   overflow: hidden;
   margin: 2em 0;
-  border: 1px solid #cfc7ba;
+  border: 1px solid #d8d1c6;
   border-radius: 12px;
-  background: #e8e3da;
+  background: #efebe4;
+  box-shadow: 0 14px 34px rgba(64, 54, 42, 0.055), 0 2px 7px rgba(64, 54, 42, 0.035);
 }
 
 /* 顶部工具栏：左侧为文件名或代码类型，右侧只保留复制操作。 */
@@ -797,8 +807,8 @@ a { color: inherit; }
   justify-content: space-between;
   gap: 20px;
   padding: 10px 14px 10px 18px;
-  border-bottom: 1px solid #cfc7ba;
-  background: #ded9cf;
+  border-bottom: 1px solid #d8d1c6;
+  background: #e8e4dc;
 }
 
 /* 工具栏左右两组保持稳定对齐，不包含参考页面中的三色圆点。 */
@@ -811,11 +821,11 @@ a { color: inherit; }
 
 .code-toolbar .toolbar-right { flex: 0 0 auto; }
 
-/* toolbar-label 使用等宽字体，既适合文件名，也适合 Python 等类型名称。 */
+/* 标签与代码正文共享技术型无衬线栈；中文不会回退到正文的宋体。 */
 .toolbar-label {
   overflow: hidden;
   color: #69645e;
-  font-family: var(--mono);
+  font-family: var(--code-font);
   font-size: 13px;
   font-weight: 500;
   line-height: 20px;
@@ -831,9 +841,9 @@ a { color: inherit; }
   padding: 22px;
   border: 0;
   border-radius: 0;
-  background: #e8e3da;
-  color: #38342f;
-  font-family: var(--mono);
+  background: #efebe4;
+  color: #403c37;
+  font-family: var(--code-font);
   font-size: 14px;
   line-height: 1.7;
   tab-size: 2;
@@ -844,7 +854,7 @@ a { color: inherit; }
   flex: 0 0 auto;
   min-width: 54px;
   padding: 6px 11px;
-  border: 1px solid #bbb3a7;
+  border: 1px solid #c7bfb3;
   border-radius: 6px;
   background: transparent;
   color: #69645e;
@@ -856,7 +866,7 @@ a { color: inherit; }
 }
 
 .code-copy:hover {
-  border-color: #a89f92;
+  border-color: #afa699;
   background: rgba(248, 245, 239, 0.58);
   color: var(--gray-1000);
 }
@@ -869,6 +879,13 @@ a { color: inherit; }
   background: transparent;
   color: inherit;
   font-size: inherit;
+}
+
+/* 长公式在窄屏中横向滚动，避免撑破正文栏。 */
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2em 0;
 }
 
 /* 构建阶段生成的语法高亮色：低饱和度，适合暖灰代码背景。 */

@@ -1,18 +1,19 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { renderMarkdown } from "../scripts/markdown.mjs";
+import { hasMath, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
 
-test("首页包含三个最小内容栏目和用户文章", async () => {
+test("首页按项目、提示词、写作、阅读顺序展示四个栏目", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
   assert.match(html, /01 \/ 项目/);
-  assert.match(html, /02 \/ 写作/);
-  assert.match(html, /03 \/ 提示词/);
-  assert.doesNotMatch(html, /<h2 id="(?:projects|writings|prompts)-title">/);
+  assert.match(html, /02 \/ 提示词/);
+  assert.match(html, /03 \/ 写作/);
+  assert.match(html, /04 \/ 阅读/);
+  assert.doesNotMatch(html, /<h2 id="(?:projects|prompts|writings|readings)-title">/);
   assert.match(html, /class="project-card"/);
   assert.match(html, /class="writing-row"/);
   assert.doesNotMatch(html, /class="prompt-card"/);
@@ -26,21 +27,31 @@ test("首页包含三个最小内容栏目和用户文章", async () => {
 
   const writingSection = html.match(/<section class="content-section" id="writings"[\s\S]*?<\/section>/)?.[0] ?? "";
   const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const readingSection = html.match(/<section class="content-section" id="readings"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
+  assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
+  assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
+  assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 0);
+  assert.doesNotMatch(promptSection, /让 AI 同时以解释者、质疑者和实践者的视角/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
+  assert.match(readingSection, /href="\/readings\/">所有文章/);
 });
 
-test("写作和提示词归档页可访问全部条目", async () => {
+test("写作、提示词和阅读归档页可访问", async () => {
   const writings = await readFile(new URL("writings/index.html", root), "utf8");
   const prompts = await readFile(new URL("prompts/index.html", root), "utf8");
+  const readings = await readFile(new URL("readings/index.html", root), "utf8");
 
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<h1>写作<\/h1>/);
   assert.ok((writings.match(/class="writing-row"/g) ?? []).length >= 5);
   assert.match(prompts, /<h1>提示词<\/h1>/);
   assert.match(prompts, /three-perspective-reading/);
+  assert.match(readings, /<h1>阅读<\/h1>/);
+  assert.doesNotMatch(readings, /class="writing-row"/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
@@ -117,7 +128,10 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   const filenameCode = renderMarkdown('```python label="app.py"\nprint("hello")\n```').html;
   const escapedLabel = renderMarkdown('```javascript title="<script>"\nconst value = true;\n```').html;
   assert.match(css, /\.prose pre \{[\s\S]*?overflow: auto/);
-  assert.match(css, /background: #e8e3da/);
+  assert.match(css, /--code-font:/);
+  assert.match(css, /\.prose pre \{[\s\S]*?background: #efebe4/);
+  assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
+  assert.match(css, /\.code-block \{[\s\S]*?box-shadow:/);
   assert.match(css, /\.code-toolbar \{/);
   assert.match(css, /\.token-keyword/);
   assert.match(script, /navigator\.clipboard/);
@@ -129,6 +143,26 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.match(shellCode, /token-keyword">if<\/span>/);
   assert.match(shellCode, /token-string">&#039;ok&#039;<\/span>/);
   assert.doesNotMatch(shellUrl, /token-comment/);
+});
+
+test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
+  assert.equal(hasMath("行内公式 $E = mc^2$"), true);
+  assert.equal(hasMath("$$\\int_0^1 x^2 \\, dx$$"), true);
+  assert.equal(hasMath("```text\n$这只是代码$\n```"), false);
+
+  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
+  const mathScript = await readFile(new URL("math.js", root), "utf8");
+  assert.match(buildSource, /katex@0\.18\.1/);
+  assert.match(buildSource, /integrity="sha384-/);
+  assert.match(mathScript, /renderMathInElement/);
+  assert.match(mathScript, /document\.querySelector\("\.prose"\)/);
+});
+
+test("首页文章列表使用留白分组并弱化标题字重", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
+  assert.match(css, /\.home \.writing-row \{ border-bottom: 0; \}/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 500/);
 });
 
 test("Markdown 无序与有序列表支持多层缩进", () => {

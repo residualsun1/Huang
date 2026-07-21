@@ -21,6 +21,7 @@ npm run build
 - `content/projects/`
 - `content/writings/`
 - `content/prompts/`
+- `content/readings/`
 
 每篇内容使用相同的头部字段：
 
@@ -34,6 +35,9 @@ date: 2026-07-14
 
 文件名会成为网址的一部分，例如 `content/writings/example.md` 会生成
 `/writings/example/`。
+
+首页按“项目 → 提示词 → 写作 → 阅读”排列。提示词展示最新 3 篇，写作与阅读各展示最新 5 篇；
+阅读内容放入 `content/readings/` 后会自动出现在首页和 `/readings/` 归档页。
 
 从 Hugo 迁移文章、可用扩展格式和未知格式的处理方式，见
 [`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)。

@@ -11,8 +11,9 @@ const clientRoot = path.join(distRoot, "client");
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
-  { key: "writings", number: "02", label: "写作", eyebrow: "WRITING" },
-  { key: "prompts", number: "03", label: "提示词", eyebrow: "PROMPT" },
+  { key: "prompts", number: "02", label: "提示词", eyebrow: "PROMPT" },
+  { key: "writings", number: "03", label: "写作", eyebrow: "WRITING" },
+  { key: "readings", number: "04", label: "阅读", eyebrow: "READING" },
 ];
 
 const escapeHtml = (value = "") =>
@@ -209,9 +210,9 @@ function formatDate(value) {
 
 function layout({ title, description, content, bodyClass = "", math = false }) {
   const mathAssets = math ? `
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.css" integrity="sha384-1vdNCNel6Tx/NQa8IR1mGOGKsbGreCkOPfbtPPnUURJ5Tu2PRVfQ/7KLZC+Pi1p1" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.js" integrity="sha384-ycJ6GAwiS15LoUPipwJOrWTvkUHl/YqELValBwI5I4awP1EeEQJYarj+w85ntcz7" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"></script>
   <script defer src="/math.js"></script>` : "";
   return `<!doctype html>
 <html lang="zh-CN">
@@ -247,8 +248,9 @@ function siteHeader() {
       </a>
       <nav class="site-nav" aria-label="主要导航">
         <a href="/#projects">项目</a>
-        <a href="/#writings">写作</a>
         <a href="/#prompts">提示词</a>
+        <a href="/#writings">写作</a>
+        <a href="/#readings">阅读</a>
       </nav>
     </div>
   </header>`;
@@ -288,8 +290,9 @@ function homePage(collections) {
       </div>
       <time datetime="${escapeHtml(entry.date)}">更新于 ${formatDate(entry.date)}</time>
     </a>`).join("");
+  const prompts = byKey.prompts.entries.slice(0, 3).map((entry) => listRow(entry, { summary: "" })).join("");
   const writings = byKey.writings.entries.slice(0, 5).map((entry) => listRow(entry, { summary: entry.excerpt })).join("");
-  const prompts = byKey.prompts.entries.slice(0, 5).map(listRow).join("");
+  const readings = byKey.readings.entries.slice(0, 5).map((entry) => listRow(entry, { summary: "" })).join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
     <p class="section-kicker" id="${group.key}-title">${group.number} / ${group.label}</p>
@@ -315,16 +318,22 @@ function homePage(collections) {
         <div class="project-grid">${projects}</div>
       </section>
 
+      <section class="content-section" id="prompts" aria-labelledby="prompts-title">
+        ${sectionHeader(byKey.prompts.group)}
+        <div class="writing-list">${prompts}</div>
+        <div class="section-more"><a href="/prompts/">所有文章<span aria-hidden="true">→</span></a></div>
+      </section>
+
       <section class="content-section" id="writings" aria-labelledby="writings-title">
         ${sectionHeader(byKey.writings.group)}
         <div class="writing-list">${writings}</div>
         <div class="section-more"><a href="/writings/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
 
-      <section class="content-section" id="prompts" aria-labelledby="prompts-title">
-        ${sectionHeader(byKey.prompts.group)}
-        <div class="writing-list">${prompts}</div>
-        <div class="section-more"><a href="/prompts/">所有文章<span aria-hidden="true">→</span></a></div>
+      <section class="content-section" id="readings" aria-labelledby="readings-title">
+        ${sectionHeader(byKey.readings.group)}
+        <div class="writing-list">${readings}</div>
+        <div class="section-more"><a href="/readings/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
     </main>
     ${siteFooter()}`,
@@ -446,7 +455,7 @@ export async function buildSite() {
   }
 
   await writeFile(path.join(clientRoot, "index.html"), homePage(collections), "utf8");
-  for (const collection of collections.filter(({ group }) => group.key === "writings" || group.key === "prompts")) {
+  for (const collection of collections.filter(({ group }) => ["writings", "prompts", "readings"].includes(group.key))) {
     const target = path.join(clientRoot, collection.group.key);
     await mkdir(target, { recursive: true });
     await writeFile(path.join(target, "index.html"), collectionPage(collection), "utf8");
