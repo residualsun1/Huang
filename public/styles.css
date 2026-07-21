@@ -484,7 +484,8 @@ a { color: inherit; }
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
-  text-decoration-color: transparent;
+  /* 常态使用浅棕色下划线，悬浮时自然过渡为标题的深棕色。 */
+  text-decoration-color: rgb(190, 155, 128);
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-decoration-thickness: 1px;
@@ -496,7 +497,8 @@ a { color: inherit; }
 
 /* 首页可选摘要来自 Markdown Front Matter 的 description；没有字段时不生成元素。 */
 .home .writing-copy > span {
-  color: rgb(136, 136, 136);
+  /* 比原灰色略深，提高摘要在暖纸背景上的可读性。 */
+  color: rgb(119, 115, 110);
   font-family: var(--title-serif);
   font-size: 14.4px;
   hyphens: auto;

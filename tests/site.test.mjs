@@ -207,9 +207,11 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?transition: text-decoration-color 0\.2s ease/);
   assert.match(css, /\.home \.writing-copy strong:hover \{ text-decoration-color: rgb\(139, 69, 19\); \}/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: rgb\(136, 136, 136\)/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: rgb\(119, 115, 110\)/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 14\.4px/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 24\.48px/);
 });
