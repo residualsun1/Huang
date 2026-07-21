@@ -175,6 +175,7 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.match(css, /\.prose pre code \{[\s\S]*?font-family: inherit/);
   assert.match(css, /\.code-block \{[\s\S]*?box-shadow:/);
   assert.match(css, /\.code-toolbar \{/);
+  assert.match(css, /\.code-toolbar \{[\s\S]*?min-height: 40px;[\s\S]*?padding: 3px 10px 3px 14px/);
   assert.match(css, /\.token-keyword/);
   assert.match(script, /navigator\.clipboard/);
   assert.match(script, /\.prose \.code-block, \.prose \.prompt-block/);
@@ -253,6 +254,13 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 24\.48px/);
 });
 
+test("首页三段简介统一使用首段的字号颜色与字重", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /\.hero-intro \{[\s\S]*?color: var\(--gray-1000\);[\s\S]*?font-size: 15px;[\s\S]*?font-weight: 400/);
+  assert.match(css, /\.hero-intro p \{ margin: 0; color: inherit; font-size: inherit; font-weight: inherit; \}/);
+  assert.doesNotMatch(css, /\.hero-intro p:first-child/);
+});
+
 test("社交入口使用指定的默认与悬浮颜色", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.social-links \{[\s\S]*?color: rgb\(79, 77, 74\)/);
@@ -280,6 +288,19 @@ test("引用中的宽松有序列表保持连续编号", () => {
   assert.ok(html.indexOf("思考") < html.indexOf("行动"));
   assert.match(html, /<ol><li><strong>感知<\/strong>/);
   assert.match(renderMarkdown("3. 第三项\n4. 第四项").html, /<ol start="3">/);
+});
+
+test("正文引用与文末脚注编号均使用方括号", () => {
+  const { html } = renderMarkdown("正文脚注[^note]。\n\n[^note]: 脚注内容");
+  assert.match(html, /class="footnote-ref"><a[^>]*>\[1\]<\/a><\/sup>/);
+  assert.match(html, /<li id="fn-note"><span class="footnote-number"[^>]*>\[1\]<\/span>脚注内容/);
+  assert.doesNotMatch(html, /<a[^>]*>1<\/a><\/sup>/);
+});
+
+test("正文目录字号在原有基础上增加约 1 至 2 像素", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /\.article-toc > p \{[\s\S]*?font-size: 14\.5px/);
+  assert.match(css, /\.article-toc a \{[\s\S]*?font-size: 13\.5px/);
 });
 
 test("页眉页脚无分隔线且页脚显示邮箱", async () => {

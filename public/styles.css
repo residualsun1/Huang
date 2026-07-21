@@ -227,26 +227,21 @@ a { color: inherit; }
   line-height: 1.85;
 }
 
-/* 首页三段个人简介：思源宋体、小字号、短行宽，形成安静沉稳的阅读开场。 */
+/* 首页三段个人简介：统一使用首段的字号、颜色和字重。 */
 .hero-intro {
   display: grid;
   gap: 11px;
   margin: 0;
   padding: 0;
-  color: var(--gray-900);
+  color: var(--gray-1000);
   font-family: var(--source-han-serif);
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.82;
   letter-spacing: 0.01em;
 }
 
-.hero-intro p { margin: 0; }
-
-/* 首句略深，承担个人身份说明；后两段降低对比度以保持层次。 */
-.hero-intro p:first-child {
-  color: var(--gray-1000);
-  font-size: 15px;
-}
+.hero-intro p { margin: 0; color: inherit; font-size: inherit; font-weight: inherit; }
 
 /* 自我介绍下方的社交入口：小型单色图标、克制的文字下划线与圆点分隔。 */
 .social-links {
@@ -707,9 +702,9 @@ a { color: inherit; }
 .article-toc > p {
   margin: 0 0 12px;
   color: var(--gray-1000);
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 600;
-  line-height: 20px;
+  line-height: 22px;
 }
 
 .article-toc ol {
@@ -728,8 +723,8 @@ a { color: inherit; }
   display: block;
   overflow: hidden;
   color: var(--gray-700);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 13.5px;
+  line-height: 20px;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -853,11 +848,11 @@ a { color: inherit; }
 /* 顶部工具栏：左侧为文件名或代码类型，右侧只保留复制操作。 */
 .code-toolbar {
   display: flex;
-  min-height: 52px;
+  min-height: 40px;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 10px 14px 10px 18px;
+  padding: 3px 10px 3px 14px;
   border-bottom: 1px solid #d8d1c6;
   background: #e8e4dc;
 }
@@ -879,7 +874,7 @@ a { color: inherit; }
   font-family: var(--code-font);
   font-size: 13px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1208,7 +1203,25 @@ a { color: inherit; }
 }
 
 .footnotes hr { margin: 0 0 24px; }
-.footnotes ol { padding-left: 24px; }
+.footnotes ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footnotes li {
+  position: relative;
+  padding-left: 34px;
+}
+
+.footnote-number {
+  position: absolute;
+  left: 0;
+  color: var(--accent-800);
+  font-family: var(--mono);
+}
 .footnote-backref { margin-left: 4px; text-decoration: none !important; }
 
 /* Hugo imgloop 兼容：可以横向滚动的多图画廊。 */
@@ -1369,8 +1382,7 @@ a.article-pagination-item:hover {
     padding: 40px 0 12px;
   }
 
-  .hero-intro { gap: 10px; font-size: 13px; line-height: 1.8; }
-  .hero-intro p:first-child { font-size: 14px; }
+  .hero-intro { gap: 10px; font-size: 14px; line-height: 1.8; }
 
   /* 手机端首页栏目、项目卡片和文章列表。 */
   .content-section { padding-top: 72px; }
@@ -1425,7 +1437,7 @@ a.article-pagination-item:hover {
   .prose h3 { font-size: 21px; line-height: 29px; }
   .prose h4 { font-size: 18px; line-height: 27px; }
   .code-block { margin-inline: -8px; border-radius: 10px; }
-  .code-toolbar { min-height: 48px; padding: 8px 10px 8px 14px; }
+  .code-toolbar { min-height: 38px; padding: 2px 8px 2px 12px; }
   .prose pre { padding: 18px 16px; font-size: 13px; }
   .prompt-toolbar { min-height: 42px; padding: 4px 10px 4px 14px; }
   .prompt-content { padding: 12px 16px 14px; font-size: 15px; }
