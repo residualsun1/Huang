@@ -5,7 +5,7 @@ import { hasMath, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
 
-test("首页按项目、提示词、写作、阅读顺序展示四个栏目", async () => {
+test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
@@ -15,7 +15,7 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.match(html, /src="https:\/\/cdn\.jsdelivr\.net\/gh\/residualsun1\/blog-static\/about\/gz\.jpg"/);
   assert.match(html, /alt="Huang 在湖边的个人照片"/);
   assert.match(html, /01 \/ 项目/);
-  assert.match(html, /02 \/ 提示词/);
+  assert.match(html, /02 \/ Prompt/);
   assert.match(html, /03 \/ 写作/);
   assert.match(html, /04 \/ 阅读/);
   assert.doesNotMatch(html, /<h2 id="(?:projects|prompts|writings|readings)-title">/);
@@ -53,7 +53,7 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.match(readingSection, /href="\/readings\/">所有文章/);
 });
 
-test("写作、提示词和阅读归档页可访问", async () => {
+test("写作、Prompt 和阅读归档页可访问", async () => {
   const writings = await readFile(new URL("writings/index.html", root), "utf8");
   const prompts = await readFile(new URL("prompts/index.html", root), "utf8");
   const readings = await readFile(new URL("readings/index.html", root), "utf8");
@@ -61,7 +61,8 @@ test("写作、提示词和阅读归档页可访问", async () => {
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<h1>写作<\/h1>/);
   assert.ok((writings.match(/class="writing-row"/g) ?? []).length >= 5);
-  assert.match(prompts, /<h1>提示词<\/h1>/);
+  assert.match(prompts, /02 \/ Prompt/);
+  assert.match(prompts, /<h1>Prompt<\/h1>/);
   assert.match(prompts, /three-perspective-reading/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.match(readings, /we-have-never-been-modern/);
@@ -105,7 +106,7 @@ test("正文和引用使用独立的中文阅读字体", async () => {
   assert.doesNotMatch(css, /body\.detail-writings \{/);
   assert.match(css, /\.detail-editorial \.prose \{[\s\S]*?font-size: 15\.5px/);
   assert.match(css, /\.detail-editorial \.prose blockquote \{[\s\S]*?background: transparent/);
-  assert.match(css, /\.detail-writings \.article-pagination \{[\s\S]*?border-top: 0/);
+  assert.match(css, /\.detail-editorial \.article-pagination \{[\s\S]*?border-top: 0/);
   assert.match(css, /\.hero-intro \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(writing, /<body class="detail detail-writings detail-editorial">/);
   assert.match(prompt, /<body class="detail detail-prompts detail-editorial">/);
@@ -115,6 +116,11 @@ test("正文和引用使用独立的中文阅读字体", async () => {
   assert.doesNotMatch(prompt, /class="article-description"/);
   assert.doesNotMatch(reading, /class="article-description"/);
   assert.match(writing, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
+  assert.match(prompt, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
+  assert.match(reading, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
+  assert.doesNotMatch(writing, /class="eyebrow"/);
+  assert.doesNotMatch(prompt, /class="eyebrow"/);
+  assert.doesNotMatch(reading, /class="eyebrow"/);
 });
 
 test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
@@ -197,7 +203,8 @@ test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
 test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
-  assert.match(css, /\.home \.writing-row \{[\s\S]*?padding-block: 24px;[\s\S]*?border-bottom: 0;/);
+  assert.match(css, /\.home \.writing-row \{[\s\S]*?padding-block: \d+px;[\s\S]*?border-bottom: 0;/);
+  assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 112px 32px/);
   assert.match(css, /--title-serif: "Libre Baskerville"/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
@@ -246,7 +253,19 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
   assert.doesNotMatch(css, /\.site-footer \{[\s\S]*?border-top/);
   assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me">Residualsun@proton\.me<\/a>/);
   assert.doesNotMatch(html, /持续学习，持续修订/);
-  assert.match(css, /\.footer-email \{[\s\S]*?font-family: "Times New Roman"/);
+  assert.match(css, /\.footer-email \{[\s\S]*?font-family: var\(--title-serif\)/);
+});
+
+test("普通拉丁文字统一使用 Libre Baskerville，代码保留代码字体", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /--sans: "Libre Baskerville", Georgia/);
+  assert.match(css, /--mono: "Libre Baskerville", Georgia/);
+  assert.match(css, /--serif: "Libre Baskerville", Georgia/);
+  assert.match(css, /--source-han-serif: "Libre Baskerville", Georgia/);
+  assert.match(css, /--kai: "Libre Baskerville", Georgia/);
+  assert.match(css, /--editorial: "Libre Baskerville", Georgia/);
+  assert.match(css, /\.prose code \{[\s\S]*?font-family: var\(--code-font\)/);
+  assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
 });
 
 test("通用 Markdown 扩展可独立渲染", () => {

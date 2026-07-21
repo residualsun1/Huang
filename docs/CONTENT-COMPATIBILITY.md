@@ -39,7 +39,7 @@ tags:
 
 ### 首页可选摘要
 
-提示词、写作和阅读栏目统一读取 Front Matter 中的 `description`。填写时，摘要显示在首页文章标题下方：
+Prompt、写作和阅读栏目统一读取 Front Matter 中的 `description`。填写时，摘要显示在首页文章标题下方：
 
 ```md
 ---

@@ -11,7 +11,7 @@ const clientRoot = path.join(distRoot, "client");
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
-  { key: "prompts", number: "02", label: "提示词", eyebrow: "PROMPT" },
+  { key: "prompts", number: "02", label: "Prompt", eyebrow: "Prompt" },
   { key: "writings", number: "03", label: "写作", eyebrow: "WRITING" },
   { key: "readings", number: "04", label: "阅读", eyebrow: "READING" },
 ];
@@ -275,11 +275,11 @@ function socialNavigation() {
 
 function listRow(entry, { summary = entry.description } = {}) {
   return `<a class="writing-row" href="${entry.href}">
-    <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="writing-copy">
       <strong>${escapeHtml(entry.title)}</strong>
       ${summary ? `<span>${escapeHtml(summary)}</span>` : ""}
     </span>
+    <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="row-arrow" aria-hidden="true">→</span>
   </a>`;
 }
@@ -318,7 +318,7 @@ function homePage(collections) {
           <div class="hero-intro">
             <p>你好，我是 Huang。我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。</p>
             <p>这里会存放我 Vibe Coding 做出的 Demo。我希望能长期打磨一件具体的小事，一步一步，从想象落地为现实。另外，我还会在这里写一些自己关于 AI 的思考和想法，以及自己的阅读心得。</p>
-            <p>目前，本站主要包括「项目」、「提示词」、「写作」和「阅读」四个版块。</p>
+            <p>目前，本站主要包括「项目」、「Prompt」、「写作」和「阅读」四个版块。</p>
           </div>
           ${socialNavigation()}
         </div>
@@ -417,7 +417,6 @@ function detailPage(entry, previousEntry, nextEntry) {
   }
   const toc = createTableOfContents(rendered.html);
   const isEditorialArticle = ["writings", "prompts", "readings"].includes(entry.group.key);
-  const isWriting = entry.group.key === "writings";
   const description = isEditorialArticle ? "" : `<p class="article-description">${escapeHtml(entry.description)}</p>`;
   const author = entry.author ? `<span class="article-author">${escapeHtml(entry.author)}</span>` : "";
   const tags = entry.tags.length ? `<ul class="article-tags" aria-label="文章标签">${entry.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : "";
@@ -433,7 +432,6 @@ function detailPage(entry, previousEntry, nextEntry) {
         <a href="/">首页</a><span aria-hidden="true">/</span><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">${entry.group.label}</a>
       </nav>
       <header class="article-header">
-        <p class="eyebrow">${entry.group.number} / ${entry.group.eyebrow}</p>
         <h1>${escapeHtml(entry.title)}</h1>
         ${description}
         <div class="article-meta">
@@ -444,11 +442,11 @@ function detailPage(entry, previousEntry, nextEntry) {
       <div class="article-layout">
         <div class="article-main">
           <article class="prose">${rendered.html}</article>
-          ${isWriting ? pagination : ""}
+          ${isEditorialArticle ? pagination : ""}
         </div>
         ${toc}
       </div>
-      ${isWriting ? "" : pagination}
+      ${isEditorialArticle ? "" : pagination}
       <footer class="article-footer"><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">← 回到${entry.group.label}</a></footer>
     </main>
     ${siteFooter()}

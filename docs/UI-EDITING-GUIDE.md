@@ -28,11 +28,11 @@
 5. 修改项目卡片：搜索 `.project-grid` 和 `.project-card`。
 6. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
 7. 修改文章正文：搜索 `.prose`。
-8. 修改写作、提示词与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
+8. 修改写作、Prompt 与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
 9. 修改引用：搜索 `.prose blockquote`。
 10. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
 11. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
-12. 修改写作页上一篇/下一篇卡片：搜索 `.detail-writings .article-pagination` 和 `.article-pagination-item`。
+12. 修改三个文章栏目中的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
 13. 修改手机样式：搜索 `@media (max-width: 600px)`。
 
 ## 修改后的预览方法
