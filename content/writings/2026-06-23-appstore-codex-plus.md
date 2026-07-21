@@ -6,6 +6,7 @@ author: 黄国政
 tags:
   - Codex
   - 技术折腾
+description: "在没有海外信用卡的情况下，我终于成功订阅了 Codex Plus！"
 ---
 
 <!--more-->

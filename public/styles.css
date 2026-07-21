@@ -242,24 +242,24 @@ a { color: inherit; }
   letter-spacing: -0.06em;
 }
 
-/* 写作详情页标题、简介统一使用思源宋体体系。 */
-.detail-writings .article-header {
+/* 写作、提示词与阅读详情页的标题统一使用思源宋体体系。 */
+.detail-editorial .article-header {
   border-bottom-color: var(--gray-alpha-400);
 }
 
-.detail-writings .article-header h1,
-.detail-writings .article-description {
+.detail-editorial .article-header h1,
+.detail-editorial .article-description {
   font-family: var(--source-han-serif);
 }
 
-.detail-writings .article-header h1 {
+.detail-editorial .article-header h1 {
   max-width: 820px;
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: -0.035em;
 }
 
-.detail-writings .article-description {
+.detail-editorial .article-description {
   max-width: 740px;
   color: var(--gray-900);
   line-height: 1.85;
@@ -348,15 +348,15 @@ a { color: inherit; }
 
 /* 首页栏目通用间距；scroll-margin 避免锚点被顶部导航遮挡。 */
 .content-section {
-  padding-top: 76px;
+  padding-top: 45px;
   scroll-margin-top: 64px;
 }
 
-.home-layout > #projects { padding-top: 24px; }
+.home-layout > #projects { padding-top: 15px; }
 
 /* 栏目标题区域：编号与中文名称保持小字号，水平线从文字右侧延伸。 */
 .section-heading {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   padding-top: 32px;
 }
 
@@ -508,7 +508,11 @@ a { color: inherit; }
 
 /* 首页用留白而非重复横线区分文章；加粗标题让棕色链接更稳定、醒目。 */
 .home .writing-list { border-top: 0; }
-.home .writing-row { border-bottom: 0; }
+.home .writing-row {
+  /* 首页同一栏目内文章之间的距离：增减这个纵向内边距即可。 */
+  padding-block: 24px;
+  border-bottom: 0;
+}
 .home .writing-row:hover { background: transparent; }
 .home .writing-copy strong {
   width: auto;
@@ -700,8 +704,8 @@ a { color: inherit; }
   background: var(--gray-alpha-100);
 }
 
-/* 写作页不显示摘要，因此缩短标题与元信息之间的距离。 */
-.detail-writings .article-meta { margin-top: 24px; }
+/* 三个文章栏目均不在详情页显示摘要，因此缩短标题与元信息之间的距离。 */
+.detail-editorial .article-meta { margin-top: 24px; }
 
 /* 桌面端文章布局：左侧正文，右侧 220px 目录。 */
 .article-layout {
@@ -711,6 +715,9 @@ a { color: inherit; }
   justify-content: center;
   align-items: start;
 }
+
+/* 正文主列：写作文章的上一篇/下一篇卡片放在这里，与正文精确对齐。 */
+.article-main { min-width: 0; }
 
 /* 文章目录固定在视口内，滚动长文时仍可跳转章节。 */
 .article-toc {
@@ -825,8 +832,8 @@ a { color: inherit; }
 
 .prose blockquote > :last-child { margin-bottom: 0; }
 
-/* 写作正文专属阅读排版，只影响 /writings/ 下的文章。 */
-.detail-writings .prose {
+/* 写作、提示词与阅读共用的正文排版；margin-top 控制正文与上方分隔线的距离。 */
+.detail-editorial .prose {
   margin-top: 50px;
   margin-bottom: 50px;
   color: #34312f;
@@ -835,8 +842,8 @@ a { color: inherit; }
   letter-spacing: 0.01em;
 }
 
-/* 写作页引用覆盖默认引用：保留楷体和左边线，移除底色。 */
-.detail-writings .prose blockquote {
+/* 三个文章栏目共用的引用样式：保留楷体和左边线，移除底色。 */
+.detail-editorial .prose blockquote {
   margin: 2.5em 1.25em;
   padding: 0.2em 0 0.2em 1.35em;
   border-left: 1px solid var(--accent-700);
@@ -1246,35 +1253,10 @@ a.article-pagination-item:hover {
   opacity: 0.46;
 }
 
-/* 写作页将翻页卡片改成更轻的书页导航，移除边框和底色。 */
+/* 写作页翻页导航：保留卡片形式、删除上方分隔线，并由 .article-main 约束在正文宽度内。 */
 .detail-writings .article-pagination {
-  gap: 32px;
-  padding-top: 36px;
-  border-top-color: var(--gray-alpha-400);
-}
-
-.detail-writings .article-pagination-item {
-  min-height: 88px;
-  gap: 10px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
-.detail-writings .article-pagination-item strong {
-  font-size: 16px;
-  line-height: 26px;
-}
-
-.detail-writings a.article-pagination-item:hover {
-  border-color: transparent;
-  background: transparent;
-  transform: none;
-}
-
-.detail-writings a.article-pagination-item:hover strong {
-  color: var(--accent-800);
+  padding-top: 0;
+  border-top: 0;
 }
 
 /* 文章末尾“返回写作 / 项目 / 提示词”入口。 */
@@ -1355,6 +1337,8 @@ a.article-pagination-item:hover {
     padding: 20px 8px;
   }
 
+  .home .writing-row { padding-block: 20px; }
+
   .writing-row time { grid-column: 1 / -1; padding: 0; }
   .writing-copy strong { font-size: 17px; line-height: 24px; }
   .writing-row .row-arrow { grid-column: 2; grid-row: 2; }
@@ -1402,23 +1386,23 @@ a.article-pagination-item:hover {
 
   .collection-header { padding: 52px 0 24px; }
 
-  /* 手机端写作专属字体、段落和楷体引用。 */
-  .detail-writings .prose {
+  /* 手机端三个文章栏目的统一字体、段落和楷体引用。 */
+  .detail-editorial .prose {
     margin-top: 48px;
     font-size: 16px;
     line-height: 1.76;
     letter-spacing: 0.005em;
   }
 
-  .detail-writings .prose > p { margin-bottom: 2em; }
+  .detail-editorial .prose > p { margin-bottom: 2em; }
 
-  .detail-writings .prose blockquote {
+  .detail-editorial .prose blockquote {
     margin-inline: 0;
     padding-left: 1.1em;
     font-size: 16px;
   }
 
-  .detail-writings .article-pagination { gap: 22px; }
+  .detail-writings .article-pagination { gap: 12px; }
 }
 
 /* 用户开启“减少动态效果”时，关闭滚动和界面过渡。 */

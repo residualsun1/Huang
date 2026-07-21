@@ -8,6 +8,7 @@ tags:
   - Agent
   - Harness
   - 产品
+description: "我们每天都在使用 AI，但我们似乎很少区分过各式 AI 产品之间的类型差异。"
 ---
 
 <!--more-->

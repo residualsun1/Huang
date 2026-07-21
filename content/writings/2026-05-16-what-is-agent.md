@@ -6,6 +6,7 @@ slug: what-is-agent
 categories: []
 tags:
   - Agent
+description: "今天是 Agent 这样的概念，明天又会冒出一个怎样新的概念呢？"
 ---
 
 <!--more-->

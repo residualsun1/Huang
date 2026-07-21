@@ -31,7 +31,7 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.match(html, /aria-label="GitHub 个人主页"/);
   assert.match(html, />Residualsun<\/span>/);
   assert.match(html, />Guozheng Huang<\/span>/);
-  assert.match(html, /你好，我是 Huang。我在探索 AI、人文、艺术/);
+  assert.match(html, /你好，我是 Huang。我在探索 AI 与人文结合的可能性/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
 
@@ -43,10 +43,11 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
-  assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 0);
+  assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 1);
   assert.match(promptSection, /让 AI 同时以解释者、质疑者和实践者的视角/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
-  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 0);
+  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 5);
+  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
@@ -63,7 +64,7 @@ test("写作、提示词和阅读归档页可访问", async () => {
   assert.match(prompts, /<h1>提示词<\/h1>/);
   assert.match(prompts, /three-perspective-reading/);
   assert.match(readings, /<h1>阅读<\/h1>/);
-  assert.doesNotMatch(readings, /class="writing-row"/);
+  assert.match(readings, /we-have-never-been-modern/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
@@ -96,16 +97,24 @@ test("正文和引用使用独立的中文阅读字体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
   const prompt = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
+  const reading = await readFile(new URL("readings/we-have-never-been-modern/index.html", root), "utf8");
   assert.match(css, /--source-han-serif:/);
   assert.match(css, /--kai:/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--kai\)/);
   assert.doesNotMatch(css, /body\.detail-writings \{/);
-  assert.match(css, /\.detail-writings \.article-pagination-item \{/);
+  assert.match(css, /\.detail-editorial \.prose \{[\s\S]*?font-size: 15\.5px/);
+  assert.match(css, /\.detail-editorial \.prose blockquote \{[\s\S]*?background: transparent/);
+  assert.match(css, /\.detail-writings \.article-pagination \{[\s\S]*?border-top: 0/);
   assert.match(css, /\.hero-intro \{[\s\S]*?font-family: var\(--source-han-serif\)/);
-  assert.match(writing, /<body class="detail detail-writings">/);
-  assert.match(prompt, /<body class="detail detail-prompts">/);
+  assert.match(writing, /<body class="detail detail-writings detail-editorial">/);
+  assert.match(prompt, /<body class="detail detail-prompts detail-editorial">/);
+  assert.match(reading, /<body class="detail detail-readings detail-editorial">/);
   assert.doesNotMatch(prompt, /<body class="detail detail-writings">/);
+  assert.doesNotMatch(writing, /class="article-description"/);
+  assert.doesNotMatch(prompt, /class="article-description"/);
+  assert.doesNotMatch(reading, /class="article-description"/);
+  assert.match(writing, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
 });
 
 test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
@@ -188,7 +197,7 @@ test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
 test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
-  assert.match(css, /\.home \.writing-row \{ border-bottom: 0; \}/);
+  assert.match(css, /\.home \.writing-row \{[\s\S]*?padding-block: 24px;[\s\S]*?border-bottom: 0;/);
   assert.match(css, /--title-serif: "Libre Baskerville"/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);

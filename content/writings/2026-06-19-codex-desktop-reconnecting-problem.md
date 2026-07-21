@@ -6,6 +6,7 @@ author: 黄国政
 tags:
   - Codex
   - 技术折腾
+description: "问题的源头其实是没能成功登录账号，若非如此，可以直接让 Codex 进行修复。"
 ---
 
 ## 背景

@@ -316,9 +316,9 @@ function homePage(collections) {
         <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
         <div class="hero-copy">
           <div class="hero-intro">
-            <p>你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。</p>
-            <p>这里会存放我 Vibe Coding 做出的 Demo，它们或许多是「粗糙」的，但我喜欢长期打磨一件具体的小事，一步一步，好事多磨。另外，我也会在此写一些自己关于 AI 的思考和想法。</p>
-            <p>我的主力协作大模型伙伴是 GPT，同时希望我的 Claude 可以早些被解封。</p>
+            <p>你好，我是 Huang。我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。</p>
+            <p>这里会存放我 Vibe Coding 做出的 Demo。我希望能长期打磨一件具体的小事，一步一步，从想象落地为现实。另外，我还会在这里写一些自己关于 AI 的思考和想法，以及自己的阅读心得。</p>
+            <p>目前，本站主要包括「项目」、「提示词」、「写作」和「阅读」四个版块。</p>
           </div>
           ${socialNavigation()}
         </div>
@@ -416,13 +416,16 @@ function detailPage(entry, previousEntry, nextEntry) {
     console.warn(`[${entry.group.key}/${entry.slug}] ${warning}`);
   }
   const toc = createTableOfContents(rendered.html);
-  const description = entry.group.key === "writings" ? "" : `<p class="article-description">${escapeHtml(entry.description)}</p>`;
+  const isEditorialArticle = ["writings", "prompts", "readings"].includes(entry.group.key);
+  const isWriting = entry.group.key === "writings";
+  const description = isEditorialArticle ? "" : `<p class="article-description">${escapeHtml(entry.description)}</p>`;
   const author = entry.author ? `<span class="article-author">${escapeHtml(entry.author)}</span>` : "";
   const tags = entry.tags.length ? `<ul class="article-tags" aria-label="文章标签">${entry.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : "";
+  const pagination = articlePagination(previousEntry, nextEntry);
   return layout({
     title: `${entry.title} — Huang`,
     description: entry.description,
-    bodyClass: `detail detail-${entry.group.key}`,
+    bodyClass: `detail detail-${entry.group.key}${isEditorialArticle ? " detail-editorial" : ""}`,
     math: hasMath(entry.body),
     content: `${siteHeader()}
     <main class="article-shell">
@@ -439,10 +442,13 @@ function detailPage(entry, previousEntry, nextEntry) {
         </div>
       </header>
       <div class="article-layout">
-        <article class="prose">${rendered.html}</article>
+        <div class="article-main">
+          <article class="prose">${rendered.html}</article>
+          ${isWriting ? pagination : ""}
+        </div>
         ${toc}
       </div>
-      ${articlePagination(previousEntry, nextEntry)}
+      ${isWriting ? "" : pagination}
       <footer class="article-footer"><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">← 回到${entry.group.label}</a></footer>
     </main>
     ${siteFooter()}
