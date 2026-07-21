@@ -275,11 +275,11 @@ function socialNavigation() {
 
 function listRow(entry, { summary = entry.description } = {}) {
   return `<a class="writing-row" href="${entry.href}">
+    <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="writing-copy">
       <strong>${escapeHtml(entry.title)}</strong>
       ${summary ? `<span>${escapeHtml(summary)}</span>` : ""}
     </span>
-    <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="row-arrow" aria-hidden="true">→</span>
   </a>`;
 }
@@ -322,9 +322,6 @@ function homePage(collections) {
           </div>
           ${socialNavigation()}
         </div>
-        <figure class="portrait-space">
-          <img src="https://cdn.jsdelivr.net/gh/residualsun1/blog-static/about/gz.jpg" alt="Huang 在湖边的个人照片" width="260" height="190" decoding="async" fetchpriority="high">
-        </figure>
       </section>
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">

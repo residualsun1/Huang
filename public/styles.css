@@ -176,32 +176,12 @@ a { color: inherit; }
   padding-bottom: 112px;
 }
 
-/* 首页首屏：正文获得更舒展的行宽，右侧照片位采用更自然的横向比例。 */
+/* 首页首屏：删除照片后使用完整内容宽度，让自我介绍自然横向延展。 */
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  gap: 40px;
-  padding: 52px 0 28px;
+  padding: 52px 0 16px;
 }
 
-.hero-copy { min-width: 0; }
-
-/* 个人照片容器：保持克制的 260 × 190 横向比例，不添加阴影或装饰边框。 */
-.portrait-space {
-  height: 190px;
-  margin: 0;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-}
-
-/* 原图人物位于右侧，因此以 76% 为焦点裁切，同时保留部分天空和湖面。 */
-.portrait-space img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 76% center;
-}
+.hero-copy { width: 100%; }
 
 /* 英文栏目编号和小标签统一使用 Libre Baskerville。 */
 .eyebrow,
@@ -250,7 +230,6 @@ a { color: inherit; }
 /* 首页三段个人简介：思源宋体、小字号、短行宽，形成安静沉稳的阅读开场。 */
 .hero-intro {
   display: grid;
-  max-width: 720px;
   gap: 11px;
   margin: 0;
   padding: 0;
@@ -438,10 +417,10 @@ a { color: inherit; }
   border-top: 1px solid var(--gray-alpha-400);
 }
 
-/* 单行结构：左侧标题摘要、右侧日期和箭头。 */
+/* 单行结构：左侧日期、右侧标题摘要和箭头。 */
 .writing-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 112px 32px;
+  grid-template-columns: 112px minmax(0, 1fr) 32px;
   gap: 24px;
   align-items: start;
   padding: 24px 12px;
@@ -461,7 +440,7 @@ a { color: inherit; }
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   line-height: 20px;
-  text-align: right;
+  text-align: left;
 }
 
 /* 标题和摘要组成的两行文字区域。 */
@@ -1293,11 +1272,8 @@ a.article-pagination-item:hover {
 
   /* 手机端首页简介：继续保持短行距和紧凑留白。 */
   .hero {
-    grid-template-columns: 1fr;
-    padding: 40px 0 22px;
+    padding: 40px 0 12px;
   }
-
-  .portrait-space { display: none; }
 
   .hero-intro { gap: 10px; font-size: 13px; line-height: 1.8; }
   .hero-intro p:first-child { font-size: 14px; }
@@ -1316,7 +1292,7 @@ a.article-pagination-item:hover {
   .project-card h3 { font-size: 22px; line-height: 29px; }
 
   .writing-row {
-    grid-template-columns: minmax(0, 1fr) auto 20px;
+    grid-template-columns: 82px minmax(0, 1fr) 20px;
     gap: 10px;
     padding: 20px 8px;
   }

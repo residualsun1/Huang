@@ -11,9 +11,8 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
   assert.doesNotMatch(html, /class="site-nav"/);
   assert.doesNotMatch(html, /class="home-toc"/);
-  assert.match(html, /class="portrait-space"/);
-  assert.match(html, /src="https:\/\/cdn\.jsdelivr\.net\/gh\/residualsun1\/blog-static\/about\/gz\.jpg"/);
-  assert.match(html, /alt="Huang 在湖边的个人照片"/);
+  assert.doesNotMatch(html, /class="portrait-space"/);
+  assert.doesNotMatch(html, /blog-static\/about\/gz\.jpg/);
   assert.match(html, /01 \/ 项目/);
   assert.match(html, /02 \/ Prompt/);
   assert.match(html, /03 \/ 写作/);
@@ -131,15 +130,14 @@ test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
 });
 
-test("首页使用 880px 中等宽度与更舒展的照片位", async () => {
+test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const heroRule = css.match(/\.hero \{([^}]*)\}/)?.[1] ?? "";
   assert.match(css, /\.home-layout \{[\s\S]*?padding-bottom: 112px/);
   assert.match(css, /\.home-layout \{[\s\S]*?width: min\(calc\(100% - 48px\), 880px\)/);
-  assert.match(css, /\.hero \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 260px/);
-  assert.match(css, /\.hero \{[\s\S]*?gap: 40px/);
-  assert.match(css, /\.portrait-space \{[\s\S]*?height: 190px/);
-  assert.match(css, /\.portrait-space \{[\s\S]*?overflow: hidden/);
-  assert.match(css, /\.portrait-space img \{[\s\S]*?object-position: 76% center/);
+  assert.doesNotMatch(css, /\.portrait-space/);
+  assert.doesNotMatch(heroRule, /grid-template-columns/);
+  assert.match(css, /\.hero-copy \{ width: 100%; \}/);
   assert.doesNotMatch(css, /\.home-toc/);
 });
 
@@ -204,7 +202,7 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
   assert.match(css, /\.home \.writing-row \{[\s\S]*?padding-block: \d+px;[\s\S]*?border-bottom: 0;/);
-  assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 112px 32px/);
+  assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: 112px minmax\(0, 1fr\) 32px/);
   assert.match(css, /--title-serif: "Libre Baskerville"/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
