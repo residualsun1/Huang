@@ -102,6 +102,9 @@ test("所有写作页面均不残留已知 Hugo 短代码", async () => {
 
 test("Prompt 代码块包含语言类并被安全转义", async () => {
   const html = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
+  assert.match(html, /class="code-toolbar"/);
+  assert.match(html, /class="toolbar-left"><span class="toolbar-label">文本<\/span><\/div>/);
+  assert.match(html, /class="toolbar-right"><button class="toolbar-btn code-copy"[^>]*>复制<\/button><\/div>/);
   assert.match(html, /<pre data-language="text"><code class="language-text">/);
   assert.match(html, /解释者/);
 });
@@ -111,11 +114,18 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   const script = await readFile(new URL("code-blocks.js", root), "utf8");
   const shellCode = renderMarkdown("```bash\nif true; then echo \'ok\'; fi\n```").html;
   const shellUrl = renderMarkdown("```bash\ncurl https://example.com/api\n```").html;
-  assert.match(css, /\.prose pre \{[\s\S]*?overflow-x: auto/);
+  const filenameCode = renderMarkdown('```python label="app.py"\nprint("hello")\n```').html;
+  const escapedLabel = renderMarkdown('```javascript title="<script>"\nconst value = true;\n```').html;
+  assert.match(css, /\.prose pre \{[\s\S]*?overflow: auto/);
   assert.match(css, /background: #e8e3da/);
+  assert.match(css, /\.code-toolbar \{/);
   assert.match(css, /\.token-keyword/);
   assert.match(script, /navigator\.clipboard/);
-  assert.match(script, /className = "code-copy"/);
+  assert.match(script, /querySelector\("\.code-copy"\)/);
+  assert.match(filenameCode, /class="toolbar-label">app\.py<\/span>/);
+  assert.match(filenameCode, /class="language-python"/);
+  assert.match(escapedLabel, /class="toolbar-label">&lt;script&gt;<\/span>/);
+  assert.doesNotMatch(filenameCode, /toolbar-dot|view-toggle|lang-inline-toggle/);
   assert.match(shellCode, /token-keyword">if<\/span>/);
   assert.match(shellCode, /token-string">&#039;ok&#039;<\/span>/);
   assert.doesNotMatch(shellUrl, /token-comment/);

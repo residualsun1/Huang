@@ -1,5 +1,5 @@
-// 为正文代码块添加复制按钮。脚本不负责高亮，高亮 HTML 已在构建阶段生成。
-const codeBlocks = document.querySelectorAll(".prose pre");
+// 为正文代码块启用复制按钮。工具栏与高亮 HTML 已在构建阶段生成。
+const codeBlocks = document.querySelectorAll(".prose .code-block");
 
 async function copyText(value) {
   if (navigator.clipboard && window.isSecureContext) {
@@ -19,22 +19,12 @@ async function copyText(value) {
   textarea.remove();
 }
 
-codeBlocks.forEach((pre) => {
+codeBlocks.forEach((block) => {
+  const pre = block.querySelector("pre");
+  const button = block.querySelector(".code-copy");
+  if (!pre || !button) return;
   const code = pre.querySelector("code");
   if (!code) return;
-
-  // 外层容器固定复制按钮；内部 pre 继续独立横向滚动。
-  const wrapper = document.createElement("div");
-  wrapper.className = "code-block";
-  pre.before(wrapper);
-  wrapper.append(pre);
-
-  const button = document.createElement("button");
-  button.className = "code-copy";
-  button.type = "button";
-  button.textContent = "复制";
-  button.setAttribute("aria-label", "复制代码");
-  wrapper.prepend(button);
 
   button.addEventListener("click", async () => {
     try {

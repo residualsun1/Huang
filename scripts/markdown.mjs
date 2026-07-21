@@ -176,6 +176,43 @@ function normalizeLanguage(language) {
   return aliases[normalized] || normalized;
 }
 
+function languageLabel(language) {
+  const labels = {
+    ascii: "ASCII",
+    css: "CSS",
+    html: "HTML",
+    javascript: "JavaScript",
+    json: "JSON",
+    markdown: "Markdown",
+    powershell: "PowerShell",
+    python: "Python",
+    shell: "Shell",
+    sql: "SQL",
+    text: "文本",
+    typescript: "TypeScript",
+    xml: "XML",
+    yaml: "YAML",
+  };
+  const normalized = normalizeLanguage(language);
+  return labels[normalized] || (normalized ? normalized.toLocaleUpperCase() : "代码");
+}
+
+function parseFenceInfo(value) {
+  const source = String(value || "").trim();
+  if (!source) return { language: "", label: "代码" };
+  const match = source.match(/^([\w+-]+)(?:\s+([\s\S]+))?$/);
+  if (!match) return { language: "", label: "代码" };
+
+  const language = match[1];
+  const metadata = (match[2] || "").trim();
+  if (!metadata) return { language, label: languageLabel(language) };
+
+  const attribute = metadata.match(/^\{?\s*(?:label|title)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^}\s]+))\s*\}?$/i);
+  const rawLabel = attribute ? (attribute[1] ?? attribute[2] ?? attribute[3] ?? "") : metadata;
+  const label = rawLabel.trim().replace(/^(["'])|(["'])$/g, "");
+  return { language, label: label || languageLabel(language) };
+}
+
 function highlightCode(source, language) {
   const normalized = normalizeLanguage(language);
   const keywords = languageKeywords[normalized] || new Set();
@@ -250,11 +287,18 @@ function highlightCode(source, language) {
   return html;
 }
 
-function renderCodeBlock(code, language) {
+function renderCodeBlock(code, language, label = "") {
   const normalized = normalizeLanguage(language);
   const languageClass = normalized ? ` class="language-${escapeAttribute(normalized)}"` : "";
   const languageAttribute = normalized ? ` data-language="${escapeAttribute(normalized)}"` : "";
-  return `<pre${languageAttribute}><code${languageClass}>${highlightCode(code, normalized)}</code></pre>`;
+  const visibleLabel = label || languageLabel(normalized);
+  return `<div class="code-block">
+    <div class="code-toolbar">
+      <div class="toolbar-left"><span class="toolbar-label">${escapeHtml(visibleLabel)}</span></div>
+      <div class="toolbar-right"><button class="toolbar-btn code-copy" type="button" aria-label="复制 ${escapeAttribute(visibleLabel)} 的代码">复制</button></div>
+    </div>
+    <pre${languageAttribute}><code${languageClass}>${highlightCode(code, normalized)}</code></pre>
+  </div>`;
 }
 
 function renderList(lines, inlineMarkdown) {
@@ -352,6 +396,7 @@ export function renderMarkdown(markdown, options = {}) {
   let inCode = false;
   let code = [];
   let codeLanguage = "";
+  let codeLabel = "";
 
   const flushParagraph = () => {
     if (paragraph.length) html.push(`<p>${inlineMarkdown(paragraph.join(" "))}</p>`);
@@ -368,15 +413,18 @@ export function renderMarkdown(markdown, options = {}) {
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
-    const fence = line.match(/^```\s*([\w+-]*)\s*$/);
+    const fence = line.match(/^```([\s\S]*)$/);
     if (fence) {
       flushAll();
       if (inCode) {
-        html.push(renderCodeBlock(code.join("\n"), codeLanguage));
+        html.push(renderCodeBlock(code.join("\n"), codeLanguage, codeLabel));
         code = [];
         codeLanguage = "";
+        codeLabel = "";
       } else {
-        codeLanguage = fence[1];
+        const info = parseFenceInfo(fence[1]);
+        codeLanguage = info.language;
+        codeLabel = info.label;
       }
       inCode = !inCode;
       continue;
@@ -496,7 +544,7 @@ export function renderMarkdown(markdown, options = {}) {
   flushAll();
   if (code.length) {
     context.warnings.push("存在未闭合的 Markdown 代码围栏，已按代码块渲染到文末。");
-    html.push(renderCodeBlock(code.join("\n"), codeLanguage));
+    html.push(renderCodeBlock(code.join("\n"), codeLanguage, codeLabel));
   }
 
   if (context.appendFootnotes && footnoteOrder.length) {
