@@ -288,7 +288,7 @@ a { color: inherit; }
   align-items: center;
   gap: 14px;
   margin-top: 18px;
-  color: var(--gray-900);
+  color: rgb(79, 77, 74);
   font-family: var(--title-serif);
   font-size: 13px;
   line-height: 20px;
@@ -304,10 +304,12 @@ a { color: inherit; }
 }
 
 .social-links a span {
-  border-bottom: 1px solid rgba(139, 69, 19, 0.55);
+  border-bottom: 1px solid rgb(197, 193, 187);
+  transition: border-color 200ms ease;
 }
 
-.social-links a:hover { color: var(--accent-700); }
+.social-links a:hover { color: rgb(29, 27, 27); }
+.social-links a:hover span { border-bottom-color: rgb(29, 27, 27); }
 .social-links svg { flex: 0 0 auto; }
 .social-separator { color: var(--gray-alpha-500); }
 
@@ -359,6 +361,8 @@ a { color: inherit; }
   width: 100%;
   gap: 12px;
   align-items: center;
+  font-size: 13px;
+  line-height: 18px;
   white-space: nowrap;
 }
 
@@ -499,12 +503,15 @@ a { color: inherit; }
 /* 首页用留白而非重复横线区分文章；较轻的标题字重与暖纸背景更协调。 */
 .home .writing-list { border-top: 0; }
 .home .writing-row { border-bottom: 0; }
+.home .writing-row:hover { background: transparent; }
 .home .writing-copy strong {
   width: auto;
   justify-self: start;
   color: rgb(139, 69, 19);
   font-family: var(--title-serif);
+  font-size: 16px;
   font-weight: 400;
+  line-height: 24px;
   text-decoration-color: transparent;
   text-decoration-line: underline;
   text-decoration-style: solid;
@@ -514,6 +521,16 @@ a { color: inherit; }
 }
 
 .home .writing-copy strong:hover { text-decoration-color: rgb(139, 69, 19); }
+
+/* 首页可选摘要来自 Markdown Front Matter 的 description；没有字段时不生成元素。 */
+.home .writing-copy > span {
+  color: rgb(136, 136, 136);
+  font-family: var(--title-serif);
+  font-size: 14.4px;
+  hyphens: auto;
+  line-height: 24.48px;
+  text-align: justify;
+}
 
 /* 悬浮时箭头向右移动，提示整行可以点击。 */
 .writing-row:hover .row-arrow {

@@ -24,6 +24,8 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.match(html, /class="social-links"/);
   assert.match(html, /aria-label="X 个人主页"/);
   assert.match(html, /aria-label="GitHub 个人主页"/);
+  assert.match(html, />Residualsun<\/span>/);
+  assert.match(html, />Guozheng Huang<\/span>/);
   assert.match(html, /你好，我是 Huang。我在探索 AI、人文、艺术/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
@@ -37,7 +39,9 @@ test("首页按项目、提示词、写作、阅读顺序展示四个栏目", as
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
   assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 0);
-  assert.doesNotMatch(promptSection, /让 AI 同时以解释者、质疑者和实践者的视角/);
+  assert.match(promptSection, /让 AI 同时以解释者、质疑者和实践者的视角/);
+  assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
+  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 0);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
@@ -103,6 +107,7 @@ test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.section-heading \.section-kicker::after \{/);
   assert.match(css, /background: var\(--gray-alpha-400\)/);
+  assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 13px/);
 });
 
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {
@@ -168,8 +173,21 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-row \{ border-bottom: 0; \}/);
   assert.match(css, /--title-serif: "Libre Baskerville"/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 400/);
   assert.match(css, /\.home \.writing-copy strong:hover \{ text-decoration-color: rgb\(139, 69, 19\); \}/);
+  assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: rgb\(136, 136, 136\)/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 14\.4px/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 24\.48px/);
+});
+
+test("社交入口使用指定的默认与悬浮颜色", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /\.social-links \{[\s\S]*?color: rgb\(79, 77, 74\)/);
+  assert.match(css, /border-bottom: 1px solid rgb\(197, 193, 187\)/);
+  assert.match(css, /\.social-links a:hover \{ color: rgb\(29, 27, 27\); \}/);
+  assert.match(css, /\.social-links a:hover span \{ border-bottom-color: rgb\(29, 27, 27\); \}/);
 });
 
 test("Markdown 无序与有序列表支持多层缩进", () => {
