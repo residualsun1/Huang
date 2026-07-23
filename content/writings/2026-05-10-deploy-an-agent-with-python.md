@@ -40,7 +40,7 @@ Agent 的搭建过程并不十分困难，需要满足的条件如下：
 正式开始以前，让我们先明确搭建 Agent 的具体需求。
 
 * 可以回应用户的问题：
- > 你好，请帮我查询一下今天北京的天气，然后根据天气推荐一个合适的旅游景点。
+  > 你好，请帮我查询一下今天北京的天气，然后根据天气推荐一个合适的旅游景点。
 * 根据问题，Agent 需要先调用天气查询工具，查询天气状况，以此作为下一步的依据。
 * 在下一轮循环中，Agent 调用景点推荐工具，最终提出建议。
 
@@ -365,7 +365,7 @@ class OpenAICompatibleClient:
 
 Tavily 注册过后每人都可以生成自己的 API，不过 LLM 部分会因选择的产商的不同而不同——要选择支持 OpenAI API 接口规范的。
 
-和教程不同，我过去在 [Deepseek API](https://platform.deepseek.com/api_keys) 中充值过 10 元，因此选择了 Deepseek。如果你也选择了 Deepseek，但不知道其 API 的具体调用信息，可以参考[此处](https://api-docs.deepseek.com/zh-cn/)。
+和教程不同，我过去在 [DeepSeek API](https://platform.deepseek.com/api_keys) 中充值过 10 元，因此选择了 DeepSeek。如果你也选择了 DeepSeek，但不知道其 API 的具体调用信息，可以参考[此处](https://api-docs.deepseek.com/zh-cn/)。
 
 ```Python
 import re

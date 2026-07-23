@@ -207,17 +207,21 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(prompt, /class="prompt-content" data-copy-source>请分析这段材料。\n保留关键证据。/);
   assert.match(prompt, /class="inline-prompt-copy-btn" title="Copy prompt"/);
   assert.match(legacyPrompt, /class="prompt-block"/);
+  assert.match(prompt, /<span>Prompt<\/span>/);
   assert.match(react, /class="prompt-block react-block"/);
-  assert.match(react, /<span>REACT<\/span>/);
+  assert.match(react, /<span>React<\/span>/);
   assert.match(legacyReact, /class="prompt-block react-block"/);
   assert.doesNotMatch(prompt, /class="language-prompt"/);
   assert.doesNotMatch(react, /class="language-react"/);
   assert.match(gptReact, /chatgpt-icon\.svg/);
-  assert.match(gptReact, /class="prompt-model-label">GPT<\/span>/);
+  assert.match(gptReact, /<span>GPT<\/span>/);
+  assert.doesNotMatch(gptReact, />REACT<|>React<|prompt-model-label/);
   assert.match(claudeReact, /claude-ai-icon\.svg/);
-  assert.match(claudeReact, /class="prompt-model-label">Claude<\/span>/);
+  assert.match(claudeReact, /<span>Claude<\/span>/);
+  assert.doesNotMatch(claudeReact, />REACT<|>React<|prompt-model-label/);
   assert.match(geminiReact, /google-gemini-icon\.svg/);
-  assert.match(geminiReact, /class="prompt-model-label">Gemini<\/span>/);
+  assert.match(geminiReact, /<span>Gemini<\/span>/);
+  assert.doesNotMatch(geminiReact, />REACT<|>React<|prompt-model-label/);
   assert.doesNotMatch(react, /class="prompt-model-icon"/);
   assert.match(css, /--codex-ui-font:/);
   assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--codex-ui-font\)/);
@@ -325,8 +329,13 @@ test("正文引用与文末脚注编号均使用方括号", () => {
 
 test("正文目录字号在原有基础上增加约 1 至 2 像素", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const agent = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
   assert.match(css, /\.article-toc > p \{[\s\S]*?font-size: 14\.5px/);
   assert.match(css, /\.article-toc a \{[\s\S]*?font-size: 13\.5px/);
+  assert.match(css, /\.article-toc \{[\s\S]*?overflow-y: auto/);
+  assert.match(css, /\.article-toc \{[\s\S]*?max-height: calc\(100vh - 120px\)/);
+  assert.match(css, /\.article-toc \{[\s\S]*?overscroll-behavior-y: contain/);
+  assert.match(agent, /class="article-toc" aria-label="文章目录" tabindex="0"/);
 });
 
 test("正文英文字母与数字使用 Times New Roman，标题和代码保持原有字体", async () => {

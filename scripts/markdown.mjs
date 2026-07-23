@@ -216,7 +216,7 @@ function parseFenceInfo(value) {
 
   // prompt 是独立的内容组件；同时兼容旧文章已经写下的中文“提示词”围栏。
   if (normalized === "prompt" || language === "提示词") {
-    return { kind: "prompt", language: "", label: label || "PROMPT" };
+    return { kind: "prompt", language: "", label: label || "Prompt" };
   }
 
   // React 用于展示 AI 的回应；中文“回应”作为迁移内容的兼容别名。
@@ -232,7 +232,7 @@ function parseFenceInfo(value) {
     return {
       kind: "react",
       language: "",
-      label: model ? "REACT" : (label || "REACT"),
+      label: model ? "" : (label || "React"),
       model,
     };
   }
@@ -374,15 +374,16 @@ function renderDialogueMark(kind, model = "") {
 }
 
 function renderDialogueBlock(content, kind = "prompt", label = "", model = "") {
-  const visibleLabel = label || (kind === "react" ? "REACT" : "PROMPT");
-  const variantClass = kind === "react" ? " react-block" : "";
   const modelConfig = dialogueModels[model];
-  const modelLabel = modelConfig
-    ? `<span class="prompt-model-label">${escapeHtml(modelConfig.label)}</span>`
-    : "";
+  const defaultLabel = kind === "react" ? "React" : "Prompt";
+  const normalizedLabel = label.toLocaleLowerCase() === defaultLabel.toLocaleLowerCase()
+    ? defaultLabel
+    : label;
+  const visibleLabel = modelConfig?.label || normalizedLabel || defaultLabel;
+  const variantClass = kind === "react" ? " react-block" : "";
   return `<section class="prompt-block${variantClass}" aria-label="${escapeAttribute(visibleLabel)}">
     <div class="prompt-toolbar">
-      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true">${renderDialogueMark(kind, model)}</span><span>${escapeHtml(visibleLabel)}</span>${modelLabel}</div>
+      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true">${renderDialogueMark(kind, model)}</span><span>${escapeHtml(visibleLabel)}</span></div>
       ${renderCopyButton()}
     </div>
     <div class="prompt-content" data-copy-source>${escapeHtml(content)}</div>

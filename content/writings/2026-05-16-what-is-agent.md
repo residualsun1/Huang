@@ -23,7 +23,7 @@ description: "今天是 Agent 这样的概念，明天又会冒出一个怎样�
 
 ## 智能体（Agent）
 
-我们在[前面](https://guozheng.rbind.io/project/deploy-an-agent-with-python/)动手搭建了一个可以运行的智能体（Agent），它通过调用 wttr.in、Tavily 以及 Deepseek 的 API，进而逐步实现天气查询、旅游景点推荐以及根据需求调用 LLM 的功能。
+我们在[前面](https://guozheng.rbind.io/project/deploy-an-agent-with-python/)动手搭建了一个可以运行的智能体（Agent），它通过调用 wttr.in、Tavily 以及 DeepSeek 的 API，进而逐步实现天气查询、旅游景点推荐以及根据需求调用 LLM 的功能。
 
 基于前面的实战，让我们尝试从概念层次来理解什么是智能体。在概念的基础上，我们还会从智能体的基本要素、分类、历史和发展，以及 Agent 与 AI、LLM 等概念的比较来深化认识。
 

@@ -49,21 +49,21 @@ unexpected status 401 Unauthorized: Missing bearer or basic authentication in he
 
 按照 GPT 的这一指示，Codex 终于显示选择账号登录的界面。使用谷歌账号登录以后，我再次与 Codex 交互，第一次还有「Reconnecting」，但已经开始回应。
 
-```提示词
+```Prompt
 你好！
 ```
 
-```回应
+```React lable-GPT
 你好！我在这儿。需要我帮你看这个项目、改代码、跑检查，还是先聊聊思路都行。
 ```
 
 第二次再次交互，则不再有「Reconnecting」，而是直接反馈内容。
 
-```提示词
+```Prompt
 为什么我给你发送信息后，你需要「正在重新思考 1/5」……然后有五次，可以改善这一情况吗？
 ```
 
-```回应
+```React lable-GPT
 这是 Codex 桌面端在后台做“恢复/续跑”的机制：当一次回复里要调用工具、读项目、跑命令，或者上下文被整理时，系统可能会分阶段重新调度模型，所以你会看到类似「正在重新思考 1/5」的状态。它不一定表示我真的卡住了五次，更像是客户端把后台尝试次数显示出来了。
 
 我这边能改善的部分主要是：
@@ -78,11 +78,11 @@ unexpected status 401 Unauthorized: Missing bearer or basic authentication in he
 
 问题终于解决了。不过我没有百分百的把握确定问题的唯一肇因，只能尽量复现解决问题的过程，为后续出现可能出现相似的情况提供参考。
 
-```提示词
+```Prompt
 现在已经没有这个问题出现了。我一开始遇到的问题是一直显示「正在重新思考 1/5」，最后显示「stream disconnected before completion: error sending request for url (http://127.0.0.1:18100/responses」，我做了许多尝试都失败。最后我直接删除 config.toml 内的配置，再打开你，这里开始显示我要用 GPT 账号登录，登录后我终于得到你的响应了。
 ```
 
-```回应
+```React lable-GPT
 听起来你把关键点找到了：之前不是你消息的问题，而是本地 Codex 客户端试图连 `http://127.0.0.1:18100/responses` 这个本地服务/代理接口时断流了，所以一直进入「正在重新思考 1/5」的重试循环。删除 `config.toml` 后，它回到默认登录流程，用 GPT 账号重新认证，于是请求链路恢复了。
 
 这通常说明旧配置里可能有一项指向了失效的本地 endpoint、代理、模型提供方、认证 token，或某个 experimental/local server 设置。你现在这个做法相当于“重置客户端配置”，是很合理的修复路径。

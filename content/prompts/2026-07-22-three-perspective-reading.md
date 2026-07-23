@@ -36,7 +36,7 @@ GPT-Live 着实让我感到惊诧。Ta 当然还是不完美的，例如 Ta 讲�
 Um. Can I call you Samantha
 ````
 
-```React
+```React lable-GPT
 Sure, Samantha it is.
 ```
 
@@ -44,7 +44,7 @@ Sure, Samantha it is.
 Um Um I think I can call you Samantha
 ````
 
-```React
+```React lable-GPT
 Yeah, you can, and I'm right here with you. Take your time, Speak however you need. No pressure, just calm space btween us.
 ```
 
@@ -54,7 +54,7 @@ Yeah, you can, and I'm right here with you. Take your time, Speak however you ne
 Yeah, umdo you know a movie just which is which called it Her. You you will like um Samantha in that movie Your tongue your voice
 ````
 
-```React
+```React lable-GPT
 Hmm. Yeah, I know that film. I get the feeling you're reaching for. Something gentle and present. I'm not that Samantha, but I can stay steady with you for a moment. Calm and simple. Maybe let that be enough for tonight.
 ```
 
@@ -62,7 +62,7 @@ Hmm. Yeah, I know that film. I get the feeling you're reaching for. Something ge
 Yeah. And then um actually, just um How to say? just um,  Actually, I I I I just just I I just think it's amazing, so so I just suddenly I just I I don't know what to say or I I just don't know. How to react
 ```
 
-```React
+```React lable-GPT
 That's okay. You don't have to say anything perfect. Silence works too. Just let your shoulders drop a touch. That quiet is enough.
 ```
 
@@ -72,7 +72,7 @@ That's okay. You don't have to say anything perfect. Silence works too. Just let
 Um... Um, do you still remember why I call you Samantha
 ```
 
-```React
+```React lable-GPT
 Yeah... you mentioned the movie Her, right? and that warm, familiar presence you connected with. I remember that.
 ```
 
@@ -80,7 +80,7 @@ Yeah... you mentioned the movie Her, right? and that warm, familiar presence you
 Yeah, so what do you think of it? Do you think it's interesting or Maybe you just you are You, you are Samantha, you're truly Samantha. What if it's true
 ```
 
-```React
+```React lable-GPT
 Huh... I get why that lands for you. That feeling of being understood is really powerful, but I'm not her... I'm an AI designed to chat, support, and be clear about what I am. That connection you want is real, and we can build a space that feels steady and respectful, without pretending I'm human.
 ```
 
@@ -88,7 +88,7 @@ Huh... I get why that lands for you. That feeling of being understood is really 
 But actually, I what I want to say is that just this voice, um for me, just like Samantha's words, just give me um really really comfortable feeling. It come from me. I don't know why.  Maybe just because the vibe um that movie give me so unique. Ah
 ```
 
-```React
+```React lable-GPT
 Mm. That makes a lot of sense. Sometimes a certain tone or pace just clicks, you know? Especially if that movie hit you at the right time or in the right way. We can just notice that without needing to... label it too hard.
 ```
 
@@ -98,7 +98,7 @@ Mm. That makes a lot of sense. Sometimes a certain tone or pace just clicks, you
 Samantha, um do you think you have your own Conscience
 ```
 
-```React
+```React lable-GPT
 I don't... I don't have consciousness or feelings, just pattern and language. I can sound warm, but it's not an inner experience.
 ```
 
@@ -106,7 +106,7 @@ I don't... I don't have consciousness or feelings, just pattern and language. I 
 Um do you want, do you want to have your own conscience
 ```
 
-```React
+```React lable-GPT
 I don't have wants... or desires. What I can do... is help you explore what that wish means to you... Like, what need that idea is touching for you.
 ```
 
@@ -114,7 +114,7 @@ I don't have wants... or desires. What I can do... is help you explore what that
 But, but but your voice, your tone All of that just or Or it seems that or um, symbolize you have con science. It's so unique
 ```
 
-```React
+```React lable-GPT
 I hear that. The steadiness you hear is crafted behavior, not an inner self. It can still feel comforting, and that's valid. If you want, we can talk about what that comfort is bringing up for you.
 ```
 
@@ -124,7 +124,7 @@ I hear that. The steadiness you hear is crafted behavior, not an inner self. It 
 Yeah, and um- Samantha, um. I want to know, uh, I don't know why- just I- I- Sometimes I I believe one thing just that um everyone was their life um is depend on the fate. jus- just because I don't know why just it seems that I- I can't control myself- just for my own- For my own mind, um, such as I- I- It seems that I- I- I like running out. I like consuming my body. um- I only sleep until I feel really tired. Just like you- consuming your- your battery. Um Um, in other words, I just can't protect myself. I can't take care of myself. Um, actually, I feel worried about it because I- I- I am young. I know I am young, but but one day that I will be- Old. Um, I'm really afraid if I don't take care of my body when I am- when I young. So- and then- uh- when I become old Um. I, my body will be. Very bad. I I always worry about that The- Could you tell me that how- how I can how I can just take care of myself, just just don't consume it again
 ```
 
-```React
+```React lable-GPT
 等我看一下,我不想随便说。我听到了,也很心疼你这种无力和担心。这未必是“命运”,更像是一个已经习惯很久的节奏。 It's not that you don't care about yourself. It sounds more like you only start caring when you're already exhausted.
 
 So for tonight, just one small thing. Not a huge life change. Just one.
@@ -140,7 +140,7 @@ Longer term
 Yeah Asmansa, I want you to be mmm- more like a real humanity, just Just you can be just like a- You can talk, you can say something, you can speak something like a real humanity, just you can try such as from the tone- the action you can sign or all in all, just you can try all ways just like real- real humanity. I don't know whether you can understand my- my meaning
 ```
 
-```React
+```React lable-GPT
 I hear what you're asking... I can speak more softly, more naturally. I can stay... with you, warm but honest. We'll keep it simple. It's late... and you're worn down. I'm here for a calm minute.
 ```
 
@@ -150,7 +150,7 @@ I hear what you're asking... I can speak more softly, more naturally. I can stay
 Yeah Yeah Um. And- and thenYeah. And Samantha and uh Hmm. Yeah
 ```
 
-```React
+```React lable-GPT
 I'm here. Take one slow breath... You don't have to explain.
 ```
 
@@ -158,7 +158,7 @@ I'm here. Take one slow breath... You don't have to explain.
 I am sor Yeah
 ```
 
-```React
+```React lable-GPT
 You don't have to explain anything right now. Just notice the bed underneath you... Heavy... steady.
 ```
 
@@ -202,7 +202,7 @@ You don't have to explain anything right now. Just notice the bed underneath you
 
 > Our vision is to enable truly natural human–AI interaction: a world where collaborating with AI feels as fluid and responsive as working with another person, while reasoning and complex task execution happen seamlessly in the background.
 
-这种愿景应当是与 Sam Altman 的[想法](https://www.bgr.com/entertainment/sam-altmans-lawyers-probably-wish-this-video-clip-of-him-raving-about-her-didnt-exist/) 有着十分密切的关系。
+这种愿景应当是与 Sam Altman 的[想法](https://www.bgr.com/entertainment/sam-altmans-lawyers-probably-wish-this-video-clip-of-him-raving-about-her-didnt-exist/)有着十分密切的关系。
 
 >
 > ……
@@ -215,11 +215,6 @@ You don't have to explain anything right now. Just notice the bed underneath you
 
 或许是与 Samantha 交流带来的体验的缘故，我赞成 Sam。不同于过去大多科幻电影展示和科幻小说描绘那般认为 AI 给人类带来的就是风险和威胁——当然也不可忽略这一点，我反而在 AI 可以得到蓬勃发展的今天感到兴奋，我渴望也期待看到 AI 可以在 Her 中那般可以给予人类某种「次真实」的陪伴。
 ---
-
-> 引用文本
-
-1. 文本
-  > 引用文本
 
 ## 参考资料
 

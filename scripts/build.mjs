@@ -384,7 +384,7 @@ function createTableOfContents(html) {
   }));
   if (headings.length < 2) return "";
 
-  return `<aside class="article-toc" aria-label="文章目录">
+  return `<aside class="article-toc" aria-label="文章目录" tabindex="0">
     <p>本文目录</p>
     <ol>${headings.map((heading) => `<li class="toc-level-${heading.level}"><a href="#${heading.id}">${heading.label}</a></li>`).join("")}</ol>
   </aside>`;

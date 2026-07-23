@@ -693,14 +693,32 @@ a { color: inherit; }
 /* 正文主列：写作文章的上一篇/下一篇卡片放在这里，与正文精确对齐。 */
 .article-main { min-width: 0; }
 
-/* 文章目录固定在视口内，滚动长文时仍可跳转章节。 */
+/* 文章目录固定在视口内；目录过长时鼠标滚轮只滚动目录本身。 */
 .article-toc {
   position: sticky;
   top: 96px;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
   margin-top: 64px;
-  padding-left: 16px;
+  padding: 0 8px 8px 16px;
   border-left: 1px solid var(--gray-alpha-400);
   font-family: var(--body-reading);
+  overscroll-behavior-y: contain;
+  scrollbar-color: var(--gray-alpha-400) transparent;
+  scrollbar-width: thin;
+}
+
+.article-toc:focus-visible {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  outline: 1px solid var(--gray-alpha-400);
+  outline-offset: 4px;
+}
+
+.article-toc::-webkit-scrollbar { width: 5px; }
+.article-toc::-webkit-scrollbar-track { background: transparent; }
+.article-toc::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--gray-alpha-400);
 }
 
 .article-toc > p {
@@ -985,22 +1003,12 @@ a { color: inherit; }
 
 .prompt-mark svg { display: block; }
 
-/* 模型图标和标签只在 React 指定 GPT、Claude 或 Gemini 时显示。 */
+/* 模型图标只在 React 指定 GPT、Claude 或 Gemini 时显示。 */
 .prompt-model-icon {
   display: block;
   width: 17px;
   height: 17px;
   object-fit: contain;
-}
-
-.prompt-model-label {
-  margin-left: -3px;
-  padding-left: 9px;
-  border-left: 1px solid var(--gray-alpha-400);
-  color: var(--gray-700);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.025em;
 }
 
 /* Prompt / React 正文使用接近 Codex 的无衬线 UI 字体，并保留输入段落与换行。 */
