@@ -269,8 +269,8 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?transition: text-decoration-color 0\.2s ease/);
-  assert.match(css, /\.home \.writing-copy strong:hover \{ text-decoration-color: rgb\(139, 69, 19\); \}/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
+  assert.match(css, /\.home \.writing-copy strong:hover \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: rgb\(119, 115, 110\)/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 14\.4px/);
@@ -335,6 +335,8 @@ test("正文目录字号在原有基础上增加约 1 至 2 像素", async () =>
   assert.match(css, /\.article-toc \{[\s\S]*?overflow-y: auto/);
   assert.match(css, /\.article-toc \{[\s\S]*?max-height: calc\(100vh - 120px\)/);
   assert.match(css, /\.article-toc \{[\s\S]*?overscroll-behavior-y: contain/);
+  assert.match(css, /\.article-toc \{[\s\S]*?scrollbar-width: none/);
+  assert.match(css, /\.article-toc::-webkit-scrollbar \{ display: none; \}/);
   assert.match(agent, /class="article-toc" aria-label="文章目录" tabindex="0"/);
 });
 

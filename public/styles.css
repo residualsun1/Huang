@@ -488,10 +488,13 @@ a { color: inherit; }
   text-decoration-style: solid;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
-  transition: text-decoration-color 0.2s ease;
+  transition: text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
 }
 
-.home .writing-copy strong:hover { text-decoration-color: rgb(139, 69, 19); }
+.home .writing-copy strong:hover {
+  text-decoration-color: rgb(139, 69, 19);
+  text-decoration-thickness: 1.5px;
+}
 
 /* 首页可选摘要来自 Markdown Front Matter 的 description；没有字段时不生成元素。 */
 .home .writing-copy > span {
@@ -704,8 +707,7 @@ a { color: inherit; }
   border-left: 1px solid var(--gray-alpha-400);
   font-family: var(--body-reading);
   overscroll-behavior-y: contain;
-  scrollbar-color: var(--gray-alpha-400) transparent;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 
 .article-toc:focus-visible {
@@ -714,12 +716,8 @@ a { color: inherit; }
   outline-offset: 4px;
 }
 
-.article-toc::-webkit-scrollbar { width: 5px; }
-.article-toc::-webkit-scrollbar-track { background: transparent; }
-.article-toc::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: var(--gray-alpha-400);
-}
+/* 隐藏目录滚动条，但保留鼠标滚轮、触控板和键盘滚动。 */
+.article-toc::-webkit-scrollbar { display: none; }
 
 .article-toc > p {
   margin: 0 0 12px;
