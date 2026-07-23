@@ -409,7 +409,8 @@ function detailPage(entry, previousEntry, nextEntry) {
       </div>
     </main>
     ${siteFooter()}
-    <script defer src="/code-blocks.js"></script>`,
+    <script defer src="/code-blocks.js"></script>
+    <script defer src="/toc.js"></script>`,
   });
 }
 

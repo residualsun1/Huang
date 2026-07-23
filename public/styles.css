@@ -26,6 +26,26 @@
   --background-100: #f3f1ed;
   --background-200: rgba(29, 27, 27, 0.035);
   --surface-raised: rgba(250, 248, 244, 0.76);
+  /*
+   * 全站共用的纸张表面：
+   * 两层柔和光晕负责自然光照，一层极淡斜纹负责纸张颗粒。
+   */
+  --paper-surface:
+    radial-gradient(
+      circle at 13% 7%,
+      rgba(255, 255, 255, 0.58),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(220, 205, 183, 0.24),
+      transparent 27%
+    ),
+    linear-gradient(
+      115deg,
+      rgba(121, 98, 71, 0.025) 25%,
+      transparent 25%
+    ) 0 0 / 8px 8px;
 
   /* 从深到浅的正文、说明文字和弱化文字颜色。 */
   --gray-1000: #1d1b1b;
@@ -110,23 +130,7 @@ body {
    * 第三层 8px 斜向纹理提供极轻的纸张颗粒感；
    * 最后一层保留站点原有的复古暖灰底色。
    */
-  background:
-    radial-gradient(
-      circle at 13% 7%,
-      rgba(255, 255, 255, 0.58),
-      transparent 25%
-    ),
-    radial-gradient(
-      circle at 88% 18%,
-      rgba(220, 205, 183, 0.24),
-      transparent 27%
-    ),
-    linear-gradient(
-      115deg,
-      rgba(121, 98, 71, 0.025) 25%,
-      transparent 25%
-    ) 0 0 / 8px 8px,
-    var(--background-100);
+  background: var(--paper-surface), var(--background-100);
   color: var(--gray-1000);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
@@ -150,12 +154,12 @@ body {
 /* 链接默认继承父元素颜色，具体样式由各组件定义。 */
 a { color: inherit; }
 
-/* 顶部导航：滚动时固定，背景直接沿用页面主底色。 */
+/* 顶部导航：滚动时固定，并复用全站纸张光晕与斜纹；不使用真实模糊滤镜。 */
 .site-header {
   position: sticky;
   z-index: 20;
   top: 0;
-  background: var(--background-100);
+  background: var(--paper-surface), var(--background-100);
   backdrop-filter: none;
 }
 
@@ -864,10 +868,14 @@ a { color: inherit; }
   line-height: 20px;
   text-decoration: none;
   text-overflow: ellipsis;
+  transition: color 160ms ease;
   white-space: nowrap;
 }
 
-.article-toc a:hover { color: var(--gray-1000); }
+.article-toc a:hover,
+.article-toc a[aria-current="location"] {
+  color: var(--gray-1000);
+}
 
 /* Markdown 正文基础排版：字体、字号、行距和上下留白。 */
 .prose {

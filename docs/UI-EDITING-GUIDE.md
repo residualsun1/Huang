@@ -10,6 +10,7 @@
 | `scripts/build.mjs` | HTML 页面结构和组件模板 | 调整导航栏目、增加区块、改变卡片或文章页面的 DOM 结构 |
 | `scripts/markdown.mjs` | Markdown 转 HTML | 多级列表、代码高亮、Hugo 短代码与其他文章格式 |
 | `public/code-blocks.js` | 正文代码块交互 | 复制按钮及本地 HTTP 兼容逻辑 |
+| `public/toc.js` | 正文目录交互 | 根据页面滚动位置高亮当前章节，并让长目录跟随当前项滚动 |
 | `public/images/` | 正文需要随站点发布的图片目录（需要时创建） | 添加文章图片素材 |
 | `docs/DESIGN-SYSTEM.md` | 当前视觉规范 | 查看颜色、字体和布局原则，不直接影响页面显示 |
 
@@ -20,7 +21,7 @@
 
 ## CSS 中最常调整的位置
 
-1. 修改全站背景色：搜索 `--background-100`。
+1. 修改全站背景色：搜索 `--background-100`；修改正文与页眉共用的纸张光晕和斜纹时搜索 `--paper-surface`。
 2. 修改全站最大宽度：搜索 `--page-width`。
 3. 修改文章正文宽度：搜索 `--article-width`。
 4. 修改首页简介：搜索 `.hero-intro`。
@@ -34,7 +35,8 @@
 12. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
 13. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
 14. 修改四个内容栏目的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
-15. 修改手机样式：搜索 `@media (max-width: 600px)`。
+15. 修改目录当前章节颜色：搜索 `.article-toc a[aria-current="location"]`；修改滚动定位逻辑则编辑 `public/toc.js`。
+16. 修改手机样式：搜索 `@media (max-width: 600px)`。
 
 ## 修改后的预览方法
 

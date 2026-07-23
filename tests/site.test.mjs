@@ -219,13 +219,14 @@ test("全站使用柔和光晕与细微纸张纹理背景", async () => {
 
   assert.match(
     css,
-    /body \{[\s\S]*?radial-gradient\([\s\S]*?circle at 13% 7%[\s\S]*?radial-gradient\([\s\S]*?circle at 88% 18%/,
+    /--paper-surface:[\s\S]*?radial-gradient\([\s\S]*?circle at 13% 7%[\s\S]*?radial-gradient\([\s\S]*?circle at 88% 18%/,
   );
   assert.match(
     css,
-    /linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(121, 98, 71, 0\.025\)[\s\S]*?\) 0 0 \/ 8px 8px/,
+    /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(121, 98, 71, 0\.025\)[\s\S]*?\) 0 0 \/ 8px 8px/,
   );
-  assert.match(css, /body \{[\s\S]*?var\(--background-100\)/);
+  assert.match(css, /body \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
+  assert.match(css, /\.site-header \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
 });
 
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {
@@ -413,9 +414,10 @@ test("正文引用与文末脚注编号均使用方括号", () => {
   assert.doesNotMatch(html, /<a[^>]*>1<\/a><\/sup>/);
 });
 
-test("正文目录字号在原有基础上增加约 1 至 2 像素", async () => {
+test("正文目录可独立滚动并随当前章节自动高亮", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const agent = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
+  const tocScript = await readFile(new URL("toc.js", root), "utf8");
   assert.match(css, /\.article-toc > p \{[\s\S]*?font-size: 14\.5px/);
   assert.match(css, /\.article-toc a \{[\s\S]*?font-size: 13\.5px/);
   assert.match(css, /\.article-toc \{[\s\S]*?overflow-y: auto/);
@@ -423,7 +425,12 @@ test("正文目录字号在原有基础上增加约 1 至 2 像素", async () =>
   assert.match(css, /\.article-toc \{[\s\S]*?overscroll-behavior-y: contain/);
   assert.match(css, /\.article-toc \{[\s\S]*?scrollbar-width: none/);
   assert.match(css, /\.article-toc::-webkit-scrollbar \{ display: none; \}/);
+  assert.match(css, /\.article-toc a:hover,[\s\S]*?\.article-toc a\[aria-current="location"\][\s\S]*?color: var\(--gray-1000\)/);
   assert.match(agent, /class="article-toc" aria-label="文章目录" tabindex="0"/);
+  assert.match(agent, /src="\/toc\.js"/);
+  assert.match(tocScript, /setAttribute\("aria-current", "location"\)/);
+  assert.match(tocScript, /getBoundingClientRect\(\)\.top <= readingLine/);
+  assert.match(tocScript, /window\.requestAnimationFrame\(updateActiveHeading\)/);
 });
 
 test("正文英文字母与数字使用 Times New Roman，标题和代码保持原有字体", async () => {
@@ -443,7 +450,7 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const headerRule = css.match(/\.site-header \{([\s\S]*?)\}/)?.[1] ?? "";
   assert.doesNotMatch(headerRule, /border-bottom/);
-  assert.match(headerRule, /background: var\(--background-100\)/);
+  assert.match(headerRule, /background: var\(--paper-surface\), var\(--background-100\)/);
   assert.match(headerRule, /backdrop-filter: none/);
   assert.doesNotMatch(css, /\.site-footer \{[\s\S]*?border-top/);
   assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me"[\s\S]*?<svg width="14" height="14"[\s\S]*?<span>Residualsun@proton\.me<\/span>/);
