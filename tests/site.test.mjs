@@ -43,7 +43,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
   assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 1);
-  assert.match(promptSection, /让 AI 同时以解释者、质疑者和实践者的视角/);
+  assert.match(promptSection, /每一次对话，既是用户在了解大模型，也是大模型在了解用户/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 5);
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
@@ -62,7 +62,7 @@ test("写作、Prompt 和阅读归档页可访问", async () => {
   assert.ok((writings.match(/class="writing-row"/g) ?? []).length >= 5);
   assert.match(prompts, /02 \/ Prompt/);
   assert.match(prompts, /<h1>Prompt<\/h1>/);
-  assert.match(prompts, /three-perspective-reading/);
+  assert.match(prompts, /GPT-Live-Samantha/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.match(readings, /we-have-never-been-modern/);
 });
@@ -93,15 +93,16 @@ test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
   assert.match(agent, /src="\/code-blocks\.js"/);
 });
 
-test("正文和引用使用独立的中文阅读字体", async () => {
+test("正文英数与中文正文、引用分别使用对应的阅读字体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
-  const prompt = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
+  const prompt = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
   const reading = await readFile(new URL("readings/we-have-never-been-modern/index.html", root), "utf8");
   assert.match(css, /--source-han-serif:/);
-  assert.match(css, /--kai:/);
-  assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--source-han-serif\)/);
-  assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--kai\)/);
+  assert.match(css, /--body-reading: "Times New Roman"/);
+  assert.match(css, /--body-kai: "Times New Roman"/);
+  assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--body-reading\)/);
+  assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--body-kai\)/);
   assert.doesNotMatch(css, /body\.detail-writings \{/);
   assert.match(css, /\.detail-editorial \.prose \{[\s\S]*?font-size: 15\.5px/);
   assert.match(css, /\.detail-editorial \.prose blockquote \{[\s\S]*?background: transparent/);
@@ -150,13 +151,13 @@ test("所有写作页面均不残留已知 Hugo 短代码", async () => {
   }
 });
 
-test("Prompt 代码块包含语言类并被安全转义", async () => {
-  const html = await readFile(new URL("prompts/three-perspective-reading/index.html", root), "utf8");
+test("文章代码块包含语言类并被安全转义", async () => {
+  const html = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
   assert.match(html, /class="code-toolbar"/);
-  assert.match(html, /class="toolbar-left"><span class="toolbar-label">文本<\/span><\/div>/);
+  assert.match(html, /class="toolbar-left"><span class="toolbar-label">和 Samantha 的核心共识记录<\/span><\/div>/);
   assert.match(html, /class="toolbar-right"><button class="inline-prompt-copy-btn" title="Copy prompt">[\s\S]*?<rect x="4" y="8" width="12" height="12" rx="2" ry="2"><\/rect>[\s\S]*?<path d="M8 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"><\/path>/);
-  assert.match(html, /<pre data-language="text"><code class="language-text" data-copy-source>/);
-  assert.match(html, /解释者/);
+  assert.match(html, /<pre data-language="fiodor"><code class="language-fiodor" data-copy-source>/);
+  assert.match(html, /称呼共识/);
 });
 
 test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", async () => {
@@ -196,6 +197,9 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   const prompt = renderMarkdown("```prompt\n请分析这段材料。\n保留关键证据。\n```").html;
   const legacyPrompt = renderMarkdown("```提示词\n你好！\n```").html;
   const react = renderMarkdown("```React\n这是 AI 的回应。\n```").html;
+  const gptReact = renderMarkdown("```React lable-GPT\n这是 GPT 的回应。\n```").html;
+  const claudeReact = renderMarkdown("```React label-Claude\n这是 Claude 的回应。\n```").html;
+  const geminiReact = renderMarkdown('```React model="Gemini"\n这是 Gemini 的回应。\n```').html;
   const legacyReact = renderMarkdown("```回应\n这是旧文章中的回应。\n```").html;
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(prompt, /class="prompt-block"/);
@@ -208,12 +212,27 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(legacyReact, /class="prompt-block react-block"/);
   assert.doesNotMatch(prompt, /class="language-prompt"/);
   assert.doesNotMatch(react, /class="language-react"/);
-  assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--code-font\)/);
+  assert.match(gptReact, /chatgpt-icon\.svg/);
+  assert.match(gptReact, /class="prompt-model-label">GPT<\/span>/);
+  assert.match(claudeReact, /claude-ai-icon\.svg/);
+  assert.match(claudeReact, /class="prompt-model-label">Claude<\/span>/);
+  assert.match(geminiReact, /google-gemini-icon\.svg/);
+  assert.match(geminiReact, /class="prompt-model-label">Gemini<\/span>/);
+  assert.doesNotMatch(react, /class="prompt-model-icon"/);
+  assert.match(css, /--codex-ui-font:/);
+  assert.match(css, /\.prompt-content \{[\s\S]*?font-family: var\(--codex-ui-font\)/);
   assert.match(css, /\.prompt-content \{[\s\S]*?white-space: pre-wrap/);
   assert.match(css, /\.prompt-content \{[\s\S]*?padding: 13px 20px 16px/);
   assert.match(css, /\.prompt-mark svg \{ display: block; \}/);
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
-  assert.match(css, /\.react-block \{[\s\S]*?background: rgba\(229, 224, 215, 0\.72\)/);
+  assert.match(css, /\.prompt-block \{[\s\S]*?background: rgba\(229, 224, 215, 0\.72\)/);
+  assert.match(css, /\.react-block \{[\s\S]*?background: rgba\(250, 248, 244, 0\.56\)/);
+});
+
+test("链接文字与普通正文中的 Markdown 斜体都能正常渲染", () => {
+  const { html } = renderMarkdown("这是 *普通斜体*，以及 [*Her*](https://example.com/her)。");
+  assert.match(html, /这是 <em>普通斜体<\/em>/);
+  assert.match(html, /<a href="https:\/\/example\.com\/her"[^>]*><em>Her<\/em><\/a>/);
 });
 
 test("普通段落与引用保留 Markdown 行末双空格换行", () => {
@@ -274,6 +293,13 @@ test("Markdown 无序与有序列表支持多层缩进", () => {
   assert.match(html, /<ul><li>Claude<ul><li>Web 网页<ol><li>Chrome<\/li><\/ol><\/li><\/ul><\/li><li>Codex<\/li><\/ul>/);
 });
 
+test("有序与无序列表项下方支持缩进引用", () => {
+  const ordered = renderMarkdown("1. 文本\n  > *引用文本*\n2. 后续").html;
+  const unordered = renderMarkdown("- 文本\n  > **引用文本**\n- 后续").html;
+  assert.match(ordered, /<ol><li>文本<blockquote><p><em>引用文本<\/em><\/p><\/blockquote><\/li><li>后续<\/li><\/ol>/);
+  assert.match(unordered, /<ul><li>文本<blockquote><p><strong>引用文本<\/strong><\/p><\/blockquote><\/li><li>后续<\/li><\/ul>/);
+});
+
 test("引用中的宽松有序列表保持连续编号", () => {
   const source = `> 1. **感知**：接收环境输入。
 >
@@ -301,6 +327,18 @@ test("正文目录字号在原有基础上增加约 1 至 2 像素", async () =>
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /\.article-toc > p \{[\s\S]*?font-size: 14\.5px/);
   assert.match(css, /\.article-toc a \{[\s\S]*?font-size: 13\.5px/);
+});
+
+test("正文英文字母与数字使用 Times New Roman，标题和代码保持原有字体", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  assert.match(css, /--body-reading: "Times New Roman"/);
+  assert.match(css, /--body-kai: "Times New Roman"/);
+  assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--body-reading\)/);
+  assert.match(css, /\.prose h1,[\s\S]*?\.prose h6 \{[\s\S]*?font-family: var\(--source-han-serif\)/);
+  assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--body-kai\)/);
+  assert.match(css, /\.article-toc \{[\s\S]*?font-family: var\(--body-reading\)/);
+  assert.match(css, /\.footnotes \{[\s\S]*?font-family: var\(--body-reading\)/);
+  assert.match(css, /\.prose code \{[\s\S]*?font-family: var\(--code-font\)/);
 });
 
 test("页眉页脚无分隔线且页脚显示邮箱", async () => {

@@ -91,6 +91,11 @@ function createInlineRenderer({ references, footnoteOrder }) {
       tokens.push(html);
       return token;
     };
+    const renderEmphasis = (content) => escapeHtml(content)
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+      .replace(/~~([^~]+)~~/g, "<del>$1</del>")
+      .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
 
     let source = String(value);
 
@@ -117,10 +122,10 @@ function createInlineRenderer({ references, footnoteOrder }) {
 
     const link = (label, url, title = "") => {
       const href = safeUrl(url);
-      if (!href) return escapeHtml(label);
+      if (!href) return renderEmphasis(label);
       const external = /^https?:\/\//i.test(url);
       const attributes = `${external ? ' target="_blank" rel="noreferrer"' : ""}${title ? ` title="${escapeAttribute(title)}"` : ""}`;
-      return store(`<a href="${href}"${attributes}>${escapeHtml(label)}</a>`);
+      return store(`<a href="${href}"${attributes}>${renderEmphasis(label)}</a>`);
     };
 
     source = source.replace(/\[([^\]]+)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)/g, (_, label, url, title) => link(label, url, title));
@@ -139,11 +144,7 @@ function createInlineRenderer({ references, footnoteOrder }) {
       return store(`<sup class="footnote-ref"><a id="fnref-${escapeAttribute(normalized)}" href="#fn-${escapeAttribute(normalized)}" aria-label="脚注 ${number}">[${number}]</a></sup>`);
     });
 
-    source = escapeHtml(source)
-      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/__([^_]+)__/g, "<strong>$1</strong>")
-      .replace(/~~([^~]+)~~/g, "<del>$1</del>")
-      .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
+    source = renderEmphasis(source);
 
     return source.replace(/\u0000INLINE(\d+)\u0000/g, (_, index) => tokens[Number(index)]);
   };
@@ -208,7 +209,7 @@ function parseFenceInfo(value) {
 
   const language = match[1];
   const metadata = (match[2] || "").trim();
-  const attribute = metadata.match(/^\{?\s*(?:label|title)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^}\s]+))\s*\}?$/i);
+  const attribute = metadata.match(/^\{?\s*(?:label|lable|title|model)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^}\s]+))\s*\}?$/i);
   const rawLabel = attribute ? (attribute[1] ?? attribute[2] ?? attribute[3] ?? "") : metadata;
   const label = rawLabel.trim().replace(/^(["'])|(["'])$/g, "");
   const normalized = normalizeLanguage(language);
@@ -220,7 +221,20 @@ function parseFenceInfo(value) {
 
   // React 用于展示 AI 的回应；中文“回应”作为迁移内容的兼容别名。
   if (normalized === "react" || language === "回应") {
-    return { kind: "react", language: "", label: label || "REACT" };
+    const shorthand = metadata.match(/^(?:label|lable|model)[-:]\s*(gpt|chatgpt|openai|claude|gemini)$/i);
+    const modelSource = shorthand?.[1] || (attribute ? label : "");
+    const modelKey = modelSource.toLocaleLowerCase();
+    const model = /^(?:gpt|chatgpt|openai)$/.test(modelKey)
+      ? "gpt"
+      : /^(?:claude|gemini)$/.test(modelKey)
+        ? modelKey
+        : "";
+    return {
+      kind: "react",
+      language: "",
+      label: model ? "REACT" : (label || "REACT"),
+      model,
+    };
   }
 
   // 单独的中文首词不是语法高亮语言，而是作者希望展示的工具栏标签。
@@ -333,24 +347,51 @@ function renderCopyButton() {
     </button>`;
 }
 
-function renderDialogueBlock(content, kind = "prompt", label = "") {
-  const visibleLabel = label || (kind === "react" ? "REACT" : "PROMPT");
-  const variantClass = kind === "react" ? " react-block" : "";
-  return `<section class="prompt-block${variantClass}" aria-label="${escapeAttribute(visibleLabel)}">
-    <div class="prompt-toolbar">
-      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+const dialogueModels = {
+  gpt: {
+    label: "GPT",
+    icon: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/chatgpt-icon.svg",
+  },
+  claude: {
+    label: "Claude",
+    icon: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/claude-ai-icon.svg",
+  },
+  gemini: {
+    label: "Gemini",
+    icon: "https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.svg",
+  },
+};
+
+function renderDialogueMark(kind, model = "") {
+  const modelConfig = kind === "react" ? dialogueModels[model] : null;
+  if (modelConfig) {
+    return `<img class="prompt-model-icon" src="${modelConfig.icon}" alt="" width="17" height="17" loading="lazy" decoding="async">`;
+  }
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="16 18 22 12 16 6"></polyline>
         <polyline points="8 6 2 12 8 18"></polyline>
-      </svg></span><span>${escapeHtml(visibleLabel)}</span></div>
+      </svg>`;
+}
+
+function renderDialogueBlock(content, kind = "prompt", label = "", model = "") {
+  const visibleLabel = label || (kind === "react" ? "REACT" : "PROMPT");
+  const variantClass = kind === "react" ? " react-block" : "";
+  const modelConfig = dialogueModels[model];
+  const modelLabel = modelConfig
+    ? `<span class="prompt-model-label">${escapeHtml(modelConfig.label)}</span>`
+    : "";
+  return `<section class="prompt-block${variantClass}" aria-label="${escapeAttribute(visibleLabel)}">
+    <div class="prompt-toolbar">
+      <div class="prompt-heading"><span class="prompt-mark" aria-hidden="true">${renderDialogueMark(kind, model)}</span><span>${escapeHtml(visibleLabel)}</span>${modelLabel}</div>
       ${renderCopyButton()}
     </div>
     <div class="prompt-content" data-copy-source>${escapeHtml(content)}</div>
   </section>`;
 }
 
-function renderFenceBlock(content, kind, language, label) {
+function renderFenceBlock(content, kind, language, label, model = "") {
   return kind === "prompt" || kind === "react"
-    ? renderDialogueBlock(content, kind, label)
+    ? renderDialogueBlock(content, kind, label, model)
     : renderCodeBlock(content, language, label);
 }
 
@@ -363,17 +404,7 @@ function joinParagraphLines(lines) {
   }).join("");
 }
 
-function renderList(lines, inlineMarkdown) {
-  const items = lines.map((line) => {
-    const match = line.match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
-    const ordered = /^\d/.test(match[2]);
-    return {
-      indent: match[1].replaceAll("\t", "  ").length,
-      type: ordered ? "ol" : "ul",
-      start: ordered ? Number.parseInt(match[2], 10) : null,
-      content: match[3],
-    };
-  });
+function renderList(lines, inlineMarkdown, context) {
   const stack = [];
   let html = "";
   const openList = (item) => item.type === "ol" && item.start !== 1
@@ -385,7 +416,36 @@ function renderList(lines, inlineMarkdown) {
     return `<li class="task-list-item"><input type="checkbox" disabled${task[1].toLocaleLowerCase() === "x" ? " checked" : ""}> ${inlineMarkdown(task[2])}`;
   };
 
-  for (const item of items) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const quote = lines[index].match(/^(\s{2,})>\s?(.*)$/);
+    if (quote) {
+      const quoteIndent = quote[1].replaceAll("\t", "  ").length;
+      while (stack.length > 1 && quoteIndent <= stack.at(-1).indent) {
+        const level = stack.pop();
+        html += `</li></${level.type}>`;
+      }
+
+      const quoteLines = [];
+      while (index < lines.length) {
+        const nestedQuote = lines[index].match(/^(\s{2,})>\s?(.*)$/);
+        if (!nestedQuote) break;
+        quoteLines.push(nestedQuote[2]);
+        index += 1;
+      }
+      index -= 1;
+      html += `<blockquote>${renderMarkdown(quoteLines.join("\n"), { ...context, appendFootnotes: false }).html}</blockquote>`;
+      continue;
+    }
+
+    const match = lines[index].match(/^(\s*)([-*+]|\d+[.)])\s+(.+)$/);
+    if (!match) continue;
+    const ordered = /^\d/.test(match[2]);
+    const item = {
+      indent: match[1].replaceAll("\t", "  ").length,
+      type: ordered ? "ol" : "ul",
+      start: ordered ? Number.parseInt(match[2], 10) : null,
+      content: match[3],
+    };
     if (!stack.length) {
       html += `${openList(item)}${itemHtml(item.content)}`;
       stack.push({ indent: item.indent, type: item.type });
@@ -469,6 +529,7 @@ export function renderMarkdown(markdown, options = {}) {
   let codeLanguage = "";
   let codeLabel = "";
   let codeKind = "code";
+  let codeModel = "";
 
   const flushParagraph = () => {
     if (paragraph.length) html.push(`<p>${inlineMarkdown(joinParagraphLines(paragraph))}</p>`);
@@ -490,16 +551,18 @@ export function renderMarkdown(markdown, options = {}) {
       flushAll();
       if (inCode) {
         const content = code.join("\n");
-        html.push(renderFenceBlock(content, codeKind, codeLanguage, codeLabel));
+        html.push(renderFenceBlock(content, codeKind, codeLanguage, codeLabel, codeModel));
         code = [];
         codeLanguage = "";
         codeLabel = "";
         codeKind = "code";
+        codeModel = "";
       } else {
         const info = parseFenceInfo(fence[1]);
         codeKind = info.kind;
         codeLanguage = info.language;
         codeLabel = info.label;
+        codeModel = info.model || "";
       }
       inCode = !inCode;
       continue;
@@ -594,9 +657,10 @@ export function renderMarkdown(markdown, options = {}) {
       flushAll();
       const listLines = [line];
       const listPattern = /^\s*(?:[-*+]|\d+[.)])\s+.+$/;
+      const nestedQuotePattern = /^\s{2,}>\s?.*$/;
       let cursor = index + 1;
       while (cursor < lines.length) {
-        if (listPattern.test(lines[cursor])) {
+        if (listPattern.test(lines[cursor]) || nestedQuotePattern.test(lines[cursor])) {
           listLines.push(lines[cursor]);
           cursor += 1;
           continue;
@@ -605,7 +669,10 @@ export function renderMarkdown(markdown, options = {}) {
         if (!lines[cursor].trim()) {
           let nextItem = cursor + 1;
           while (nextItem < lines.length && !lines[nextItem].trim()) nextItem += 1;
-          if (nextItem < lines.length && listPattern.test(lines[nextItem])) {
+          if (
+            nextItem < lines.length
+            && (listPattern.test(lines[nextItem]) || nestedQuotePattern.test(lines[nextItem]))
+          ) {
             cursor = nextItem;
             continue;
           }
@@ -613,7 +680,7 @@ export function renderMarkdown(markdown, options = {}) {
         break;
       }
       index = cursor - 1;
-      html.push(renderList(listLines, inlineMarkdown));
+      html.push(renderList(listLines, inlineMarkdown, context));
       continue;
     }
 
@@ -637,7 +704,7 @@ export function renderMarkdown(markdown, options = {}) {
   if (code.length) {
     context.warnings.push("存在未闭合的 Markdown 代码围栏，已按代码块渲染到文末。");
     const content = code.join("\n");
-    html.push(renderFenceBlock(content, codeKind, codeLanguage, codeLabel));
+    html.push(renderFenceBlock(content, codeKind, codeLanguage, codeLabel, codeModel));
   }
 
   if (context.appendFootnotes && footnoteOrder.length) {

@@ -322,9 +322,9 @@ function homePage(collections) {
         <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
         <div class="hero-copy">
           <div class="hero-intro">
-            <p>你好，我是 Huang。我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。</p>
-            <p>这里会存放我 Vibe Coding 做出的 Demo。我希望能长期打磨一件具体的小事，一步一步，从想象落地为现实。另外，我还会在这里写一些自己关于 AI 的思考和想法，以及自己的阅读心得。</p>
+            <p>你好，我是 Huang。我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。我希望能长期打磨一件具体的小事，一步一步，从想象落地为现实。</p>
             <p>目前，本站主要包括「项目」、「Prompt」、「写作」和「阅读」四个版块。</p>
+            <p><b>「项目」</b>即我与 AI 协作开发的 Demo，希望最后能完善成为产品；<b>「Prompt」</b>会展示两种内容，一种是我与 GPT-Live 的语音对话，另一种则是我在开发时与 GPT 的工程对话；<b>「写作」</b>将展示任何与 AI 领域相关的话题写作，呈现我对 AI 的想法和思考;<b>「阅读」</b>则致力于人文领域书籍的阅读。</p>
           </div>
           ${socialNavigation()}
         </div>
