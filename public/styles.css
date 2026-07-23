@@ -377,8 +377,8 @@ a { color: inherit; }
 }
 
 /*
- * 项目卡片使用独立的暖桃纸面，不改变全站背景。
- * 低对比度 WebP 纹理叠在 #f8eee6 上，右下阴影继续模拟轻微的纸张叠放感。
+ * 项目卡片沿用全站的复古暖灰底色，避免卡片与页面产生突兀色差。
+ * WebP 纸纹会先去除自身色相、再增强纤维对比；柔光层补充细微磨砂颗粒。
  */
 .project-card {
   position: relative;
@@ -388,12 +388,13 @@ a { color: inherit; }
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
-  border: 1px solid rgba(105, 78, 54, 0.14);
+  overflow: hidden;
+  border: 1px solid rgba(71, 65, 58, 0.15);
   border-radius: var(--radius-sm);
-  background: #f8eee6;
+  background: var(--background-100);
   box-shadow:
-    3px 4px 0 rgba(92, 72, 51, 0.06),
-    0 12px 24px rgba(57, 45, 32, 0.045);
+    3px 4px 0 rgba(61, 55, 48, 0.055),
+    0 12px 24px rgba(45, 41, 36, 0.045);
   color: inherit;
   transition:
     border-color 180ms ease,
@@ -402,7 +403,7 @@ a { color: inherit; }
     transform 180ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
-/* 原创纸纹只承担表面质感；较低透明度保证小字号文字仍然清楚。 */
+/* 原创纸纹只承担纤维质感；灰度、对比与正片叠底使其自然融入原站底色。 */
 .project-card::before {
   position: absolute;
   z-index: 0;
@@ -411,9 +412,30 @@ a { color: inherit; }
   background-image: url("/images/project-card-paper.webp");
   background-position: center top;
   background-repeat: repeat;
-  background-size: 680px 680px;
+  background-size: 520px 520px;
   content: "";
-  opacity: 0.38;
+  filter: grayscale(1) contrast(1.55);
+  mix-blend-mode: multiply;
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+/*
+ * 第二层用不规则柔光与极细斜向颗粒制造轻微磨砂感。
+ * 纹理保持低对比度，以免干扰卡片中的小字号文字。
+ */
+.project-card::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.58), transparent 34%),
+    radial-gradient(circle at 84% 76%, rgba(68, 59, 49, 0.075), transparent 42%),
+    linear-gradient(115deg, rgba(53, 47, 41, 0.045) 25%, transparent 25%) 0 0 / 5px 5px;
+  content: "";
+  mix-blend-mode: soft-light;
+  opacity: 0.62;
   pointer-events: none;
 }
 
@@ -436,11 +458,11 @@ a { color: inherit; }
 
 /* 鼠标悬浮时卡片轻微上移，阴影只做温和加深。 */
 .project-card:hover {
-  border-color: rgba(105, 78, 54, 0.2);
-  background: #fbf2eb;
+  border-color: rgba(71, 65, 58, 0.23);
+  background: rgba(246, 244, 240, 0.96);
   box-shadow:
-    4px 5px 0 rgba(92, 72, 51, 0.075),
-    0 15px 28px rgba(57, 45, 32, 0.055);
+    4px 5px 0 rgba(61, 55, 48, 0.07),
+    0 15px 28px rgba(45, 41, 36, 0.06);
   transform: translateY(-1px);
 }
 

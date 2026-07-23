@@ -116,9 +116,10 @@ test("项目卡片支持状态、详情入口与可选外部链接", async () =>
   assert.doesNotMatch(projectSection, /更新于/);
   assert.match(css, /\.status-dot \{[\s\S]*?background: #2fbd70;[\s\S]*?box-shadow:/);
   assert.match(css, /\.status-completed \.status-dot \{[\s\S]*?background: var\(--accent-700\)/);
-  assert.match(css, /\.project-card \{[\s\S]*?border: 1px solid rgba\(105, 78, 54, 0\.14\);[\s\S]*?background: #f8eee6;[\s\S]*?box-shadow:/);
-  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 680px 680px;[\s\S]*?opacity: 0\.38/);
-  assert.match(css, /\.project-card:hover \{[\s\S]*?background: #fbf2eb;/);
+  assert.match(css, /\.project-card \{[\s\S]*?border: 1px solid rgba\(71, 65, 58, 0\.15\);[\s\S]*?background: var\(--background-100\);[\s\S]*?box-shadow:/);
+  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 520px 520px;[\s\S]*?grayscale\(1\) contrast\(1\.55\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.28/);
+  assert.match(css, /\.project-card::after \{[\s\S]*?linear-gradient\(115deg,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.62/);
+  assert.match(css, /\.project-card:hover \{[\s\S]*?background: rgba\(246, 244, 240, 0\.96\);/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
   assert.ok(paperTexture.byteLength > 4_000 && paperTexture.byteLength < 100_000);
 });
