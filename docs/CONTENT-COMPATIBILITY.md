@@ -33,7 +33,7 @@ tags:
 ---
 ```
 
-当前生成器实际使用 `title`、`author`、`date`、`description`、`slug` 和 `tags`。
+当前生成器通用字段包括 `title`、`author`、`date`、`description`、`slug` 和 `tags`。
 `author` 与 `tags` 会显示在文章标题下方；`title` 与 `date` 必填。
 
 ## 按年份管理文件
@@ -65,6 +65,29 @@ description: 这段文字会作为首页摘要。
 ```
 
 没有填写 `description` 时，首页只显示标题，不生成摘要元素，也不预留摘要高度。
+
+### 项目卡片
+
+项目 Markdown 可以额外填写 `status`、`repository` 和 `website`：
+
+```md
+---
+title: 全球民族志档案数据库
+date: 2026-07-14
+slug: global-enthnography
+description: 一个 3D 与 2D 地球民族志档案库
+status: 迭代中
+repository: https://github.com/你的用户名/仓库名
+website: https://项目网址.example
+---
+```
+
+- `status` 只需填写 `迭代中` 或 `已完结`；不写时默认采用 `迭代中`。
+- `迭代中` 使用亮绿色圆点，`已完结` 使用站点原有的棕色圆点。
+- `repository` 对应卡片底部左侧的「项目仓库」。
+- `website` 对应卡片底部右侧的「项目网址」。
+- 链接暂时留空时，两个入口会以弱化的不可点击状态保留；以后直接填入完整的 `https://` 地址即可。
+- 点击卡片的其他区域会进入该项目 Markdown 生成的正文页面。
 
 ### 多级列表
 

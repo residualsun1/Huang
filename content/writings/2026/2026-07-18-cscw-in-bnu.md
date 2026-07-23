@@ -113,6 +113,6 @@ description: "因为哲学家 Amanda Askell 和 Havery Lederman 而开始好奇�
 
 综合以上，千言万语最后可以化作一句：还是要多外出走动，与人交流学习，才能发现进步空间和发展机会。不要因为暂时无法判断外出的价值而拒绝行动，闭门造车定然无法产生更多可能。以及，无论什么时候都要保持学习，即便当下前景黯淡，也可以在未来出现机遇时把握住机会。
 
-## 参考文献
+## 四、参考资料
 
 - Bengio, Yoshua, et al. 2026. “[2026 年国际人工智能安全报告](https://internationalaisafetyreport.org/sites/default/files/2026-02/international-ai-safety-report-2026-zh.pdf).” DSIT 2026/001, February 3, 2026.

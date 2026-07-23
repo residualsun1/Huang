@@ -34,7 +34,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     html.indexOf('aria-label="GitHub 个人主页"') < html.indexOf('aria-label="X 个人主页"'),
     "GitHub 应显示在 X 之前",
   );
-  assert.match(html, /<p>你好，我是 Huang。<\/p>/);
+  assert.match(html, /<p>你好，我是 Huang，一个人类学在读研究生。<\/p>/);
   assert.match(html, /<p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。<\/p>/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
@@ -48,7 +48,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
   assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 2);
-  assert.match(promptSection, /每一次对话，既是用户在了解大模型，也是大模型在了解用户/);
+  assert.match(promptSection, /每一次对话，既是我在了解大模型，也是大模型在了解我/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 5);
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 2);
@@ -73,7 +73,7 @@ test("写作、Prompt 和阅读归档页可访问", async () => {
   assert.match(readings, /the-spears-of-twilight/);
 });
 
-test("实际使用外部资料的文章统一渲染参考文献", async () => {
+test("实际使用外部资料的文章均保留作者自定义的参考文献或参考资料标题", async () => {
   const paths = [
     "prompts/GPT-Live-Samantha/index.html",
     "readings/we-have-never-been-modern/index.html",
@@ -86,8 +86,7 @@ test("实际使用外部资料的文章统一渲染参考文献", async () => {
 
   for (const path of paths) {
     const html = await readFile(new URL(path, root), "utf8");
-    assert.match(html, /<h2 id="参考文献">参考文献<\/h2>/);
-    assert.doesNotMatch(html, /<h2 id="参考资料">参考资料<\/h2>/);
+    assert.match(html, /<h2 id="[^"]*参考(?:文献|资料)">[^<]*参考(?:文献|资料)<\/h2>/);
   }
 });
 
@@ -95,12 +94,29 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   const prompt = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
   const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
   const reading = await readFile(new URL("readings/the-spears-of-twilight/index.html", root), "utf8");
-  const project = await readFile(new URL("projects/ai-learning-site/index.html", root), "utf8");
+  const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
 
   assert.match(prompt, /Samantha 会理解我吗？/);
   assert.match(writing, /我眼中的智能体/);
   assert.match(reading, /暮光之矛/);
-  assert.match(project, /个人 AI 学习网站/);
+  assert.match(project, /全球民族志档案数据库/);
+});
+
+test("项目卡片支持状态、详情入口与可选外部链接", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
+
+  assert.match(projectSection, /class="project-card-link" href="\/projects\/global-enthnography\/"/);
+  assert.match(projectSection, /class="status-label status-active"[\s\S]*?>迭代中<\/span>/);
+  assert.match(projectSection, />项目仓库<\/span>/);
+  assert.match(projectSection, />项目网址<\/span>/);
+  assert.match(projectSection, /aria-disabled="true"/);
+  assert.doesNotMatch(projectSection, /更新于/);
+  assert.match(css, /\.status-dot \{[\s\S]*?background: #2fbd70;[\s\S]*?box-shadow:/);
+  assert.match(css, /\.status-completed \.status-dot \{[\s\S]*?background: var\(--accent-700\)/);
+  assert.match(css, /\.project-card \{[\s\S]*?box-shadow:/);
+  assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
@@ -322,7 +338,7 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
   assert.match(css, /\.home \.writing-copy strong:hover \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: rgb\(119, 115, 110\)/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #34312f/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 14\.4px/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 24\.48px/);
 });
@@ -416,7 +432,7 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
 
 test("所有正文的回到首页入口位于正文主列最左侧", async () => {
   const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
-  const project = await readFile(new URL("projects/ai-learning-site/index.html", root), "utf8");
+  const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(writing, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);
   assert.match(project, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);

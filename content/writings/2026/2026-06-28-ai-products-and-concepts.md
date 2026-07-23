@@ -25,13 +25,15 @@ description: "我们每天都在使用 AI，但我们似乎很少区分过各式
 Claude Code 是 Harness？那 Claude 是什么？哪些是产品，哪些是大模型，哪些又是 Agent……我以为我了解 AI，其实很多内容都很陌生，遂决定搜集资料写作此博文。
 {{% /notice %}}
 
+## 一、前言
+
 随着 AI 的发展，各种产品和概念层出不穷，本篇博文尝试以从 Anthropic、OpenAI 和 Google 三大厂商推出的模型和产品切入，对各海外主流 AI 产品及该领域中的概念进行梳理。
 
 在对各厂商的产品进行介绍和梳理前，我们需要澄清一下 7 个概念，分别是 Web 网页、Desktop 桌面端应用、Mobile App 移动端、IDE、CLI、 TUI 和 GUI。
 
 我们可以简单将这 7 个概念理解为**用户与 AI 产品的交互界面/方式**，它们之间的关系如下：
 
-```
+```ASCII
 交互界面
 ├── GUI（图形用户界面）← 一个"大类"
 │    ├── Web 网页
@@ -63,7 +65,7 @@ CLI、TUI 和 IDE 则多为开发者使用。[^1]
 
 值得注意的是，这里 GUI 和其他 6 个概念之间并不是完全并列的关系。事实上，在具体的产品中，它结合于 Web 网页、Desktop 桌面应用、Mobile App 移动端 和 IDE 4 种交互界面中。TUI 中虽然有伪图形增强，但不算真正的 GUI，不将其归于 GUI。
 
-```
+```ASCII
 交互界面
 ├── Web          → 浏览器 + GUI
 ├── Desktop      → 本地电脑 + GUI
@@ -74,11 +76,11 @@ CLI、TUI 和 IDE 则多为开发者使用。[^1]
                     └── TUI（文字 + 伪图形增强）
 ```
 
-## 产品（Product）
+## 二、产品（Product）
 
 基于以上概念的信息背景补充，我们便可以总结归纳一下三大厂商推出的 AI 产品。
 
-### Anthropic 的产品
+### 2.1 Anthropic 的产品
 
 | 产品          | 定位                         |
 |-------------|----------------------------|
@@ -88,7 +90,7 @@ CLI、TUI 和 IDE 则多为开发者使用。[^1]
 | Claude Code | CLI + TUI + Agent Harness  |
 
 
-### OpenAI 的产品
+### 2.2 OpenAI 的产品
 
 | 产品            | 定位                       |
 |---------------|--------------------------|
@@ -98,7 +100,7 @@ CLI、TUI 和 IDE 则多为开发者使用。[^1]
 | Codex CLI     | CLI + Agent Harness      |
 | Codex Desktop | 桌面端应用                    |
 
-### Google 的产品
+### 2.3 Google 的产品
 
 | 产品          | 定位                                                 |
 |-------------|----------------------------------------------------|
@@ -121,7 +123,7 @@ CLI、TUI 和 IDE 则多为开发者使用。[^1]
 
 {{% /notice %}}
 
-## 大模型（LLM）
+## 三、大模型（LLM）
 
 Anthropic 的大模型主要包括 Haiku、Sonnet、Opus 和 Fable。
 
@@ -129,11 +131,11 @@ OpenAI 的大模型主要包括 GPT-5.3、GPT-5.4、GPT-5.5 等。
 
 Gemini 的大模型主要包括 Flash、Pro 和 Ultra。
 
-## 关系（Relationship）
+## 四、关系（Relationship）
 
 理解本文提到的三大海外产商的 AI 产品，可以从大模型（LLM）、Agent 和交互界面三个层级出发。
 
-```
+```ASCII
 ┌────────────────────────────────────────────────────────┐
 │                    第三层：交互界面层                    │
 │        用户如何"使用" Agent（IDE / CLI / TUI / Desktop） │
@@ -154,7 +156,7 @@ Agent 可以被理解为「LLM + Harness + 工具调用」，这相当给大模�
 
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/06/06-28-01.png)
 
-## Harness
+## 五、Harness
 
 这里再聊一下 Harness，前面大致说过，在 Agent 中，Harness 指调度循环，它主要是接受 LLM 的输出，对该输出进行解析，然后由工具调用执行相关文件，之后把结果反馈给 LLM。其运行逻辑如下所示。
 
@@ -191,10 +193,10 @@ Harness 的工程设计（循环调度、工具集、上下文压缩）是 Anthr
 * 某些需要模型特定能力（如 Claude 的 Computer Use）的功能失效。
 * 中文模型对 Harness 的指令理解可能不如原生模型精准。
 
-## 参考文献
+## 六、参考资料
 
-- Anthropic. n.d. “[CLI Reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage).” *Claude Code Documentation*. 访问于 2026 年 7 月 23 日.
+- Anthropic. n.d. “[CLI Reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage).” *Claude Code Documentation*. 访问于 2026 年 6 月 28 日.
 - Google Antigravity Team. 2025. “[Build with Google Antigravity, Our New Agentic Development Platform](https://developers.googleblog.com/en/build-with-google-antigravity-our-new-agentic-development-platform/).” *Google Developers Blog*, November 20, 2025.
 - Google. 2026. “[Gemini CLI](https://developers.google.com/gemini-code-assist/docs/gemini-cli).” *Google for Developers*. 更新于 2026 年 6 月 18 日.
-- OpenAI. n.d. “[Using Codex with Your ChatGPT Plan](https://help.openai.com/en/articles/11369540-getting-started-with-codex).” 访问于 2026 年 7 月 23 日.
-- 程序员鱼皮. 2026. “[2 分钟，教你国内爽用 Claude Code + Codex！保姆级教程](https://www.codefather.cn/post/2064234894459990018).” 编程导航.
+- OpenAI. n.d. “[Using Codex with Your ChatGPT Plan](https://help.openai.com/en/articles/11369540-getting-started-with-codex).” 访问于 2026 年 6 月 28 日.
+- 程序员鱼皮. 2026. “[领导禁止实习生用 Codex 和 Claude Code，说国内用不了、价格死贵。。我怒了：这不胡扯么？2 分钟包你用上](https://mp.weixin.qq.com/s/aCFXu9pNBQQ1t0v8U5BdsA).” 微信公众号：鱼皮编程导航.

@@ -92,9 +92,9 @@ description: "德斯科拉对待人类学研究的态度，总给人以与其老
 
 > 散落在遥远丛林中的几千名印第安人，其价值远胜任何一本可信度存疑的未来学著作。
 
-## 参考文献
+## 四、参考文献
 
-- 德斯科拉，菲利普. 2026.《暮光之矛：一桩亚马孙雨林中的仇杀案》. 刘文玲译. 桂林：广西师范大学出版社.
+- 菲利普·德斯科拉. 2026.《暮光之矛：一桩亚马孙雨林中的仇杀案》. 刘文玲 译. 桂林：广西师范大学出版社.
 - 群鸟会议. 2026. “[重返雨林：仇杀、灵魂与人类学家的文学野心](https://www.xiaoyuzhoufm.com/episode/6a3390e643a22a695585cf0b).” 小宇宙，播客音频.
-- Debaene, Vincent. 2010. *L’adieu au voyage: L’ethnologie française entre science et littérature*. Paris: Gallimard.
-- Taussig, Michael. 2011. *I Swear I Saw This: Drawings in Fieldwork Notebooks, Namely My Own*. Chicago: University of Chicago Press.
+- Vincent Debaene. 2010. *L’adieu au voyage: L’ethnologie française entre science et littérature*. Paris: Gallimard.
+- Michael Taussig. 2011. *I Swear I Saw This: Drawings in Fieldwork Notebooks, Namely My Own*. Chicago: University of Chicago Press.

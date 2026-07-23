@@ -314,13 +314,22 @@ a { color: inherit; }
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  background: #2fbd70;
+  box-shadow:
+    0 0 0 3px rgba(47, 189, 112, 0.1),
+    0 0 8px rgba(47, 189, 112, 0.28);
+}
+
+/* 已完结项目沿用网站原本的棕色，并使用比迭代状态更克制的光圈。 */
+.status-completed .status-dot {
   background: var(--accent-700);
-  box-shadow: 0 0 0 3px var(--accent-100);
+  box-shadow:
+    0 0 0 3px rgba(139, 69, 19, 0.08),
+    0 0 7px rgba(139, 69, 19, 0.2);
 }
 
 /* 首页时间信息：使用等宽数字，避免日期宽度跳动。 */
-.hero-meta time,
-.project-card time {
+.hero-meta time {
   color: var(--gray-700);
   font-family: var(--editorial);
   font-size: 12px;
@@ -367,30 +376,49 @@ a { color: inherit; }
   gap: 16px;
 }
 
-/* 项目卡片的表面、边框和基础交互动画。 */
+/* 项目卡片的表面、边框和基础交互动画。右下阴影模拟轻微的纸张叠放感。 */
 .project-card {
-  border: 1px solid var(--gray-alpha-400);
-  border-radius: var(--radius-sm);
-  background: var(--surface-raised);
-  color: inherit;
-  text-decoration: none;
-  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
-}
-
-/* 鼠标悬浮时卡片轻微上移。 */
-.project-card:hover {
-  border-color: var(--gray-alpha-500);
-  background: rgba(250, 248, 244, 0.94);
-  transform: translateY(-2px);
-}
-
-/* 卡片内部纵向布局，把更新时间稳定放在底部。 */
-.project-card {
+  position: relative;
   display: flex;
   min-height: 228px;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
+  border: 1px solid var(--gray-alpha-400);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  box-shadow:
+    3px 4px 0 rgba(92, 72, 51, 0.075),
+    0 12px 24px rgba(57, 45, 32, 0.045);
+  color: inherit;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+/* 整张卡片的透明主链接：既让卡片可点击，也避免与底部两个外部链接产生嵌套。 */
+.project-card-link {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.project-card-link:focus-visible {
+  outline: 2px solid var(--accent-700);
+  outline-offset: 3px;
+}
+
+/* 鼠标悬浮时卡片轻微上移，阴影只做温和加深。 */
+.project-card:hover {
+  border-color: var(--gray-alpha-500);
+  background: rgba(250, 248, 244, 0.94);
+  box-shadow:
+    4px 5px 0 rgba(92, 72, 51, 0.09),
+    0 15px 28px rgba(57, 45, 32, 0.06);
+  transform: translateY(-1px);
 }
 
 /* 卡片顶部类型标签和右上箭头。 */
@@ -427,9 +455,51 @@ a { color: inherit; }
 
 .project-card p {
   margin: 12px 0 0;
-  color: var(--gray-900);
+  color: #34312f;
   font-size: 14px;
   line-height: 22px;
+}
+
+/* 卡片底部外部链接：沿用首页社交入口的图标、文字下划线和颜色变化。 */
+.project-card-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  color: rgb(79, 77, 74);
+  font-family: var(--title-serif);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.project-action {
+  display: inline-flex;
+  min-width: 0;
+  gap: 6px;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  transition: color 200ms ease, opacity 200ms ease;
+}
+
+.project-action svg { flex: 0 0 auto; }
+
+.project-action span {
+  border-bottom: 1px solid rgb(197, 193, 187);
+  white-space: nowrap;
+  transition: border-color 200ms ease;
+}
+
+.project-action:not(.is-disabled):hover { color: rgb(29, 27, 27); }
+.project-action:not(.is-disabled):hover span { border-bottom-color: rgb(29, 27, 27); }
+
+/* 尚未填写链接时仍保留入口位置，但用较低透明度表明当前不可点击。 */
+.project-action.is-disabled {
+  cursor: default;
+  opacity: 0.48;
 }
 
 /* 写作、Prompt 与阅读共用的分隔式列表。 */
@@ -520,8 +590,8 @@ a { color: inherit; }
 
 /* 首页可选摘要来自 Markdown Front Matter 的 description；没有字段时不生成元素。 */
 .home .writing-copy > span {
-  /* 比原灰色略深，提高摘要在暖纸背景上的可读性。 */
-  color: rgb(119, 115, 110);
+  /* 与正文统一为 #34312f，让首页摘要在暖纸背景上保持稳定可读。 */
+  color: #34312f;
   font-family: var(--title-serif);
   font-size: 14.4px;
   hyphens: auto;

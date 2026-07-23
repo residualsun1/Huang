@@ -22,7 +22,7 @@ tags:
 {{% /notice %}}
 
 
-## 1.前言
+## 一、前言
 
 让我们来跟随[教程](https://hello-agents.datawhale.cc/#/./chapter1/%E7%AC%AC%E4%B8%80%E7%AB%A0%20%E5%88%9D%E8%AF%86%E6%99%BA%E8%83%BD%E4%BD%93?id=_13-%e5%8a%a8%e6%89%8b%e4%bd%93%e9%aa%8c%ef%bc%9a5-%e5%88%86%e9%92%9f%e5%ae%9e%e7%8e%b0%e7%ac%ac%e4%b8%80%e4%b8%aa%e6%99%ba%e8%83%bd%e4%bd%93)尝试构建一个可以运行的智能旅行助手 Agent。需要指出的是，本文搭建过程未创建虚拟环境，如需配置虚拟环境，可以参考[此处](https://github.com/datawhalechina/hello-agents/blob/main/Extra-Chapter/Extra07-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.md#%E5%9B%9B%E9%A1%B9%E7%9B%AE%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)。
 
@@ -44,7 +44,7 @@ Agent 的搭建过程并不十分困难，需要满足的条件如下：
 * 根据问题，Agent 需要先调用天气查询工具，查询天气状况，以此作为下一步的依据。
 * 在下一轮循环中，Agent 调用景点推荐工具，最终提出建议。
 
-## 2.搭建流程
+## 二、搭建流程
 
 ### 2.1 基本 Python 库
 
@@ -484,7 +484,7 @@ for i in range(5): # 设置最大循环次数
 
 最后是关于记录观察结果部分，这部分把工具返回的结果追加到历史记录，如此，下次循环 AI 就能看到这次的结果。
 
-## 3.运行结果
+## 三、运行结果
 
 下面是我在 VS Code 的终端中成功运行得到的结果，呈现了一个完整的 ReAct Agent 工作流：`思考 → 行动 → 观察 → 再思考`，循环往复直到解决问题。
 
@@ -535,7 +535,7 @@ Sorry, to prevent abuse of free resources, accounts that have not been recharged
 2. 添加新的工具函数
 3. 实现更复杂的 Agent 逻辑
 
-## 4.完整代码示例
+## 四、完整代码示例
 
 <details>
 
@@ -772,9 +772,9 @@ for i in range(5): # 设置最大循环次数
 
 </details>
 
-## 参考文献
+## 五、参考资料
 
-- Datawhale 社区. n.d. “[Hello-Agents：从零开始构建智能体](https://github.com/datawhalechina/hello-agents).” GitHub. 访问于 2026 年 7 月 23 日.
-- DeepSeek. n.d. “[DeepSeek API Docs](https://api-docs.deepseek.com/zh-cn/).” 访问于 2026 年 7 月 23 日.
-- Tavily. n.d. “[Tavily Search API](https://www.tavily.com/).” 访问于 2026 年 7 月 23 日.
-- wttr.in. n.d. “[Weather Service](https://wttr.in/).” 访问于 2026 年 7 月 23 日.
+- Datawhale 社区. n.d. “[Hello-Agents：从零开始构建智能体](https://github.com/datawhalechina/hello-agents).” GitHub. 访问于 2026 年 5 月 10 日.
+- DeepSeek. n.d. “[DeepSeek API Docs](https://api-docs.deepseek.com/zh-cn/).” 访问于 2026 年 5 月 10 日.
+- Tavily. n.d. “[Tavily Search API](https://www.tavily.com/).” 访问于 2026 年 5 月 10 日.
+- wttr.in. n.d. “[Weather Service](https://wttr.in/).” 访问于 2026 年 5 月 10 日.

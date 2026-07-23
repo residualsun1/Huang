@@ -1,7 +1,12 @@
 ---
-title: 个人 AI 学习网站
-description: 从一个足够小的内容骨架开始，逐步形成属于自己的 AI 学习与理解空间。
-date: 2026-07-14
+title: "全球民族志档案数据库"
+date: "2026-07-14"
+author: "黄国政"
+slug: "global-enthnography"
+description: "一个 3D 与 2D 地球民族志档案库"
+status: "迭代中"
+repository: ""
+website: ""
 ---
 
 ## 项目目标

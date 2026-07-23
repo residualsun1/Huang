@@ -9,7 +9,7 @@ tags:
 description: "问题的源头其实是没能成功登录账号，若非如此，可以直接让 Codex 进行修复。"
 ---
 
-## 背景
+## 一、背景
 
 今天给自己的 Windows 安装上了 Codex Desktop。虽说「差生文具多」，但可以白嫖一些额度，为什么不呢。
 
@@ -17,9 +17,9 @@ description: "问题的源头其实是没能成功登录账号，若非如此，
 
 但安装好 Codex 后，模型响应时反复显示「Reconnecting」的问题迟迟难以解决。我花费了一个下午，又是问 GPT 和 Claude，又是搜索小红书，反反复复，无法确定究竟是哪一步解决了问题，可能是前置的步骤为后续的步骤铺好了路，也可能是小红书上的建议和 GPT 基于此的修改建议完成了最后一舞……
 
-## 问题与解决
+## 二、问题与解决
 
-```bash
+```React lable-GPT
 Reconnecting 1/5
 
 Reconnecting 2/5
@@ -41,7 +41,7 @@ stream disconnected before completion: error sending request for url (http://127
 
 后面实在没有办法，我再次彻底删除 Codex 并清除相关文件，接着下载 Codex 的 Beta 版本，重新回到小红书后换了关键词检索。这一次得到的解决方案是修改 `config.toml`。在修改了文件以后，再次与 Codex 交互，得到的反馈信息变化了。
 
-```bash
+```React lable-GPT
 unexpected status 401 Unauthorized: Missing bearer or basic authentication in header, url: https://api.openai.com/v1/responses, cf-ray: a0e1388b7cb8ef12-YVR, request id: req_b8de48386f2a492099b763ea33f7e43
 ```
 
@@ -95,7 +95,7 @@ unexpected status 401 Unauthorized: Missing bearer or basic authentication in he
 如果你愿意，我也可以帮你检查旧的 `config.toml` 里是哪一项导致它去连 `127.0.0.1:18100/responses`。注意可以先把 token、key、账号信息删掉再贴给我。
 ```
 
-## 总结
+## 三、总结
 
 总的来说，这一次是解决问题背后**应对问题的方式**出了问题：没有根据完整的报错信息进行检索，这很可能导致我走错了方向。
 
