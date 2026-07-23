@@ -10,8 +10,7 @@
 | `scripts/build.mjs` | HTML 页面结构和组件模板 | 调整导航栏目、增加区块、改变卡片或文章页面的 DOM 结构 |
 | `scripts/markdown.mjs` | Markdown 转 HTML | 多级列表、代码高亮、Hugo 短代码与其他文章格式 |
 | `public/code-blocks.js` | 正文代码块交互 | 复制按钮及本地 HTTP 兼容逻辑 |
-| `public/scene.js` | 已暂停加载的首页像素场景 | 仅在未来恢复像素场景时继续调整 |
-| `public/images/` | 历史首页场景、Codey、社交分享图等图片 | 替换图片素材 |
+| `public/images/` | 正文需要随站点发布的图片目录（需要时创建） | 添加文章图片素材 |
 | `docs/DESIGN-SYSTEM.md` | 当前视觉规范 | 查看颜色、字体和布局原则，不直接影响页面显示 |
 
 ## 不要直接修改的文件

@@ -104,7 +104,29 @@ html {
 /* 全站正文基础样式；局部页面可以在后文覆盖这些值。 */
 body {
   margin: 0;
-  background-color: var(--background-100);
+  /*
+   * 全站纸张质感背景：
+   * 前两层径向渐变制造柔和、自然的不均匀光照；
+   * 第三层 8px 斜向纹理提供极轻的纸张颗粒感；
+   * 最后一层保留站点原有的复古暖灰底色。
+   */
+  background:
+    radial-gradient(
+      circle at 13% 7%,
+      rgba(255, 255, 255, 0.58),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(220, 205, 183, 0.24),
+      transparent 27%
+    ),
+    linear-gradient(
+      115deg,
+      rgba(121, 98, 71, 0.025) 25%,
+      transparent 25%
+    ) 0 0 / 8px 8px,
+    var(--background-100);
   color: var(--gray-1000);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;

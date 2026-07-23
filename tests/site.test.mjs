@@ -146,6 +146,20 @@ test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
   assert.doesNotMatch(css, /\.home-toc/);
 });
 
+test("全站使用柔和光晕与细微纸张纹理背景", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+
+  assert.match(
+    css,
+    /body \{[\s\S]*?radial-gradient\([\s\S]*?circle at 13% 7%[\s\S]*?radial-gradient\([\s\S]*?circle at 88% 18%/,
+  );
+  assert.match(
+    css,
+    /linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(121, 98, 71, 0\.025\)[\s\S]*?\) 0 0 \/ 8px 8px/,
+  );
+  assert.match(css, /body \{[\s\S]*?var\(--background-100\)/);
+});
+
 test("所有写作页面均不残留已知 Hugo 短代码", async () => {
   const writingRoot = new URL("writings/", root);
   const directories = await readdir(writingRoot, { withFileTypes: true });
