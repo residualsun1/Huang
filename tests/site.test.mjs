@@ -35,7 +35,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     html.indexOf('aria-label="GitHub 个人主页"') < html.indexOf('aria-label="X 个人主页"'),
     "GitHub 应显示在 X 之前",
   );
-  assert.match(html, /<p>你好，我是 Huang，一个人类学在读研究生。<\/p>/);
+  assert.match(html, /<p>你好，我是 Huang。<\/p>/);
   assert.match(html, /<p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。<\/p>/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
@@ -47,7 +47,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
   assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
-  assert.equal((projectSection.match(/class="project-card"/g) ?? []).length, 1);
+  assert.equal((projectSection.match(/class="project-card"/g) ?? []).length, 3);
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 3);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
   assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 2);
@@ -123,13 +123,14 @@ test("项目卡片从标题开始展示详情入口与可选外部链接", async
   assert.match(projectSection, /aria-disabled="true"/);
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
-  assert.match(css, /\.project-card \{[\s\S]*?min-height: 208px;[\s\S]*?border: 1px solid rgba\(71, 65, 58, 0\.15\);[\s\S]*?background: var\(--background-100\);[\s\S]*?box-shadow:/);
-  assert.match(css, /\.project-card \{[\s\S]*?box-shadow:[\s\S]*?4px 5px 0 rgba\(61, 55, 48, 0\.13\),[\s\S]*?0 14px 28px rgba\(45, 41, 36, 0\.11\)/);
-  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 380px 380px;[\s\S]*?grayscale\(1\) contrast\(2\.35\) brightness\(0\.98\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.48/);
-  assert.match(css, /\.project-card::after \{[\s\S]*?radial-gradient\(circle, rgba\(50, 45, 40, 0\.16\)[\s\S]*?linear-gradient\(115deg,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.82/);
-  assert.match(css, /\.project-card:hover \{[\s\S]*?background: rgba\(246, 244, 240, 0\.96\);/);
+  assert.match(css, /\.project-card \{[\s\S]*?min-height: 208px;[\s\S]*?border: 1px solid var\(--project-glass-edge\);[\s\S]*?border-radius: 18px;[\s\S]*?backdrop-filter: blur\(8px\) saturate\(106%\);/);
+  assert.match(css, /\.project-card \{[\s\S]*?box-shadow:[\s\S]*?inset 0 1px 0 rgba\(255, 255, 255, 0\.68\),[\s\S]*?0 16px 36px var\(--project-glass-shadow\)/);
+  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 380px 380px;[\s\S]*?grayscale\(1\) contrast\(1\.75\) brightness\(1\.04\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.2/);
+  assert.match(css, /\.project-card::after \{[\s\S]*?radial-gradient\(circle at 13% 4%,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.64/);
+  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-4px\);/);
+  assert.match(css, /@media \(prefers-reduced-transparency: reduce\) \{[\s\S]*?\.project-card \{[\s\S]*?backdrop-filter: none;/);
   assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 22px;[\s\S]*?right: 22px;/);
-  assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.015em/);
+  assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.025em/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
   assert.ok(paperTexture.byteLength > 4_000 && paperTexture.byteLength < 100_000);
 });

@@ -1,11 +1,11 @@
 ---
-title: "全球民族志档案数据库"
-date: "2026-07-10"
+title: "Time Gambler"
+date: "2026-02-01"
 author: "黄国政"
-slug: "global-enthnography"
-description: "一个 3D 与 2D 地球民族志档案库"
-repository: ""
-website: ""
+slug: "time-gambler"
+description: "赌注驱动的专注力协议"
+repository: "https://github.com/0x-IHRR/ADHD_BlockChain"
+website: "https://adhd-block-chain.vercel.app/"
 ---
 
 ## 项目目标
