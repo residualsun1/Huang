@@ -150,13 +150,13 @@ body {
 /* 链接默认继承父元素颜色，具体样式由各组件定义。 */
 a { color: inherit; }
 
-/* 顶部导航：滚动时固定，并使用半透明背景与轻微模糊。 */
+/* 顶部导航：滚动时固定，背景直接沿用页面主底色。 */
 .site-header {
   position: sticky;
   z-index: 20;
   top: 0;
-  background: rgba(243, 241, 237, 0.86);
-  backdrop-filter: saturate(140%) blur(14px);
+  background: var(--background-100);
+  backdrop-filter: none;
 }
 
 /* 全站通用水平容器：控制最大宽度与左右留白。 */
@@ -231,7 +231,7 @@ a { color: inherit; }
   letter-spacing: -0.06em;
 }
 
-/* 写作、Prompt 与阅读详情页的标题统一使用思源宋体体系。 */
+/* 项目、写作、Prompt 与阅读详情页的标题统一使用思源宋体体系。 */
 .detail-editorial .article-header {
   border-bottom-color: var(--gray-alpha-400);
 }
@@ -364,8 +364,8 @@ a { color: inherit; }
   border-radius: var(--radius-sm);
   background: var(--background-100);
   box-shadow:
-    3px 4px 0 rgba(61, 55, 48, 0.055),
-    0 12px 24px rgba(45, 41, 36, 0.045);
+    4px 5px 0 rgba(61, 55, 48, 0.13),
+    0 14px 28px rgba(45, 41, 36, 0.11);
   color: inherit;
   transition:
     border-color 180ms ease,
@@ -434,8 +434,8 @@ a { color: inherit; }
   border-color: rgba(71, 65, 58, 0.23);
   background: rgba(246, 244, 240, 0.96);
   box-shadow:
-    4px 5px 0 rgba(61, 55, 48, 0.07),
-    0 15px 28px rgba(45, 41, 36, 0.06);
+    5px 6px 0 rgba(61, 55, 48, 0.17),
+    0 17px 32px rgba(45, 41, 36, 0.14);
   transform: translateY(-1px);
 }
 
@@ -470,7 +470,7 @@ a { color: inherit; }
   padding-right: 28px;
   color: var(--gray-1000);
   font-weight: 600;
-  letter-spacing: -0.035em;
+  letter-spacing: 0.015em;
 }
 
 .project-card h3 {
@@ -798,7 +798,7 @@ a { color: inherit; }
   background: var(--gray-alpha-100);
 }
 
-/* 三个文章栏目均不在详情页显示摘要，因此缩短标题与元信息之间的距离。 */
+/* 四个内容栏目均不在详情页显示摘要，因此缩短标题与元信息之间的距离。 */
 .detail-editorial .article-meta { margin-top: 24px; }
 
 /* 桌面端文章布局：左侧正文，右侧 220px 目录。 */
@@ -941,7 +941,7 @@ a { color: inherit; }
 
 .prose blockquote > :last-child { margin-bottom: 0; }
 
-/* 写作、Prompt 与阅读共用的正文排版；margin-top 控制正文与上方分隔线的距离。 */
+/* 项目、写作、Prompt 与阅读共用的正文排版；margin-top 控制正文与上方分隔线的距离。 */
 .detail-editorial .prose {
   margin-top: 40px;
   margin-bottom: 50px;
@@ -951,7 +951,7 @@ a { color: inherit; }
   letter-spacing: 0.01em;
 }
 
-/* 三个文章栏目共用的引用样式：保留楷体和左边线，移除底色。 */
+/* 四个内容栏目共用的引用样式：保留楷体和左边线，移除底色。 */
 .detail-editorial .prose blockquote {
   margin: 2.5em 1.25em;
   padding: 0.2em 0 0.2em 1.35em;
@@ -1474,7 +1474,7 @@ a.article-pagination-item:hover {
   opacity: 0.46;
 }
 
-/* 三个文章栏目均把翻页卡片放入正文列，并删除卡片上方的分隔线。 */
+/* 四个内容栏目均把翻页卡片放入正文列，并删除卡片上方的分隔线。 */
 .detail-editorial .article-pagination {
   padding-top: 0;
   border-top: 0;
@@ -1603,7 +1603,7 @@ a.article-pagination-item:hover {
 
   .collection-header { padding: 52px 0 24px; }
 
-  /* 手机端三个文章栏目的统一字体、段落和楷体引用。 */
+  /* 手机端四个内容栏目的统一字体、段落和楷体引用。 */
   .detail-editorial .prose {
     margin-top: 48px;
     font-size: 16px;

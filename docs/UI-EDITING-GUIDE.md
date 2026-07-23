@@ -29,11 +29,11 @@
 7. 设置项目链接：打开对应的 `content/projects/年份/项目名.md`，填写 `repository` 和 `website`。
 8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
 9. 修改文章正文：搜索 `.prose`。
-10. 修改写作、Prompt 与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
+10. 修改项目、写作、Prompt 与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
 11. 修改引用：搜索 `.prose blockquote`。
 12. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
 13. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
-14. 修改三个文章栏目中的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
+14. 修改四个内容栏目的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
 15. 修改手机样式：搜索 `@media (max-width: 600px)`。
 
 ## 修改后的预览方法

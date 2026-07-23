@@ -7,6 +7,7 @@ const root = new URL("../dist/client/", import.meta.url);
 
 test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
+  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
   assert.doesNotMatch(html, /class="site-nav"/);
@@ -39,18 +40,24 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
 
+  const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
   const writingSection = html.match(/<section class="content-section" id="writings"[\s\S]*?<\/section>/)?.[0] ?? "";
   const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
   const readingSection = html.match(/<section class="content-section" id="readings"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
   assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
-  assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
+  assert.equal((projectSection.match(/class="project-card"/g) ?? []).length, 1);
+  assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 3);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
   assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 2);
+  assert.match(buildSource, /byKey\.projects\.entries\.slice\(0, 3\)/);
+  assert.match(buildSource, /byKey\.prompts\.entries\.slice\(0, 3\)/);
+  assert.match(buildSource, /byKey\.writings\.entries\.slice\(0, 3\)/);
+  assert.match(buildSource, /byKey\.readings\.entries\.slice\(0, 3\)/);
   assert.match(promptSection, /每一次对话，既是我在了解大模型，也是大模型在了解我/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
-  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 5);
+  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 3);
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 2);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
@@ -117,10 +124,12 @@ test("项目卡片从标题开始展示详情入口与可选外部链接", async
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
   assert.match(css, /\.project-card \{[\s\S]*?min-height: 208px;[\s\S]*?border: 1px solid rgba\(71, 65, 58, 0\.15\);[\s\S]*?background: var\(--background-100\);[\s\S]*?box-shadow:/);
+  assert.match(css, /\.project-card \{[\s\S]*?box-shadow:[\s\S]*?4px 5px 0 rgba\(61, 55, 48, 0\.13\),[\s\S]*?0 14px 28px rgba\(45, 41, 36, 0\.11\)/);
   assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 380px 380px;[\s\S]*?grayscale\(1\) contrast\(2\.35\) brightness\(0\.98\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.48/);
   assert.match(css, /\.project-card::after \{[\s\S]*?radial-gradient\(circle, rgba\(50, 45, 40, 0\.16\)[\s\S]*?linear-gradient\(115deg,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.82/);
   assert.match(css, /\.project-card:hover \{[\s\S]*?background: rgba\(246, 244, 240, 0\.96\);/);
   assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 22px;[\s\S]*?right: 22px;/);
+  assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.015em/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
   assert.ok(paperTexture.byteLength > 4_000 && paperTexture.byteLength < 100_000);
 });
@@ -156,6 +165,7 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
   const prompt = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
   const reading = await readFile(new URL("readings/we-have-never-been-modern/index.html", root), "utf8");
+  const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
   assert.match(css, /--source-han-serif:/);
   assert.match(css, /--body-reading: "Times New Roman"/);
   assert.match(css, /--body-kai: "Times New Roman"/);
@@ -169,16 +179,20 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   assert.match(writing, /<body class="detail detail-writings detail-editorial">/);
   assert.match(prompt, /<body class="detail detail-prompts detail-editorial">/);
   assert.match(reading, /<body class="detail detail-readings detail-editorial">/);
+  assert.match(project, /<body class="detail detail-projects detail-editorial">/);
   assert.doesNotMatch(prompt, /<body class="detail detail-writings">/);
   assert.doesNotMatch(writing, /class="article-description"/);
   assert.doesNotMatch(prompt, /class="article-description"/);
   assert.doesNotMatch(reading, /class="article-description"/);
+  assert.doesNotMatch(project, /class="article-description"/);
   assert.match(writing, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
   assert.match(prompt, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
   assert.match(reading, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
+  assert.match(project, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
   assert.doesNotMatch(writing, /class="eyebrow"/);
   assert.doesNotMatch(prompt, /class="eyebrow"/);
   assert.doesNotMatch(reading, /class="eyebrow"/);
+  assert.doesNotMatch(project, /class="eyebrow"/);
 });
 
 test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
@@ -429,6 +443,8 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const headerRule = css.match(/\.site-header \{([\s\S]*?)\}/)?.[1] ?? "";
   assert.doesNotMatch(headerRule, /border-bottom/);
+  assert.match(headerRule, /background: var\(--background-100\)/);
+  assert.match(headerRule, /backdrop-filter: none/);
   assert.doesNotMatch(css, /\.site-footer \{[\s\S]*?border-top/);
   assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me"[\s\S]*?<svg width="14" height="14"[\s\S]*?<span>Residualsun@proton\.me<\/span>/);
   assert.doesNotMatch(html, /持续学习，持续修订/);

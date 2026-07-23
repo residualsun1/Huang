@@ -249,7 +249,7 @@ function listRow(entry, { summary = entry.description } = {}) {
 
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
-  const projects = byKey.projects.entries.map((entry) => {
+  const projects = byKey.projects.entries.slice(0, 3).map((entry) => {
     return `
     <article class="project-card">
       <a class="project-card-link" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}"></a>
@@ -265,8 +265,8 @@ function homePage(collections) {
     </article>`;
   }).join("");
   const prompts = byKey.prompts.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
-  const writings = byKey.writings.entries.slice(0, 5).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
-  const readings = byKey.readings.entries.slice(0, 5).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
+  const writings = byKey.writings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
+  const readings = byKey.readings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
     <p class="section-kicker" id="${group.key}-title">${group.number} / ${group.label}</p>
@@ -379,15 +379,13 @@ function detailPage(entry, previousEntry, nextEntry) {
     console.warn(`[${entry.group.key}/${entry.slug}] ${warning}`);
   }
   const toc = createTableOfContents(rendered.html);
-  const isEditorialArticle = ["writings", "prompts", "readings"].includes(entry.group.key);
-  const description = isEditorialArticle ? "" : `<p class="article-description">${escapeHtml(entry.description)}</p>`;
   const author = entry.author ? `<span class="article-author">${escapeHtml(entry.author)}</span>` : "";
   const tags = entry.tags.length ? `<ul class="article-tags" aria-label="文章标签">${entry.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : "";
   const pagination = articlePagination(previousEntry, nextEntry);
   return layout({
     title: `${entry.title} — Huang`,
     description: entry.description,
-    bodyClass: `detail detail-${entry.group.key}${isEditorialArticle ? " detail-editorial" : ""}`,
+    bodyClass: `detail detail-${entry.group.key} detail-editorial`,
     math: hasMath(entry.body),
     content: `${siteHeader()}
     <main class="article-shell">
@@ -396,7 +394,6 @@ function detailPage(entry, previousEntry, nextEntry) {
       </nav>
       <header class="article-header">
         <h1>${escapeHtml(entry.title)}</h1>
-        ${description}
         <div class="article-meta">
           <div class="article-byline">${author}<time datetime="${escapeHtml(entry.date)}">发布于 ${formatDate(entry.date)}</time></div>
           ${tags}

@@ -50,7 +50,7 @@ date: 2026-07-14
 `content/writings/2026/example.md`，都会生成 `/writings/example/`；年份目录只负责文件管理，
 不会进入公开网址。也可以继续通过 Front Matter 中的 `slug` 自定义网址。
 
-首页按“项目 → 提示词 → 写作 → 阅读”排列。提示词展示最新 3 篇，写作与阅读各展示最新 5 篇；
+首页按“项目 → 提示词 → 写作 → 阅读”排列，每个栏目最多展示最新 3 项；
 阅读内容放入 `content/readings/` 后会自动出现在首页和 `/readings/` 归档页。
 
 首页 X 与 GitHub 地址集中定义在 `scripts/build.mjs` 顶部的 `socialLinks` 对象中，
