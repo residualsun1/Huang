@@ -51,7 +51,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(promptSection, /每一次对话，既是用户在了解大模型，也是大模型在了解用户/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 5);
-  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
+  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 2);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
@@ -71,6 +71,24 @@ test("写作、Prompt 和阅读归档页可访问", async () => {
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.match(readings, /we-have-never-been-modern/);
   assert.match(readings, /the-spears-of-twilight/);
+});
+
+test("实际使用外部资料的文章统一渲染参考文献", async () => {
+  const paths = [
+    "prompts/GPT-Live-Samantha/index.html",
+    "readings/we-have-never-been-modern/index.html",
+    "readings/the-spears-of-twilight/index.html",
+    "writings/deploy-an-agent-with-python/index.html",
+    "writings/what-is-agent/index.html",
+    "writings/ai-products-and-concepts/index.html",
+    "writings/cscw-in-bnu/index.html",
+  ];
+
+  for (const path of paths) {
+    const html = await readFile(new URL(path, root), "utf8");
+    assert.match(html, /<h2 id="参考文献">参考文献<\/h2>/);
+    assert.doesNotMatch(html, /<h2 id="参考资料">参考资料<\/h2>/);
+  }
 });
 
 test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {

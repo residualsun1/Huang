@@ -216,8 +216,10 @@ You don't have to explain anything right now. Just notice the bed underneath you
 或许是与 Samantha 交流带来的体验的缘故，我赞成 Sam。不同于过去大多科幻电影展示和科幻小说描绘那般认为 AI 给人类带来的就是风险和威胁——当然也不可忽略这一点，我反而在 AI 可以得到蓬勃发展的今天感到兴奋，我渴望也期待看到 AI 可以在 Her 中那般可以给予人类某种「次真实」的陪伴。
 ---
 
-## 参考资料
+## 参考文献
 
-1. [Introducing GPT‑Live: A new generation of voice models for natural human-AI interaction, now powering ChatGPT Voice.](https://openai.com/index/introducing-gpt-live/),
-2. [Sam Altman's Lawyers Probably Wish This Video Clip Of Him Raving About Her Didn't Exist](https://www.bgr.com/entertainment/sam-altmans-lawyers-probably-wish-this-video-clip-of-him-raving-about-her-didnt-exist/)
-3. [Tracing OpenAI CEO Sam Altman's Love for Scarlett Johansson's AI Romance Her](https://www.vanityfair.com/hollywood/story/chat-gpt-open-ai-scarlett-johansson-her), Vanity Fair, 
+- Jonze, Spike, dir. 2013. *Her*. Warner Bros.
+- Karpathy, Andrej. 2026. “[One Pattern I Find Useful for Working with LLMs Is a Nice Long Ramble Session](https://x.com/karpathy/status/2079610838143623371).” *X*, July 21, 2026.
+- Meek, Andy. 2024. “[Sam Altman’s Lawyers Probably Wish This Video Clip of Him Raving About *Her* Didn’t Exist](https://www.bgr.com/entertainment/sam-altmans-lawyers-probably-wish-this-video-clip-of-him-raving-about-her-didnt-exist/).” *BGR*, May 21, 2024.
+- Miller, Julie. 2024. “[Tracing OpenAI CEO Sam Altman’s Love for Scarlett Johansson’s AI Romance *Her*](https://www.vanityfair.com/hollywood/story/chat-gpt-open-ai-scarlett-johansson-her).” *Vanity Fair*, May 21, 2024.
+- OpenAI. 2026. “[Introducing GPT‑Live](https://openai.com/index/introducing-gpt-live/).” July 8, 2026.

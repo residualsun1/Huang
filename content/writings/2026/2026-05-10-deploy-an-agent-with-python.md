@@ -771,3 +771,10 @@ for i in range(5): # 设置最大循环次数
 ```
 
 </details>
+
+## 参考文献
+
+- Datawhale 社区. n.d. “[Hello-Agents：从零开始构建智能体](https://github.com/datawhalechina/hello-agents).” GitHub. 访问于 2026 年 7 月 23 日.
+- DeepSeek. n.d. “[DeepSeek API Docs](https://api-docs.deepseek.com/zh-cn/).” 访问于 2026 年 7 月 23 日.
+- Tavily. n.d. “[Tavily Search API](https://www.tavily.com/).” 访问于 2026 年 7 月 23 日.
+- wttr.in. n.d. “[Weather Service](https://wttr.in/).” 访问于 2026 年 7 月 23 日.

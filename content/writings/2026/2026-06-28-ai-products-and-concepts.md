@@ -190,3 +190,11 @@ Harness 的工程设计（循环调度、工具集、上下文压缩）是 Anthr
 * 工具调用（Tool Use）的兼容性可能下降。
 * 某些需要模型特定能力（如 Claude 的 Computer Use）的功能失效。
 * 中文模型对 Harness 的指令理解可能不如原生模型精准。
+
+## 参考文献
+
+- Anthropic. n.d. “[CLI Reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage).” *Claude Code Documentation*. 访问于 2026 年 7 月 23 日.
+- Google Antigravity Team. 2025. “[Build with Google Antigravity, Our New Agentic Development Platform](https://developers.googleblog.com/en/build-with-google-antigravity-our-new-agentic-development-platform/).” *Google Developers Blog*, November 20, 2025.
+- Google. 2026. “[Gemini CLI](https://developers.google.com/gemini-code-assist/docs/gemini-cli).” *Google for Developers*. 更新于 2026 年 6 月 18 日.
+- OpenAI. n.d. “[Using Codex with Your ChatGPT Plan](https://help.openai.com/en/articles/11369540-getting-started-with-codex).” 访问于 2026 年 7 月 23 日.
+- 程序员鱼皮. 2026. “[2 分钟，教你国内爽用 Claude Code + Codex！保姆级教程](https://www.codefather.cn/post/2064234894459990018).” 编程导航.

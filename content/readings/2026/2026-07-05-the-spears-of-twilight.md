@@ -8,6 +8,7 @@ tags:
   - 人类学
   - 法国
   - 美洲
+description: "德斯科拉对待人类学研究的态度，总给人以与其老师列维-斯特劳斯相近的感觉。"
 ---
 
 <!--more-->
@@ -90,3 +91,10 @@ tags:
 我认为无论外界还是我自身都做不了什么——我们都难以实现人类学家的方案。但在阅读的时候，我还是用笔划下了德斯科拉在书末写下的一段话：
 
 > 散落在遥远丛林中的几千名印第安人，其价值远胜任何一本可信度存疑的未来学著作。
+
+## 参考文献
+
+- 德斯科拉，菲利普. 2026.《暮光之矛：一桩亚马孙雨林中的仇杀案》. 刘文玲译. 桂林：广西师范大学出版社.
+- 群鸟会议. 2026. “[重返雨林：仇杀、灵魂与人类学家的文学野心](https://www.xiaoyuzhoufm.com/episode/6a3390e643a22a695585cf0b).” 小宇宙，播客音频.
+- Debaene, Vincent. 2010. *L’adieu au voyage: L’ethnologie française entre science et littérature*. Paris: Gallimard.
+- Taussig, Michael. 2011. *I Swear I Saw This: Drawings in Fieldwork Notebooks, Namely My Own*. Chicago: University of Chicago Press.

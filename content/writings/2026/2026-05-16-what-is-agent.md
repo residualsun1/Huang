@@ -53,7 +53,7 @@ description: "今天是 Agent 这样的概念，明天又会冒出一个怎样�
 
 如前所述，在今天 AI 热的大背景下，我们所谈论的现代智能体可以**主动学习，并据此独立自主地进行决策**。与之相对的「传统智能体」则是**被动反应，依赖先验的设定进行决策**。
 
-这些传统智能体经历了以下四个发展阶段：
+这些传统智能体经历了以下四个发展阶段（Russell and Norvig 2021）：
 
 （1）反射智能体  
 （2）基于模型的反射智能体  
@@ -242,7 +242,7 @@ Observation: 北京当前天气:Sunny，气温31摄氏度
 
 这段 `Observation` 文本会被反馈给智能体，作为下一段循环的主要输入信息，以使得新一轮的 `Thought` 和 `Action` 运行。
 
-就这样，`Thought`、`Action`、`Observation` 共同构成的严谨循环让 LLM 智能体得以将内部的语言推理能力与外部环境的真实信息以及工具操作能力结合起来。
+就这样，`Thought`、`Action`、`Observation` 共同构成的严谨循环让 LLM 智能体得以将内部的语言推理能力与外部环境的真实信息以及工具操作能力结合起来（Yao et al. 2023）。
 
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/05/05-18-2.png)
 
@@ -325,13 +325,13 @@ Agent、AI、LLM 与 API 的关系可以简单用下图表示：
 
 当前最主流的探索方向，旨在通过模拟人类团队的协作模式来解决复杂问题。
 
-* **角色扮演式对话**：如 CAMEL 框架，通过为两个智能体设定明确的角色（如程序员和产品经历）和沟通协议，让它们在结构化的对话中协同完成任务。
-* **组织化工作流**：如 MetaGPT 和 CrewAI，模拟一个分工明确的虚拟团队（如软件公司或咨询小组），每个智能体都有预设的指责和工作流程（SOP），通过层级化或顺序化的方式协作，产出高质量的复杂成果——如完整的代码库或研究报告。
-* **自定义交互**：如 AutoGen 和 AgentScope，开发者可以自定义智能体之间的复杂交互网络。
+* **角色扮演式对话**：如 CAMEL 框架，通过为两个智能体设定明确的角色（如程序员和产品经历）和沟通协议，让它们在结构化的对话中协同完成任务（Li et al. 2023）。
+* **组织化工作流**：如 MetaGPT 和 CrewAI，模拟一个分工明确的虚拟团队（如软件公司或咨询小组），每个智能体都有预设的指责和工作流程（SOP），通过层级化或顺序化的方式协作，产出高质量的复杂成果——如完整的代码库或研究报告（Hong et al. 2024；CrewAI n.d.）。
+* **自定义交互**：如 AutoGen 和 AgentScope，开发者可以自定义智能体之间的复杂交互网络（Wu et al. 2023；Gao et al. 2024）。
 
 #### 2.3 高级控制流架构
 
-LangGraph 是典型的代表，侧重为智能体提供更加强大的底层工程基础，将智能体的执行过程建模为状态图，以更灵活地实现循环、分支、回溯以及人工介入。
+LangGraph 是典型的代表，侧重为智能体提供更加强大的底层工程基础，将智能体的执行过程建模为状态图，以更灵活地实现循环、分支、回溯以及人工介入（LangChain n.d.）。
 
 ## Agent 的核心价值
 
@@ -344,3 +344,14 @@ LangGraph 是典型的代表，侧重为智能体提供更加强大的底层工�
 * **生成结果**：最后 Agent 会整合信息，提供完整且人性化的回答 `今天北京天气晴朗，气温31摄氏度，推荐您去颐和园、故宫或慕田峪长城，这些景点在晴天下非常适合游览。`。
 
 这里不再有写死的 `if 天气 == 晴天 then 推荐户外` 这样的命令，例如假使天气是 `雨天`，Agent 会自主推理重新进行推荐。这正是 Agent 工作相对 Workfolw 的独特之处，不再让 AI 按部就班地执行命令，亦步亦趋，而是给予 AI 一定的自由度自主达成目标。
+
+## 参考文献
+
+- CrewAI. n.d. “[CrewAI Documentation](https://docs.crewai.com/).” 访问于 2026 年 7 月 23 日.
+- Gao, Dawei, et al. 2024. “[AgentScope: A Flexible yet Robust Multi-Agent Platform](https://arxiv.org/abs/2402.14034).” arXiv:2402.14034.
+- Hong, Sirui, et al. 2024. “[MetaGPT: Meta Programming for a Multi-Agent Collaborative Framework](https://proceedings.iclr.cc/paper_files/paper/2024/hash/6507b115562bb0a305f1958ccc87355a-Abstract-Conference.html).” *International Conference on Learning Representations*.
+- LangChain. n.d. “[Graph API Overview](https://docs.langchain.com/oss/python/langgraph/graph-api).” 访问于 2026 年 7 月 23 日.
+- Li, Guohao, et al. 2023. “[CAMEL: Communicative Agents for ‘Mind’ Exploration of Large Scale Language Model Society](https://proceedings.neurips.cc/paper/2023/hash/a3621ee907def47c1b952ade25c67698-Abstract-Conference.html).” *Advances in Neural Information Processing Systems* 36.
+- Russell, Stuart, and Peter Norvig. 2021. *Artificial Intelligence: A Modern Approach*. 4th ed. Hoboken, NJ: Pearson.
+- Wu, Qingyun, et al. 2023. “[AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation](https://arxiv.org/abs/2308.08155).” arXiv:2308.08155.
+- Yao, Shunyu, et al. 2023. “[ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629).” *International Conference on Learning Representations*.
