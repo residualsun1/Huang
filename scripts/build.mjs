@@ -222,21 +222,6 @@ function socialNavigation() {
   </nav>`;
 }
 
-// 项目状态允许直接使用中文，也兼容少量常见英文写法。
-// 未填写 status 时默认显示为「迭代中」，未知值会在构建阶段给出明确提示。
-function projectStatus(entry) {
-  const source = String(entry.status || "迭代中").trim().toLowerCase();
-  if (["迭代中", "active", "in-progress", "iterating"].includes(source)) {
-    return { key: "active", label: "迭代中" };
-  }
-  if (["已完结", "completed", "complete", "done"].includes(source)) {
-    return { key: "completed", label: "已完结" };
-  }
-  throw new Error(
-    `项目「${entry.title}」的 status 仅支持「迭代中」或「已完结」，当前值为「${entry.status}」`,
-  );
-}
-
 const projectIcons = {
   github: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.014-1.699-2.782.604-3.369-1.341-3.369-1.341-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.004.071 1.532 1.031 1.532 1.031.892 1.529 2.341 1.087 2.91.831.091-.646.349-1.087.635-1.337-2.221-.253-4.555-1.111-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.845a9.56 9.56 0 0 1 2.504.337c1.909-1.294 2.748-1.025 2.748-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.591 1.028 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.679.92.679 1.855 0 1.338-.012 2.419-.012 2.748 0 .268.18.579.688.481A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10z"></path></svg>`,
   // Link 图标取自 SVG Repo 的 CC0 资源：https://www.svgrepo.com/svg/525988/link
@@ -265,14 +250,10 @@ function listRow(entry, { summary = entry.description } = {}) {
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
   const projects = byKey.projects.entries.map((entry) => {
-    const status = projectStatus(entry);
     return `
     <article class="project-card">
       <a class="project-card-link" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}"></a>
-      <div class="project-card-top">
-        <span class="status-label status-${status.key}"><span class="status-dot" aria-hidden="true"></span>${status.label}</span>
-        <span class="card-arrow" aria-hidden="true">↗</span>
-      </div>
+      <span class="card-arrow" aria-hidden="true">↗</span>
       <div class="project-card-copy">
         <h3>${escapeHtml(entry.title)}</h3>
         <p>${escapeHtml(entry.description)}</p>

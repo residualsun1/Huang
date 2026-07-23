@@ -299,35 +299,6 @@ a { color: inherit; }
 .social-links svg { flex: 0 0 auto; }
 .social-separator { color: var(--gray-alpha-500); }
 
-/* 可复用状态标签与状态圆点。 */
-.status-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--gray-900);
-  font-family: var(--mono);
-  font-size: 12px;
-  line-height: 16px;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #2fbd70;
-  box-shadow:
-    0 0 0 3px rgba(47, 189, 112, 0.1),
-    0 0 8px rgba(47, 189, 112, 0.28);
-}
-
-/* 已完结项目沿用网站原本的棕色，并使用比迭代状态更克制的光圈。 */
-.status-completed .status-dot {
-  background: var(--accent-700);
-  box-shadow:
-    0 0 0 3px rgba(139, 69, 19, 0.08),
-    0 0 7px rgba(139, 69, 19, 0.2);
-}
-
 /* 首页时间信息：使用等宽数字，避免日期宽度跳动。 */
 .hero-meta time {
   color: var(--gray-700);
@@ -378,13 +349,13 @@ a { color: inherit; }
 
 /*
  * 项目卡片沿用全站的复古暖灰底色，避免卡片与页面产生突兀色差。
- * WebP 纸纹会先去除自身色相、再增强纤维对比；柔光层补充细微磨砂颗粒。
+ * WebP 纸纹会先去除自身色相、再明显增强纤维对比；柔光层补充可见磨砂颗粒。
  */
 .project-card {
   position: relative;
   isolation: isolate;
   display: flex;
-  min-height: 228px;
+  min-height: 208px;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
@@ -412,17 +383,17 @@ a { color: inherit; }
   background-image: url("/images/project-card-paper.webp");
   background-position: center top;
   background-repeat: repeat;
-  background-size: 520px 520px;
+  background-size: 380px 380px;
   content: "";
-  filter: grayscale(1) contrast(1.55);
+  filter: grayscale(1) contrast(2.35) brightness(0.98);
   mix-blend-mode: multiply;
-  opacity: 0.28;
+  opacity: 0.48;
   pointer-events: none;
 }
 
 /*
- * 第二层用不规则柔光与极细斜向颗粒制造轻微磨砂感。
- * 纹理保持低对比度，以免干扰卡片中的小字号文字。
+ * 第二层用不规则柔光、明暗微粒与细斜纹制造一眼可见的磨砂感。
+ * 颗粒仍避开高对比度纯黑，保证卡片文字清晰。
  */
 .project-card::after {
   position: absolute;
@@ -430,12 +401,14 @@ a { color: inherit; }
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.58), transparent 34%),
-    radial-gradient(circle at 84% 76%, rgba(68, 59, 49, 0.075), transparent 42%),
-    linear-gradient(115deg, rgba(53, 47, 41, 0.045) 25%, transparent 25%) 0 0 / 5px 5px;
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.72), transparent 32%),
+    radial-gradient(circle at 84% 76%, rgba(68, 59, 49, 0.13), transparent 40%),
+    radial-gradient(circle, rgba(50, 45, 40, 0.16) 0 0.55px, transparent 0.8px) 0 0 / 4px 4px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.74) 0 0.5px, transparent 0.8px) 2px 1px / 5px 5px,
+    linear-gradient(115deg, rgba(53, 47, 41, 0.09) 25%, transparent 25%) 0 0 / 5px 5px;
   content: "";
   mix-blend-mode: soft-light;
-  opacity: 0.62;
+  opacity: 0.82;
   pointer-events: none;
 }
 
@@ -466,17 +439,10 @@ a { color: inherit; }
   transform: translateY(-1px);
 }
 
-/* 卡片顶部类型标签和右上箭头。 */
-.project-card-top,
+/* 项目名称与简介从卡片顶部自然开始；箭头独立定位，不占用内容高度。 */
 .project-card-copy {
   position: relative;
   z-index: 1;
-}
-
-.project-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .card-arrow,
@@ -484,6 +450,13 @@ a { color: inherit; }
   color: var(--gray-700);
   font-family: var(--mono);
   transition: color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+.project-card .card-arrow {
+  position: absolute;
+  z-index: 1;
+  top: 22px;
+  right: 22px;
 }
 
 .project-card:hover .card-arrow {
@@ -494,6 +467,7 @@ a { color: inherit; }
 /* 项目标题与简介。 */
 .project-card h3 {
   margin: 0;
+  padding-right: 28px;
   color: var(--gray-1000);
   font-weight: 600;
   letter-spacing: -0.035em;
@@ -1571,7 +1545,7 @@ a.article-pagination-item:hover {
 
   .section-heading .section-kicker { gap: 10px; }
   .project-grid { grid-template-columns: 1fr; }
-  .project-card { min-height: 220px; padding: 24px; }
+  .project-card { min-height: 200px; padding: 24px; }
   .project-card h3 { font-size: 22px; line-height: 29px; }
 
   .writing-row {

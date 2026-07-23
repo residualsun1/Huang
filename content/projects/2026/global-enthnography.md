@@ -4,7 +4,6 @@ date: "2026-07-14"
 author: "黄国政"
 slug: "global-enthnography"
 description: "一个 3D 与 2D 地球民族志档案库"
-status: "迭代中"
 repository: ""
 website: ""
 ---

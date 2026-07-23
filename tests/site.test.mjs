@@ -102,24 +102,25 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   assert.match(project, /全球民族志档案数据库/);
 });
 
-test("项目卡片支持状态、详情入口与可选外部链接", async () => {
+test("项目卡片从标题开始展示详情入口与可选外部链接", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const paperTexture = await readFile(new URL("images/project-card-paper.webp", root));
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
 
   assert.match(projectSection, /class="project-card-link" href="\/projects\/global-enthnography\/"/);
-  assert.match(projectSection, /class="status-label status-active"[\s\S]*?>迭代中<\/span>/);
+  assert.match(projectSection, /class="card-arrow" aria-hidden="true">↗<\/span>[\s\S]*?class="project-card-copy"/);
+  assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
   assert.match(projectSection, />项目仓库<\/span>/);
   assert.match(projectSection, />项目网址<\/span>/);
   assert.match(projectSection, /aria-disabled="true"/);
   assert.doesNotMatch(projectSection, /更新于/);
-  assert.match(css, /\.status-dot \{[\s\S]*?background: #2fbd70;[\s\S]*?box-shadow:/);
-  assert.match(css, /\.status-completed \.status-dot \{[\s\S]*?background: var\(--accent-700\)/);
-  assert.match(css, /\.project-card \{[\s\S]*?border: 1px solid rgba\(71, 65, 58, 0\.15\);[\s\S]*?background: var\(--background-100\);[\s\S]*?box-shadow:/);
-  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 520px 520px;[\s\S]*?grayscale\(1\) contrast\(1\.55\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.28/);
-  assert.match(css, /\.project-card::after \{[\s\S]*?linear-gradient\(115deg,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.62/);
+  assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
+  assert.match(css, /\.project-card \{[\s\S]*?min-height: 208px;[\s\S]*?border: 1px solid rgba\(71, 65, 58, 0\.15\);[\s\S]*?background: var\(--background-100\);[\s\S]*?box-shadow:/);
+  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 380px 380px;[\s\S]*?grayscale\(1\) contrast\(2\.35\) brightness\(0\.98\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.48/);
+  assert.match(css, /\.project-card::after \{[\s\S]*?radial-gradient\(circle, rgba\(50, 45, 40, 0\.16\)[\s\S]*?linear-gradient\(115deg,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.82/);
   assert.match(css, /\.project-card:hover \{[\s\S]*?background: rgba\(246, 244, 240, 0\.96\);/);
+  assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 22px;[\s\S]*?right: 22px;/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
   assert.ok(paperTexture.byteLength > 4_000 && paperTexture.byteLength < 100_000);
 });
