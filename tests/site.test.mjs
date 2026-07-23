@@ -105,6 +105,7 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
 test("项目卡片支持状态、详情入口与可选外部链接", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const paperTexture = await readFile(new URL("images/project-card-paper.webp", root));
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
 
   assert.match(projectSection, /class="project-card-link" href="\/projects\/global-enthnography\/"/);
@@ -115,8 +116,11 @@ test("项目卡片支持状态、详情入口与可选外部链接", async () =>
   assert.doesNotMatch(projectSection, /更新于/);
   assert.match(css, /\.status-dot \{[\s\S]*?background: #2fbd70;[\s\S]*?box-shadow:/);
   assert.match(css, /\.status-completed \.status-dot \{[\s\S]*?background: var\(--accent-700\)/);
-  assert.match(css, /\.project-card \{[\s\S]*?box-shadow:/);
+  assert.match(css, /\.project-card \{[\s\S]*?border: 1px solid rgba\(105, 78, 54, 0\.14\);[\s\S]*?background: #f8eee6;[\s\S]*?box-shadow:/);
+  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 680px 680px;[\s\S]*?opacity: 0\.38/);
+  assert.match(css, /\.project-card:hover \{[\s\S]*?background: #fbf2eb;/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
+  assert.ok(paperTexture.byteLength > 4_000 && paperTexture.byteLength < 100_000);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {

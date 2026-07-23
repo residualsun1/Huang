@@ -376,19 +376,23 @@ a { color: inherit; }
   gap: 16px;
 }
 
-/* 项目卡片的表面、边框和基础交互动画。右下阴影模拟轻微的纸张叠放感。 */
+/*
+ * 项目卡片使用独立的暖桃纸面，不改变全站背景。
+ * 低对比度 WebP 纹理叠在 #f8eee6 上，右下阴影继续模拟轻微的纸张叠放感。
+ */
 .project-card {
   position: relative;
+  isolation: isolate;
   display: flex;
   min-height: 228px;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
-  border: 1px solid var(--gray-alpha-400);
+  border: 1px solid rgba(105, 78, 54, 0.14);
   border-radius: var(--radius-sm);
-  background: var(--surface-raised);
+  background: #f8eee6;
   box-shadow:
-    3px 4px 0 rgba(92, 72, 51, 0.075),
+    3px 4px 0 rgba(92, 72, 51, 0.06),
     0 12px 24px rgba(57, 45, 32, 0.045);
   color: inherit;
   transition:
@@ -398,10 +402,29 @@ a { color: inherit; }
     transform 180ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
+/* 原创纸纹只承担表面质感；较低透明度保证小字号文字仍然清楚。 */
+.project-card::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("/images/project-card-paper.webp");
+  background-position: center top;
+  background-repeat: repeat;
+  background-size: 680px 680px;
+  content: "";
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+/* 多张卡片采用不同纹理起点，避免网格中的纸面完全重复。 */
+.project-card:nth-child(3n + 2)::before { background-position: 37% 22%; }
+.project-card:nth-child(3n + 3)::before { background-position: 68% 46%; }
+
 /* 整张卡片的透明主链接：既让卡片可点击，也避免与底部两个外部链接产生嵌套。 */
 .project-card-link {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   inset: 0;
   border-radius: inherit;
 }
@@ -413,15 +436,21 @@ a { color: inherit; }
 
 /* 鼠标悬浮时卡片轻微上移，阴影只做温和加深。 */
 .project-card:hover {
-  border-color: var(--gray-alpha-500);
-  background: rgba(250, 248, 244, 0.94);
+  border-color: rgba(105, 78, 54, 0.2);
+  background: #fbf2eb;
   box-shadow:
-    4px 5px 0 rgba(92, 72, 51, 0.09),
-    0 15px 28px rgba(57, 45, 32, 0.06);
+    4px 5px 0 rgba(92, 72, 51, 0.075),
+    0 15px 28px rgba(57, 45, 32, 0.055);
   transform: translateY(-1px);
 }
 
 /* 卡片顶部类型标签和右上箭头。 */
+.project-card-top,
+.project-card-copy {
+  position: relative;
+  z-index: 1;
+}
+
 .project-card-top {
   display: flex;
   align-items: center;
@@ -463,7 +492,7 @@ a { color: inherit; }
 /* 卡片底部外部链接：沿用首页社交入口的图标、文字下划线和颜色变化。 */
 .project-card-actions {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   gap: 14px;
   align-items: center;
