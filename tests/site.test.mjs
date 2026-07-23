@@ -30,6 +30,10 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(html, /aria-label="GitHub 个人主页"/);
   assert.match(html, />Residualsun<\/span>/);
   assert.match(html, />Guozheng Huang<\/span>/);
+  assert.ok(
+    html.indexOf('aria-label="GitHub 个人主页"') < html.indexOf('aria-label="X 个人主页"'),
+    "GitHub 应显示在 X 之前",
+  );
   assert.match(html, /你好，我是 Huang。我在探索 AI 与人文结合的可能性/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
