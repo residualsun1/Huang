@@ -34,7 +34,8 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     html.indexOf('aria-label="GitHub 个人主页"') < html.indexOf('aria-label="X 个人主页"'),
     "GitHub 应显示在 X 之前",
   );
-  assert.match(html, /你好，我是 Huang。我在探索 AI 与人文结合的可能性/);
+  assert.match(html, /<p>你好，我是 Huang。<\/p>/);
+  assert.match(html, /<p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。<\/p>/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
   assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
 
@@ -46,7 +47,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
   assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 5);
   assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
-  assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 1);
+  assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 2);
   assert.match(promptSection, /每一次对话，既是用户在了解大模型，也是大模型在了解用户/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 5);
@@ -69,6 +70,19 @@ test("写作、Prompt 和阅读归档页可访问", async () => {
   assert.match(prompts, /GPT-Live-Samantha/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.match(readings, /we-have-never-been-modern/);
+  assert.match(readings, /the-spears-of-twilight/);
+});
+
+test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
+  const prompt = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
+  const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
+  const reading = await readFile(new URL("readings/the-spears-of-twilight/index.html", root), "utf8");
+  const project = await readFile(new URL("projects/ai-learning-site/index.html", root), "utf8");
+
+  assert.match(prompt, /Samantha 会理解我吗？/);
+  assert.match(writing, /我眼中的智能体/);
+  assert.match(reading, /暮光之矛/);
+  assert.match(project, /个人 AI 学习网站/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {

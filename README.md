@@ -23,6 +23,19 @@ npm run build
 - `content/prompts/`
 - `content/readings/`
 
+栏目目录支持继续按年份建立子文件夹，例如：
+
+```text
+content/
+└─ writings/
+   ├─ 2026/
+   │  └─ example.md
+   └─ 2027/
+      └─ another-article.md
+```
+
+生成器会递归读取所有层级中的 `.md` 文件；尚未迁移进年份文件夹的文章也可以继续保留在栏目根目录。
+
 每篇内容使用相同的头部字段：
 
 ```md
@@ -33,8 +46,9 @@ date: 2026-07-14
 ---
 ```
 
-文件名会成为网址的一部分，例如 `content/writings/example.md` 会生成
-`/writings/example/`。
+文件名会成为网址的一部分。无论文件位于 `content/writings/example.md`，还是
+`content/writings/2026/example.md`，都会生成 `/writings/example/`；年份目录只负责文件管理，
+不会进入公开网址。也可以继续通过 Front Matter 中的 `slug` 自定义网址。
 
 首页按“项目 → 提示词 → 写作 → 阅读”排列。提示词展示最新 3 篇，写作与阅读各展示最新 5 篇；
 阅读内容放入 `content/readings/` 后会自动出现在首页和 `/readings/` 归档页。

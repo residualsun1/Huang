@@ -36,6 +36,20 @@ tags:
 当前生成器实际使用 `title`、`author`、`date`、`description`、`slug` 和 `tags`。
 `author` 与 `tags` 会显示在文章标题下方；`title` 与 `date` 必填。
 
+## 按年份管理文件
+
+四个栏目目录都会递归读取 `.md` 文件，因此可以按年份继续分层：
+
+```text
+content/writings/2026/example.md
+content/prompts/2026/example.md
+content/readings/2026/example.md
+content/projects/2026/example.md
+```
+
+年份文件夹不会进入文章 URL。URL 仍由 Front Matter 的 `slug` 决定；没有填写 `slug` 时，
+使用文件名。栏目内的 `slug` 必须唯一，发生重复时构建会明确列出冲突文件。
+
 ## 推荐写法
 
 ### 首页可选摘要

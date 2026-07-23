@@ -91,18 +91,45 @@ function deriveDescription(markdown) {
   return plainText.length > 92 ? `${plainText.slice(0, 92)}…` : plainText;
 }
 
+// 递归查找栏目目录中的 Markdown 文件。
+// 既兼容 content/writings/article.md，也兼容 content/writings/2026/article.md。
+async function findMarkdownFiles(directory, relativeDirectory = "") {
+  const currentDirectory = path.join(directory, relativeDirectory);
+  const directoryEntries = await readdir(currentDirectory, { withFileTypes: true });
+  const files = [];
+
+  for (const directoryEntry of directoryEntries.sort((a, b) => a.name.localeCompare(b.name))) {
+    const relativePath = path.join(relativeDirectory, directoryEntry.name);
+    if (directoryEntry.isDirectory()) {
+      files.push(...await findMarkdownFiles(directory, relativePath));
+    } else if (directoryEntry.isFile() && directoryEntry.name.toLowerCase().endsWith(".md")) {
+      files.push(relativePath);
+    }
+  }
+
+  return files;
+}
+
 async function loadContent(group) {
   const directory = path.join(contentRoot, group.key);
-  const files = (await readdir(directory)).filter((file) => file.endsWith(".md"));
+  const files = await findMarkdownFiles(directory);
   const entries = [];
+  const slugSources = new Map();
 
   for (const file of files) {
     const source = await readFile(path.join(directory, file), "utf8");
     const { data, body } = parseFrontmatter(source);
-    const slug = data.slug || file.replace(/\.md$/, "");
+    const slug = String(data.slug || path.basename(file, path.extname(file))).trim();
+    const displayPath = file.split(path.sep).join("/");
     if (!data.title || !data.date) {
-      throw new Error(`${group.key}/${file} 缺少 title 或 date`);
+      throw new Error(`${group.key}/${displayPath} 缺少 title 或 date`);
     }
+    if (slugSources.has(slug)) {
+      throw new Error(
+        `${group.key} 中存在重复 slug「${slug}」：${slugSources.get(slug)} 与 ${displayPath}`,
+      );
+    }
+    slugSources.set(slug, displayPath);
     entries.push({
       ...data,
       slug,
@@ -238,9 +265,9 @@ function homePage(collections) {
         <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
         <div class="hero-copy">
           <div class="hero-intro">
-            <p>你好，我是 Huang。我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。我希望能长期打磨一件具体的小事，一步一步，从想象落地为现实。</p>
+            <p>你好，我是 Huang。</p>
+            <p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。</p>
             <p>目前，本站主要包括「项目」、「Prompt」、「写作」和「阅读」四个版块。</p>
-            <p><b>「项目」</b>即我与 AI 协作开发的 Demo，希望最后能完善成为产品；<b>「Prompt」</b>会展示两种内容，一种是我与 GPT-Live 的语音对话，另一种则是我在开发时与 GPT 的工程对话；<b>「写作」</b>将展示任何与 AI 领域相关的话题写作，呈现我对 AI 的想法和思考;<b>「阅读」</b>则致力于人文领域书籍的阅读。</p>
           </div>
           ${socialNavigation()}
         </div>
