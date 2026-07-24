@@ -22,28 +22,39 @@
 :root {
   color-scheme: light;
 
-  /* 页面背景与半透明表面。 */
-  --background-100: #f3f1ed;
+  /*
+   * 页面背景与半透明表面：
+   * #f1eadc 是全站暖象牙纸基色，其他表面都围绕它增加明暗层次。
+   */
+  --background-100: #f1eadc;
   --background-200: rgba(29, 27, 27, 0.035);
-  --surface-raised: rgba(250, 248, 244, 0.76);
+  --surface-raised: rgba(249, 245, 237, 0.8);
+  --surface-code: #eee4d6;
+  --surface-code-toolbar: #e6dccd;
+  --surface-prompt: rgba(231, 220, 203, 0.76);
+  --surface-prompt-toolbar: rgba(217, 202, 181, 0.45);
+  --surface-react: rgba(249, 244, 234, 0.62);
+  --surface-hover: rgba(249, 244, 234, 0.94);
+  --border-code: #d8cab8;
+  --border-prompt: #cdbda8;
   /*
    * 全站共用的纸张表面：
-   * 两层柔和光晕负责自然光照，一层极淡斜纹负责纸张颗粒。
+   * 暖白光晕保留通透感，右上角浅棕光晕增加旧纸层次，斜纹负责纸张颗粒。
    */
   --paper-surface:
     radial-gradient(
       circle at 13% 7%,
-      rgba(255, 255, 255, 0.58),
+      rgba(255, 252, 245, 0.48),
       transparent 25%
     ),
     radial-gradient(
       circle at 88% 18%,
-      rgba(220, 205, 183, 0.24),
+      rgba(208, 183, 149, 0.22),
       transparent 27%
     ),
     linear-gradient(
       115deg,
-      rgba(121, 98, 71, 0.025) 25%,
+      rgba(119, 89, 58, 0.032) 25%,
       transparent 25%
     ) 0 0 / 8px 8px;
 
@@ -357,10 +368,10 @@ a { color: inherit; }
  * 下面的自定义属性只在项目卡片内部生效，不会改变正文、导航或其他栏目。
  */
 .project-card {
-  --project-glass-fill: rgba(247, 244, 238, 0.68);
-  --project-glass-edge: rgba(255, 255, 255, 0.58);
-  --project-glass-edge-shadow: rgba(78, 66, 54, 0.13);
-  --project-glass-shadow: rgba(55, 47, 40, 0.1);
+  --project-glass-fill: rgba(248, 241, 228, 0.68);
+  --project-glass-edge: rgba(255, 252, 246, 0.6);
+  --project-glass-edge-shadow: rgba(88, 69, 48, 0.14);
+  --project-glass-shadow: rgba(68, 50, 34, 0.11);
 
   position: relative;
   isolation: isolate;
@@ -375,18 +386,18 @@ a { color: inherit; }
   background:
     linear-gradient(
       145deg,
-      rgba(255, 255, 255, 0.44) 0%,
-      rgba(255, 255, 255, 0.12) 42%,
-      rgba(222, 212, 199, 0.2) 100%
+      rgba(255, 253, 248, 0.46) 0%,
+      rgba(255, 250, 241, 0.12) 42%,
+      rgba(218, 197, 170, 0.21) 100%
     ),
     var(--project-glass-fill);
   -webkit-backdrop-filter: blur(8px) saturate(106%);
   backdrop-filter: blur(8px) saturate(106%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.68),
-    inset 1px 0 0 rgba(255, 255, 255, 0.32),
+    inset 0 1px 0 rgba(255, 253, 248, 0.7),
+    inset 1px 0 0 rgba(255, 251, 244, 0.34),
     inset 0 -1px 0 var(--project-glass-edge-shadow),
-    0 3px 8px rgba(55, 47, 40, 0.08),
+    0 3px 8px rgba(68, 50, 34, 0.08),
     0 16px 36px var(--project-glass-shadow);
   color: inherit;
   transform: translateZ(0);
@@ -428,11 +439,11 @@ a { color: inherit; }
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 13% 4%, rgba(255, 255, 255, 0.7), transparent 34%),
-    radial-gradient(circle at 88% 92%, rgba(95, 76, 58, 0.11), transparent 43%),
-    linear-gradient(115deg, rgba(255, 255, 255, 0.14), transparent 36%),
-    radial-gradient(circle, rgba(62, 52, 43, 0.12) 0 0.45px, transparent 0.75px) 0 0 / 5px 5px,
-    radial-gradient(circle, rgba(255, 255, 255, 0.66) 0 0.4px, transparent 0.72px) 2px 1px / 6px 6px;
+    radial-gradient(circle at 13% 4%, rgba(255, 253, 247, 0.7), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(105, 76, 46, 0.12), transparent 43%),
+    linear-gradient(115deg, rgba(255, 251, 243, 0.15), transparent 36%),
+    radial-gradient(circle, rgba(70, 52, 36, 0.12) 0 0.45px, transparent 0.75px) 0 0 / 5px 5px,
+    radial-gradient(circle, rgba(255, 252, 244, 0.64) 0 0.4px, transparent 0.72px) 2px 1px / 6px 6px;
   content: "";
   mix-blend-mode: soft-light;
   opacity: 0.64;
@@ -464,11 +475,11 @@ a { color: inherit; }
 .project-card:focus-within {
   border-color: rgba(139, 69, 19, 0.28);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.74),
-    inset 1px 0 0 rgba(255, 255, 255, 0.36),
-    inset 0 -1px 0 rgba(78, 66, 54, 0.15),
-    0 4px 10px rgba(55, 47, 40, 0.09),
-    0 19px 42px rgba(55, 47, 40, 0.13);
+    inset 0 1px 0 rgba(255, 253, 248, 0.76),
+    inset 1px 0 0 rgba(255, 251, 244, 0.38),
+    inset 0 -1px 0 rgba(88, 69, 48, 0.16),
+    0 4px 10px rgba(68, 50, 34, 0.09),
+    0 19px 42px rgba(68, 50, 34, 0.13);
 }
 
 /*
@@ -477,13 +488,13 @@ a { color: inherit; }
  */
 @media (hover: hover) and (pointer: fine) {
   .project-card:hover {
-    border-color: rgba(255, 255, 255, 0.74);
+    border-color: rgba(255, 252, 246, 0.76);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.82),
-      inset 1px 0 0 rgba(255, 255, 255, 0.42),
-      inset 0 -1px 0 rgba(78, 66, 54, 0.16),
-      0 5px 12px rgba(55, 47, 40, 0.1),
-      0 23px 48px rgba(55, 47, 40, 0.14);
+      inset 0 1px 0 rgba(255, 253, 248, 0.84),
+      inset 1px 0 0 rgba(255, 251, 244, 0.44),
+      inset 0 -1px 0 rgba(88, 69, 48, 0.17),
+      0 5px 12px rgba(68, 50, 34, 0.1),
+      0 23px 48px rgba(68, 50, 34, 0.14);
     transform: translateY(-4px);
   }
 
@@ -499,10 +510,10 @@ a { color: inherit; }
 
   .project-card:active {
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.66),
-      inset 0 -1px 0 rgba(78, 66, 54, 0.16),
-      0 2px 6px rgba(55, 47, 40, 0.08),
-      0 11px 25px rgba(55, 47, 40, 0.11);
+      inset 0 1px 0 rgba(255, 253, 248, 0.68),
+      inset 0 -1px 0 rgba(88, 69, 48, 0.17),
+      0 2px 6px rgba(68, 50, 34, 0.08),
+      0 11px 25px rgba(68, 50, 34, 0.11);
     transform: translateY(-1px) scale(0.985);
     transition-duration: 100ms;
   }
@@ -1054,9 +1065,9 @@ a { color: inherit; }
 .code-block {
   overflow: hidden;
   margin: 2em 0;
-  border: 1px solid #d8d1c6;
+  border: 1px solid var(--border-code);
   border-radius: 12px;
-  background: #efebe4;
+  background: var(--surface-code);
   box-shadow: 0 14px 34px rgba(64, 54, 42, 0.055), 0 2px 7px rgba(64, 54, 42, 0.035);
 }
 
@@ -1068,8 +1079,8 @@ a { color: inherit; }
   justify-content: space-between;
   gap: 20px;
   padding: 3px 10px 3px 14px;
-  border-bottom: 1px solid #d8d1c6;
-  background: #e8e4dc;
+  border-bottom: 1px solid var(--border-code);
+  background: var(--surface-code-toolbar);
 }
 
 /* 工具栏左右两组保持稳定对齐，不包含参考页面中的三色圆点。 */
@@ -1102,7 +1113,7 @@ a { color: inherit; }
   padding: 22px;
   border: 0;
   border-radius: 0;
-  background: #efebe4;
+  background: var(--surface-code);
   color: #403c37;
   font-family: var(--code-font);
   font-size: 14px;
@@ -1129,7 +1140,7 @@ a { color: inherit; }
 
 .inline-prompt-copy-btn:hover {
   border-color: var(--gray-alpha-300);
-  background: rgba(248, 245, 239, 0.58);
+  background: var(--surface-react);
   color: var(--gray-1000);
 }
 
@@ -1156,9 +1167,9 @@ a { color: inherit; }
 .prompt-block {
   overflow: hidden;
   margin: 1.7em 0;
-  border: 1px solid #ccc4b9;
+  border: 1px solid var(--border-prompt);
   border-radius: 12px;
-  background: rgba(229, 224, 215, 0.72);
+  background: var(--surface-prompt);
   box-shadow: 0 10px 28px rgba(64, 54, 42, 0.055);
 }
 
@@ -1170,8 +1181,8 @@ a { color: inherit; }
   justify-content: space-between;
   gap: 20px;
   padding: 5px 12px 5px 16px;
-  border-bottom: 1px solid #ccc4b9;
-  background: rgba(218, 212, 202, 0.42);
+  border-bottom: 1px solid var(--border-prompt);
+  background: var(--surface-prompt-toolbar);
 }
 
 .prompt-heading {
@@ -1214,7 +1225,7 @@ a { color: inherit; }
 /* React 表示 AI 输出：与 Prompt 互换为较浅的纸面色。 */
 .react-block {
   border-color: var(--gray-alpha-300);
-  background: rgba(250, 248, 244, 0.56);
+  background: var(--surface-react);
   box-shadow: 0 10px 28px rgba(64, 54, 42, 0.04);
 }
 
@@ -1540,7 +1551,7 @@ a { color: inherit; }
 
 a.article-pagination-item:hover {
   border-color: var(--gray-alpha-500);
-  background: rgba(250, 248, 244, 0.94);
+  background: var(--surface-hover);
   transform: translateY(-2px);
 }
 
@@ -1716,7 +1727,7 @@ a.article-pagination-item:hover {
 /* 用户要求减少透明度时，将项目卡片退回稳定的不透明暖纸表面。 */
 @media (prefers-reduced-transparency: reduce) {
   .project-card {
-    background: #f4f1eb;
+    background: #f0e7d8;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -1729,7 +1740,7 @@ a.article-pagination-item:hover {
 @media (prefers-contrast: more) {
   .project-card {
     border-color: rgba(29, 27, 27, 0.46);
-    background: rgba(247, 244, 238, 0.92);
+    background: rgba(248, 241, 228, 0.94);
   }
 
   .project-card p { color: var(--gray-1000); }

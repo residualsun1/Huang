@@ -124,7 +124,7 @@ test("项目卡片从标题开始展示详情入口与可选外部链接", async
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
   assert.match(css, /\.project-card \{[\s\S]*?min-height: 208px;[\s\S]*?border: 1px solid var\(--project-glass-edge\);[\s\S]*?border-radius: 18px;[\s\S]*?backdrop-filter: blur\(8px\) saturate\(106%\);/);
-  assert.match(css, /\.project-card \{[\s\S]*?box-shadow:[\s\S]*?inset 0 1px 0 rgba\(255, 255, 255, 0\.68\),[\s\S]*?0 16px 36px var\(--project-glass-shadow\)/);
+  assert.match(css, /\.project-card \{[\s\S]*?--project-glass-fill: rgba\(248, 241, 228, 0\.68\);[\s\S]*?box-shadow:[\s\S]*?inset 0 1px 0 rgba\(255, 253, 248, 0\.7\),[\s\S]*?0 16px 36px var\(--project-glass-shadow\)/);
   assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 380px 380px;[\s\S]*?grayscale\(1\) contrast\(1\.75\) brightness\(1\.04\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.2/);
   assert.match(css, /\.project-card::after \{[\s\S]*?radial-gradient\(circle at 13% 4%,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.64/);
   assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-4px\);/);
@@ -218,13 +218,15 @@ test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
 test("全站使用柔和光晕与细微纸张纹理背景", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
 
+  assert.match(css, /--background-100: #f1eadc;/);
+  assert.match(css, /--surface-raised: rgba\(249, 245, 237, 0\.8\);/);
   assert.match(
     css,
-    /--paper-surface:[\s\S]*?radial-gradient\([\s\S]*?circle at 13% 7%[\s\S]*?radial-gradient\([\s\S]*?circle at 88% 18%/,
+    /--paper-surface:[\s\S]*?circle at 13% 7%[\s\S]*?rgba\(255, 252, 245, 0\.48\)[\s\S]*?circle at 88% 18%[\s\S]*?rgba\(208, 183, 149, 0\.22\)/,
   );
   assert.match(
     css,
-    /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(121, 98, 71, 0\.025\)[\s\S]*?\) 0 0 \/ 8px 8px/,
+    /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(119, 89, 58, 0\.032\)[\s\S]*?\) 0 0 \/ 8px 8px/,
   );
   assert.match(css, /body \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
   assert.match(css, /\.site-header \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
@@ -259,7 +261,8 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   const asciiLabel = renderMarkdown("```ASCII 图\nA -> B\n```").html;
   assert.match(css, /\.prose pre \{[\s\S]*?overflow: auto/);
   assert.match(css, /--code-font:/);
-  assert.match(css, /\.prose pre \{[\s\S]*?background: #efebe4/);
+  assert.match(css, /--surface-code: #eee4d6;/);
+  assert.match(css, /\.prose pre \{[\s\S]*?background: var\(--surface-code\)/);
   assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
   assert.match(css, /\.prose pre code \{[\s\S]*?font-family: inherit/);
   assert.match(css, /\.code-block \{[\s\S]*?box-shadow:/);
@@ -317,8 +320,10 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(css, /\.prompt-content \{[\s\S]*?padding: 13px 20px 16px/);
   assert.match(css, /\.prompt-mark svg \{ display: block; \}/);
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
-  assert.match(css, /\.prompt-block \{[\s\S]*?background: rgba\(229, 224, 215, 0\.72\)/);
-  assert.match(css, /\.react-block \{[\s\S]*?background: rgba\(250, 248, 244, 0\.56\)/);
+  assert.match(css, /--surface-prompt: rgba\(231, 220, 203, 0\.76\);/);
+  assert.match(css, /--surface-react: rgba\(249, 244, 234, 0\.62\);/);
+  assert.match(css, /\.prompt-block \{[\s\S]*?background: var\(--surface-prompt\)/);
+  assert.match(css, /\.react-block \{[\s\S]*?background: var\(--surface-react\)/);
 });
 
 test("链接文字与普通正文中的 Markdown 斜体都能正常渲染", () => {
