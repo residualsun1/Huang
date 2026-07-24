@@ -325,10 +325,13 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(css, /\.prompt-content \{[\s\S]*?padding: 13px 20px 16px/);
   assert.match(css, /\.prompt-mark svg \{ display: block; \}/);
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
-  assert.match(css, /--surface-prompt: rgba\(233, 226, 215, 0\.76\);/);
-  assert.match(css, /--surface-react: rgba\(250, 247, 241, 0\.62\);/);
+  assert.match(css, /--surface-prompt: #eae3d2;/);
+  assert.match(css, /--surface-prompt-toolbar: #e4dbc7;/);
+  assert.match(css, /--surface-react: #ffffff;/);
+  assert.match(css, /--border-react: #dcd6cd;/);
   assert.match(css, /\.prompt-block \{[\s\S]*?background: var\(--surface-prompt\)/);
-  assert.match(css, /\.react-block \{[\s\S]*?background: var\(--surface-react\)/);
+  assert.match(css, /\.react-block \{[\s\S]*?border: 0;[\s\S]*?background: var\(--surface-react\)[\s\S]*?box-shadow: 0 2px 8px rgba\(0, 0, 0, 0\.04\)/);
+  assert.match(css, /\.react-block \.prompt-toolbar \{[\s\S]*?border-bottom-color: var\(--border-react\)/);
 });
 
 test("链接文字与普通正文中的 Markdown 斜体都能正常渲染", () => {

@@ -31,12 +31,13 @@
   --surface-raised: rgba(250, 247, 241, 0.8);
   --surface-code: #efe9df;
   --surface-code-toolbar: #e8e1d7;
-  --surface-prompt: rgba(233, 226, 215, 0.76);
-  --surface-prompt-toolbar: rgba(222, 214, 201, 0.45);
-  --surface-react: rgba(250, 247, 241, 0.62);
+  --surface-prompt: #eae3d2;
+  --surface-prompt-toolbar: #e4dbc7;
+  --surface-react: #ffffff;
   --surface-hover: rgba(250, 247, 241, 0.94);
   --border-code: #dad1c4;
-  --border-prompt: #cfc6ba;
+  --border-prompt: #d4cab8;
+  --border-react: #dcd6cd;
   /*
    * 全站共用的纸张表面：
    * 不再使用大范围明暗光晕，三层微纹理均匀平铺，避免页面产生白黄渐变。
@@ -1078,14 +1079,14 @@ a { color: inherit; }
   transform: translate(-3px, 3px) scale(0.82);
 }
 
-/* Prompt 专用展示：使用较深的暖灰纸面，与下方较浅的 React 输出形成输入区分。 */
+/* Prompt 专用展示：低饱和暖麦芽色保持原有明度，并与羊皮纸背景自然衔接。 */
 .prompt-block {
   overflow: hidden;
   margin: 1.7em 0;
   border: 1px solid var(--border-prompt);
   border-radius: 12px;
   background: var(--surface-prompt);
-  box-shadow: 0 10px 28px rgba(64, 54, 42, 0.055);
+  box-shadow: 0 4px 14px rgba(75, 58, 40, 0.045);
 }
 
 /* Prompt 顶栏：左侧是内容类型，右侧是仅保留图标的复制按钮。 */
@@ -1137,15 +1138,15 @@ a { color: inherit; }
   white-space: pre-wrap;
 }
 
-/* React 表示 AI 输出：与 Prompt 互换为较浅的纸面色。 */
+/* React 表示 AI 输出：移除生硬外框，以白色纸片和极轻投影形成层次。 */
 .react-block {
-  border-color: var(--gray-alpha-300);
+  border: 0;
   background: var(--surface-react);
-  box-shadow: 0 10px 28px rgba(64, 54, 42, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .react-block .prompt-toolbar {
-  border-bottom-color: var(--gray-alpha-300);
+  border-bottom-color: var(--border-react);
   background: transparent;
 }
 
