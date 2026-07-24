@@ -274,6 +274,10 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.match(css, /\.code-toolbar \{/);
   assert.match(css, /\.code-toolbar \{[\s\S]*?min-height: 40px;[\s\S]*?padding: 3px 10px 3px 14px/);
   assert.match(css, /\.token-keyword/);
+  assert.match(css, /\.token-tag \{ color: #98482f; font-weight: 600; \}/);
+  assert.match(css, /\.token-string \{ color: #3f7156; \}/);
+  assert.match(css, /\.token-property \{ color: #6b528c; \}/);
+  assert.match(css, /\.token-constant \{ color: #a04f42; \}/);
   assert.match(script, /navigator\.clipboard/);
   assert.match(script, /\.prose \.code-block, \.prose \.prompt-block/);
   assert.match(script, /querySelector\("\.inline-prompt-copy-btn"\)/);
@@ -325,9 +329,10 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(css, /\.prompt-content \{[\s\S]*?padding: 13px 20px 16px/);
   assert.match(css, /\.prompt-mark svg \{ display: block; \}/);
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
-  assert.match(css, /--surface-prompt: #eae3d2;/);
-  assert.match(css, /--surface-prompt-toolbar: #e4dbc7;/);
+  assert.match(css, /--surface-prompt: var\(--surface-code\);/);
+  assert.match(css, /--surface-prompt-toolbar: var\(--surface-code-toolbar\);/);
   assert.match(css, /--surface-react: #ffffff;/);
+  assert.match(css, /--border-prompt: var\(--border-code\);/);
   assert.match(css, /--border-react: #dcd6cd;/);
   assert.match(css, /\.prompt-block \{[\s\S]*?background: var\(--surface-prompt\)/);
   assert.match(css, /\.react-block \{[\s\S]*?border: 0;[\s\S]*?background: var\(--surface-react\)[\s\S]*?box-shadow: 0 2px 8px rgba\(0, 0, 0, 0\.04\)/);

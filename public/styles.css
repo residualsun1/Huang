@@ -31,12 +31,12 @@
   --surface-raised: rgba(250, 247, 241, 0.8);
   --surface-code: #efe9df;
   --surface-code-toolbar: #e8e1d7;
-  --surface-prompt: #eae3d2;
-  --surface-prompt-toolbar: #e4dbc7;
+  --surface-prompt: var(--surface-code);
+  --surface-prompt-toolbar: var(--surface-code-toolbar);
   --surface-react: #ffffff;
   --surface-hover: rgba(250, 247, 241, 0.94);
   --border-code: #dad1c4;
-  --border-prompt: #d4cab8;
+  --border-prompt: var(--border-code);
   --border-react: #dcd6cd;
   /*
    * 全站共用的纸张表面：
@@ -1079,7 +1079,7 @@ a { color: inherit; }
   transform: translate(-3px, 3px) scale(0.82);
 }
 
-/* Prompt 专用展示：低饱和暖麦芽色保持原有明度，并与羊皮纸背景自然衔接。 */
+/* Prompt 专用展示：直接复用代码块纸面、顶栏与边框配色，保持同一视觉体系。 */
 .prompt-block {
   overflow: hidden;
   margin: 1.7em 0;
@@ -1168,14 +1168,14 @@ a { color: inherit; }
   padding: 0.2em 0;
 }
 
-/* 构建阶段生成的语法高亮色：低饱和度，适合暖灰代码背景。 */
-.token-comment { color: #7b756d; font-style: italic; }
+/* 构建阶段生成的语法高亮色：在暖灰纸面上增加色相区分，同时避免高饱和刺眼感。 */
+.token-comment { color: #716b64; font-style: italic; }
 .token-keyword,
-.token-tag { color: #85532f; font-weight: 600; }
-.token-string { color: #4f725f; }
-.token-property { color: #725d8e; }
+.token-tag { color: #98482f; font-weight: 600; }
+.token-string { color: #3f7156; }
+.token-property { color: #6b528c; }
 .token-number,
-.token-constant { color: #8a5e52; }
+.token-constant { color: #a04f42; }
 
 /* 正文链接及悬浮下划线颜色。 */
 .prose a {
