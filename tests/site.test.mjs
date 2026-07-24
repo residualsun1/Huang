@@ -109,11 +109,11 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   assert.match(project, /全球民族志档案数据库/);
 });
 
-test("项目卡片从标题开始展示详情入口与可选外部链接", async () => {
+test("项目卡片使用统一纸张纹理并展示详情入口与可选外部链接", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const paperTexture = await readFile(new URL("images/project-card-paper.webp", root));
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const projectCardRule = css.match(/\.project-card \{[\s\S]*?\n\}/)?.[0] ?? "";
 
   assert.match(projectSection, /class="project-card-link" href="\/projects\/global-enthnography\/"/);
   assert.match(projectSection, /class="card-arrow" aria-hidden="true">↗<\/span>[\s\S]*?class="project-card-copy"/);
@@ -123,16 +123,15 @@ test("项目卡片从标题开始展示详情入口与可选外部链接", async
   assert.match(projectSection, /aria-disabled="true"/);
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
-  assert.match(css, /\.project-card \{[\s\S]*?min-height: 208px;[\s\S]*?border: 1px solid var\(--project-glass-edge\);[\s\S]*?border-radius: 18px;[\s\S]*?backdrop-filter: blur\(8px\) saturate\(106%\);/);
-  assert.match(css, /\.project-card \{[\s\S]*?--project-glass-fill: rgba\(249, 245, 237, 0\.68\);[\s\S]*?box-shadow:[\s\S]*?inset 0 1px 0 rgba\(255, 254, 251, 0\.7\),[\s\S]*?0 16px 36px var\(--project-glass-shadow\)/);
-  assert.match(css, /\.project-card::before \{[\s\S]*?url\(\"\/images\/project-card-paper\.webp\"\)[\s\S]*?background-size: 380px 380px;[\s\S]*?grayscale\(1\) contrast\(1\.75\) brightness\(1\.04\)[\s\S]*?mix-blend-mode: multiply;[\s\S]*?opacity: 0\.2/);
-  assert.match(css, /\.project-card::after \{[\s\S]*?radial-gradient\(circle at 13% 4%,[\s\S]*?mix-blend-mode: soft-light;[\s\S]*?opacity: 0\.64/);
-  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-4px\);/);
-  assert.match(css, /@media \(prefers-reduced-transparency: reduce\) \{[\s\S]*?\.project-card \{[\s\S]*?backdrop-filter: none;/);
+  assert.match(projectCardRule, /--project-card-surface: #eee8de;/);
+  assert.match(projectCardRule, /min-height: 208px;[\s\S]*?border: 1px solid var\(--project-card-border\);[\s\S]*?border-radius: var\(--radius-md\);/);
+  assert.match(projectCardRule, /background: var\(--paper-surface\), var\(--project-card-surface\);/);
+  assert.match(projectCardRule, /box-shadow:[\s\S]*?3px 4px 0 rgba\(61, 55, 48, 0\.1\),[\s\S]*?0 12px 24px rgba\(45, 41, 36, 0\.08\)/);
+  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-2px\);/);
+  assert.doesNotMatch(projectCardRule, /gradient\(|backdrop-filter|filter:/);
   assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 22px;[\s\S]*?right: 22px;/);
   assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.025em/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
-  assert.ok(paperTexture.byteLength > 4_000 && paperTexture.byteLength < 100_000);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
@@ -215,8 +214,12 @@ test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
   assert.doesNotMatch(css, /\.home-toc/);
 });
 
-test("全站使用柔和光晕与细微纸张纹理背景", async () => {
+test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const cssWithoutPaperSurface = css.replace(
+    /--paper-surface:[\s\S]*?\) 0 0 \/ 8px 8px;/,
+    "",
+  );
 
   assert.match(css, /--background-100: #f2ede3;/);
   assert.match(css, /--surface-raised: rgba\(250, 247, 241, 0\.8\);/);
@@ -229,6 +232,7 @@ test("全站使用柔和光晕与细微纸张纹理背景", async () => {
     /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(112, 90, 66, 0\.024\)[\s\S]*?\) 0 0 \/ 8px 8px/,
   );
   assert.doesNotMatch(css, /circle at 13% 7%|circle at 88% 18%/);
+  assert.doesNotMatch(cssWithoutPaperSurface, /(?:radial|linear)-gradient\(/);
   assert.match(css, /body \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
   assert.match(css, /\.site-header \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
 });

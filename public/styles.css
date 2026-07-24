@@ -363,100 +363,33 @@ a { color: inherit; }
 }
 
 /*
- * 项目卡片使用“暖纸液玻璃”材质：
- * 半透明暖灰表面负责轻盈感，内外两组阴影负责玻璃厚度，底层纸纹继续承接全站气质。
- * 下面的自定义属性只在项目卡片内部生效，不会改变正文、导航或其他栏目。
+ * 项目卡片使用与全站一致的羊皮纸材质：
+ * 纯色表面承接页面底色，直接复用 --paper-surface 的均匀颗粒和斜向纹理。
+ * 不使用透明模糊、局部高光或大范围渐变，保持视觉克制和代码简洁。
  */
 .project-card {
-  --project-glass-fill: rgba(249, 245, 237, 0.68);
-  --project-glass-edge: rgba(255, 253, 249, 0.6);
-  --project-glass-edge-shadow: rgba(82, 68, 54, 0.14);
-  --project-glass-shadow: rgba(60, 50, 40, 0.1);
+  --project-card-surface: #eee8de;
+  --project-card-border: rgba(71, 65, 58, 0.18);
 
   position: relative;
-  isolation: isolate;
   display: flex;
   min-height: 208px;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px;
   overflow: hidden;
-  border: 1px solid var(--project-glass-edge);
-  border-radius: 18px;
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 254, 251, 0.46) 0%,
-      rgba(255, 252, 247, 0.12) 42%,
-      rgba(226, 215, 199, 0.2) 100%
-    ),
-    var(--project-glass-fill);
-  -webkit-backdrop-filter: blur(8px) saturate(106%);
-  backdrop-filter: blur(8px) saturate(106%);
+  border: 1px solid var(--project-card-border);
+  border-radius: var(--radius-md);
+  background: var(--paper-surface), var(--project-card-surface);
   box-shadow:
-    inset 0 1px 0 rgba(255, 254, 251, 0.7),
-    inset 1px 0 0 rgba(255, 252, 247, 0.34),
-    inset 0 -1px 0 var(--project-glass-edge-shadow),
-    0 3px 8px rgba(60, 50, 40, 0.08),
-    0 16px 36px var(--project-glass-shadow);
+    3px 4px 0 rgba(61, 55, 48, 0.1),
+    0 12px 24px rgba(45, 41, 36, 0.08);
   color: inherit;
-  transform: translateZ(0);
   transition:
-    border-color 260ms ease,
-    box-shadow 320ms ease,
-    transform 320ms cubic-bezier(0.2, 0.75, 0.25, 1);
-  will-change: transform;
+    border-color 180ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
 }
-
-/*
- * 原创纸纹现在只作为玻璃下方的基底：降低强度后仍能辨认纤维，
- * 但不会盖住玻璃的清透边缘与文字。
- */
-.project-card::before {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  border-radius: inherit;
-  background-image: url("/images/project-card-paper.webp");
-  background-position: center top;
-  background-repeat: repeat;
-  background-size: 380px 380px;
-  content: "";
-  filter: grayscale(1) contrast(1.75) brightness(1.04);
-  mix-blend-mode: multiply;
-  opacity: 0.2;
-  pointer-events: none;
-  transition: opacity 320ms ease, transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1);
-}
-
-/*
- * 第二层模拟玻璃表面的高光和细颗粒：左上角受光，右下角形成轻微厚度。
- * 整层仅在卡片内部移动，不需要额外脚本或动画依赖。
- */
-.project-card::after {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  border-radius: inherit;
-  background:
-    radial-gradient(circle at 13% 4%, rgba(255, 254, 251, 0.7), transparent 34%),
-    radial-gradient(circle at 88% 92%, rgba(95, 79, 62, 0.1), transparent 43%),
-    linear-gradient(115deg, rgba(255, 253, 249, 0.15), transparent 36%),
-    radial-gradient(circle, rgba(66, 55, 44, 0.11) 0 0.45px, transparent 0.75px) 0 0 / 5px 5px,
-    radial-gradient(circle, rgba(255, 254, 250, 0.64) 0 0.4px, transparent 0.72px) 2px 1px / 6px 6px;
-  content: "";
-  mix-blend-mode: soft-light;
-  opacity: 0.64;
-  pointer-events: none;
-  transform: scale(1.015);
-  transition:
-    opacity 320ms ease,
-    transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1);
-}
-
-/* 多张卡片采用不同纹理起点，避免网格中的纸面完全重复。 */
-.project-card:nth-child(3n + 2)::before { background-position: 37% 22%; }
-.project-card:nth-child(3n + 3)::before { background-position: 68% 46%; }
 
 /* 整张卡片的透明主链接：既让卡片可点击，也避免与底部两个外部链接产生嵌套。 */
 .project-card-link {
@@ -471,50 +404,32 @@ a { color: inherit; }
   outline-offset: 3px;
 }
 
-/* 键盘聚焦时也能看到玻璃边缘变化，不依赖鼠标操作。 */
+/* 键盘聚焦时强化纸张边缘，不依赖鼠标操作。 */
 .project-card:focus-within {
-  border-color: rgba(139, 69, 19, 0.28);
+  border-color: rgba(139, 69, 19, 0.34);
   box-shadow:
-    inset 0 1px 0 rgba(255, 254, 251, 0.76),
-    inset 1px 0 0 rgba(255, 252, 247, 0.38),
-    inset 0 -1px 0 rgba(82, 68, 54, 0.16),
-    0 4px 10px rgba(60, 50, 40, 0.09),
-    0 19px 42px rgba(60, 50, 40, 0.13);
+    3px 4px 0 rgba(61, 55, 48, 0.13),
+    0 14px 28px rgba(45, 41, 36, 0.1);
 }
 
 /*
- * 只有具备精确指针的设备才启用上浮和按压反馈，
+ * 只有具备精确指针的设备才启用轻微上移和按压反馈，
  * 避免手机触摸后残留 Hover 状态。
  */
 @media (hover: hover) and (pointer: fine) {
   .project-card:hover {
-    border-color: rgba(255, 253, 249, 0.76);
+    border-color: rgba(71, 65, 58, 0.3);
     box-shadow:
-      inset 0 1px 0 rgba(255, 254, 251, 0.84),
-      inset 1px 0 0 rgba(255, 252, 247, 0.44),
-      inset 0 -1px 0 rgba(82, 68, 54, 0.17),
-      0 5px 12px rgba(60, 50, 40, 0.1),
-      0 23px 48px rgba(60, 50, 40, 0.14);
-    transform: translateY(-4px);
-  }
-
-  .project-card:hover::before {
-    opacity: 0.24;
-    transform: scale(1.015);
-  }
-
-  .project-card:hover::after {
-    opacity: 0.78;
-    transform: translate3d(1.5%, -1%, 0) scale(1.045);
+      4px 5px 0 rgba(61, 55, 48, 0.14),
+      0 16px 30px rgba(45, 41, 36, 0.11);
+    transform: translateY(-2px);
   }
 
   .project-card:active {
     box-shadow:
-      inset 0 1px 0 rgba(255, 254, 251, 0.68),
-      inset 0 -1px 0 rgba(82, 68, 54, 0.17),
-      0 2px 6px rgba(60, 50, 40, 0.08),
-      0 11px 25px rgba(60, 50, 40, 0.11);
-    transform: translateY(-1px) scale(0.985);
+      2px 3px 0 rgba(61, 55, 48, 0.11),
+      0 8px 18px rgba(45, 41, 36, 0.08);
+    transform: translateY(0) scale(0.99);
     transition-duration: 100ms;
   }
 }
@@ -1715,32 +1630,16 @@ a.article-pagination-item:hover {
   /* 项目卡片仍保留层级变化，但不再移动或缩放。 */
   .project-card,
   .project-card:hover,
-  .project-card:active,
-  .project-card::before,
-  .project-card::after,
-  .project-card:hover::before,
-  .project-card:hover::after {
+  .project-card:active {
     transform: none;
   }
 }
 
-/* 用户要求减少透明度时，将项目卡片退回稳定的不透明暖纸表面。 */
-@media (prefers-reduced-transparency: reduce) {
-  .project-card {
-    background: #f2ece1;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .project-card::before { opacity: 0.24; }
-  .project-card::after { opacity: 0.28; }
-}
-
-/* 高对比度偏好下强化项目卡片边界和正文，避免透明材质降低辨识度。 */
+/* 高对比度偏好下强化项目卡片边界和正文。 */
 @media (prefers-contrast: more) {
   .project-card {
     border-color: rgba(29, 27, 27, 0.46);
-    background: rgba(249, 245, 237, 0.94);
+    background: var(--paper-surface), #f0e9de;
   }
 
   .project-card p { color: var(--gray-1000); }
