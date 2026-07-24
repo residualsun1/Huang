@@ -24,37 +24,38 @@
 
   /*
    * 页面背景与半透明表面：
-   * #f1eadc 是全站暖象牙纸基色，其他表面都围绕它增加明暗层次。
+   * #f2ede3 是全站轻暖羊皮纸基色，其他表面都围绕它增加明暗层次。
    */
-  --background-100: #f1eadc;
+  --background-100: #f2ede3;
   --background-200: rgba(29, 27, 27, 0.035);
-  --surface-raised: rgba(249, 245, 237, 0.8);
-  --surface-code: #eee4d6;
-  --surface-code-toolbar: #e6dccd;
-  --surface-prompt: rgba(231, 220, 203, 0.76);
-  --surface-prompt-toolbar: rgba(217, 202, 181, 0.45);
-  --surface-react: rgba(249, 244, 234, 0.62);
-  --surface-hover: rgba(249, 244, 234, 0.94);
-  --border-code: #d8cab8;
-  --border-prompt: #cdbda8;
+  --surface-raised: rgba(250, 247, 241, 0.8);
+  --surface-code: #efe9df;
+  --surface-code-toolbar: #e8e1d7;
+  --surface-prompt: rgba(233, 226, 215, 0.76);
+  --surface-prompt-toolbar: rgba(222, 214, 201, 0.45);
+  --surface-react: rgba(250, 247, 241, 0.62);
+  --surface-hover: rgba(250, 247, 241, 0.94);
+  --border-code: #dad1c4;
+  --border-prompt: #cfc6ba;
   /*
    * 全站共用的纸张表面：
-   * 暖白光晕保留通透感，右上角浅棕光晕增加旧纸层次，斜纹负责纸张颗粒。
+   * 不再使用大范围明暗光晕，三层微纹理均匀平铺，避免页面产生白黄渐变。
+   * 深浅颗粒模拟纸浆纤维，极淡斜纹让磨砂表面更规整。
    */
   --paper-surface:
     radial-gradient(
-      circle at 13% 7%,
-      rgba(255, 252, 245, 0.48),
-      transparent 25%
-    ),
+      circle,
+      rgba(93, 75, 57, 0.05) 0 0.45px,
+      transparent 0.75px
+    ) 0 0 / 4px 4px,
     radial-gradient(
-      circle at 88% 18%,
-      rgba(208, 183, 149, 0.22),
-      transparent 27%
-    ),
+      circle,
+      rgba(255, 255, 255, 0.34) 0 0.4px,
+      transparent 0.72px
+    ) 2px 1px / 6px 6px,
     linear-gradient(
       115deg,
-      rgba(119, 89, 58, 0.032) 25%,
+      rgba(112, 90, 66, 0.024) 25%,
       transparent 25%
     ) 0 0 / 8px 8px;
 
@@ -137,9 +138,8 @@ body {
   margin: 0;
   /*
    * 全站纸张质感背景：
-   * 前两层径向渐变制造柔和、自然的不均匀光照；
-   * 第三层 8px 斜向纹理提供极轻的纸张颗粒感；
-   * 最后一层保留站点原有的复古暖灰底色。
+   * 两层微粒和一层 8px 斜纹均匀平铺，不再制造局部白黄光晕；
+   * 最后一层保留轻暖羊皮纸底色。
    */
   background: var(--paper-surface), var(--background-100);
   color: var(--gray-1000);
@@ -165,7 +165,7 @@ body {
 /* 链接默认继承父元素颜色，具体样式由各组件定义。 */
 a { color: inherit; }
 
-/* 顶部导航：滚动时固定，并复用全站纸张光晕与斜纹；不使用真实模糊滤镜。 */
+/* 顶部导航：滚动时固定，并复用全站均匀的纸张颗粒与斜纹。 */
 .site-header {
   position: sticky;
   z-index: 20;
@@ -368,10 +368,10 @@ a { color: inherit; }
  * 下面的自定义属性只在项目卡片内部生效，不会改变正文、导航或其他栏目。
  */
 .project-card {
-  --project-glass-fill: rgba(248, 241, 228, 0.68);
-  --project-glass-edge: rgba(255, 252, 246, 0.6);
-  --project-glass-edge-shadow: rgba(88, 69, 48, 0.14);
-  --project-glass-shadow: rgba(68, 50, 34, 0.11);
+  --project-glass-fill: rgba(249, 245, 237, 0.68);
+  --project-glass-edge: rgba(255, 253, 249, 0.6);
+  --project-glass-edge-shadow: rgba(82, 68, 54, 0.14);
+  --project-glass-shadow: rgba(60, 50, 40, 0.1);
 
   position: relative;
   isolation: isolate;
@@ -386,18 +386,18 @@ a { color: inherit; }
   background:
     linear-gradient(
       145deg,
-      rgba(255, 253, 248, 0.46) 0%,
-      rgba(255, 250, 241, 0.12) 42%,
-      rgba(218, 197, 170, 0.21) 100%
+      rgba(255, 254, 251, 0.46) 0%,
+      rgba(255, 252, 247, 0.12) 42%,
+      rgba(226, 215, 199, 0.2) 100%
     ),
     var(--project-glass-fill);
   -webkit-backdrop-filter: blur(8px) saturate(106%);
   backdrop-filter: blur(8px) saturate(106%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 253, 248, 0.7),
-    inset 1px 0 0 rgba(255, 251, 244, 0.34),
+    inset 0 1px 0 rgba(255, 254, 251, 0.7),
+    inset 1px 0 0 rgba(255, 252, 247, 0.34),
     inset 0 -1px 0 var(--project-glass-edge-shadow),
-    0 3px 8px rgba(68, 50, 34, 0.08),
+    0 3px 8px rgba(60, 50, 40, 0.08),
     0 16px 36px var(--project-glass-shadow);
   color: inherit;
   transform: translateZ(0);
@@ -439,11 +439,11 @@ a { color: inherit; }
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 13% 4%, rgba(255, 253, 247, 0.7), transparent 34%),
-    radial-gradient(circle at 88% 92%, rgba(105, 76, 46, 0.12), transparent 43%),
-    linear-gradient(115deg, rgba(255, 251, 243, 0.15), transparent 36%),
-    radial-gradient(circle, rgba(70, 52, 36, 0.12) 0 0.45px, transparent 0.75px) 0 0 / 5px 5px,
-    radial-gradient(circle, rgba(255, 252, 244, 0.64) 0 0.4px, transparent 0.72px) 2px 1px / 6px 6px;
+    radial-gradient(circle at 13% 4%, rgba(255, 254, 251, 0.7), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(95, 79, 62, 0.1), transparent 43%),
+    linear-gradient(115deg, rgba(255, 253, 249, 0.15), transparent 36%),
+    radial-gradient(circle, rgba(66, 55, 44, 0.11) 0 0.45px, transparent 0.75px) 0 0 / 5px 5px,
+    radial-gradient(circle, rgba(255, 254, 250, 0.64) 0 0.4px, transparent 0.72px) 2px 1px / 6px 6px;
   content: "";
   mix-blend-mode: soft-light;
   opacity: 0.64;
@@ -475,11 +475,11 @@ a { color: inherit; }
 .project-card:focus-within {
   border-color: rgba(139, 69, 19, 0.28);
   box-shadow:
-    inset 0 1px 0 rgba(255, 253, 248, 0.76),
-    inset 1px 0 0 rgba(255, 251, 244, 0.38),
-    inset 0 -1px 0 rgba(88, 69, 48, 0.16),
-    0 4px 10px rgba(68, 50, 34, 0.09),
-    0 19px 42px rgba(68, 50, 34, 0.13);
+    inset 0 1px 0 rgba(255, 254, 251, 0.76),
+    inset 1px 0 0 rgba(255, 252, 247, 0.38),
+    inset 0 -1px 0 rgba(82, 68, 54, 0.16),
+    0 4px 10px rgba(60, 50, 40, 0.09),
+    0 19px 42px rgba(60, 50, 40, 0.13);
 }
 
 /*
@@ -488,13 +488,13 @@ a { color: inherit; }
  */
 @media (hover: hover) and (pointer: fine) {
   .project-card:hover {
-    border-color: rgba(255, 252, 246, 0.76);
+    border-color: rgba(255, 253, 249, 0.76);
     box-shadow:
-      inset 0 1px 0 rgba(255, 253, 248, 0.84),
-      inset 1px 0 0 rgba(255, 251, 244, 0.44),
-      inset 0 -1px 0 rgba(88, 69, 48, 0.17),
-      0 5px 12px rgba(68, 50, 34, 0.1),
-      0 23px 48px rgba(68, 50, 34, 0.14);
+      inset 0 1px 0 rgba(255, 254, 251, 0.84),
+      inset 1px 0 0 rgba(255, 252, 247, 0.44),
+      inset 0 -1px 0 rgba(82, 68, 54, 0.17),
+      0 5px 12px rgba(60, 50, 40, 0.1),
+      0 23px 48px rgba(60, 50, 40, 0.14);
     transform: translateY(-4px);
   }
 
@@ -510,10 +510,10 @@ a { color: inherit; }
 
   .project-card:active {
     box-shadow:
-      inset 0 1px 0 rgba(255, 253, 248, 0.68),
-      inset 0 -1px 0 rgba(88, 69, 48, 0.17),
-      0 2px 6px rgba(68, 50, 34, 0.08),
-      0 11px 25px rgba(68, 50, 34, 0.11);
+      inset 0 1px 0 rgba(255, 254, 251, 0.68),
+      inset 0 -1px 0 rgba(82, 68, 54, 0.17),
+      0 2px 6px rgba(60, 50, 40, 0.08),
+      0 11px 25px rgba(60, 50, 40, 0.11);
     transform: translateY(-1px) scale(0.985);
     transition-duration: 100ms;
   }
@@ -1727,7 +1727,7 @@ a.article-pagination-item:hover {
 /* 用户要求减少透明度时，将项目卡片退回稳定的不透明暖纸表面。 */
 @media (prefers-reduced-transparency: reduce) {
   .project-card {
-    background: #f0e7d8;
+    background: #f2ece1;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -1740,7 +1740,7 @@ a.article-pagination-item:hover {
 @media (prefers-contrast: more) {
   .project-card {
     border-color: rgba(29, 27, 27, 0.46);
-    background: rgba(248, 241, 228, 0.94);
+    background: rgba(249, 245, 237, 0.94);
   }
 
   .project-card p { color: var(--gray-1000); }
