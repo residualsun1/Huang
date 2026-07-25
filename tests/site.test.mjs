@@ -124,14 +124,16 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
   assert.match(projectCardRule, /--project-card-surface: #eee8de;/);
-  assert.match(projectCardRule, /min-height: 208px;[\s\S]*?border: 1px solid var\(--project-card-border\);[\s\S]*?border-radius: var\(--radius-md\);/);
+  assert.match(css, /\.project-grid \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 264px\)\);[\s\S]*?justify-content: center;/);
+  assert.match(projectCardRule, /min-height: 184px;[\s\S]*?padding: 20px;[\s\S]*?border: 1px solid var\(--project-card-border\);[\s\S]*?border-radius: var\(--radius-md\);/);
   assert.match(projectCardRule, /background: var\(--paper-surface\), var\(--project-card-surface\);/);
   assert.match(projectCardRule, /box-shadow:[\s\S]*?3px 4px 0 rgba\(61, 55, 48, 0\.1\),[\s\S]*?0 12px 24px rgba\(45, 41, 36, 0\.08\)/);
   assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-2px\);/);
   assert.doesNotMatch(projectCardRule, /gradient\(|backdrop-filter|filter:/);
-  assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 22px;[\s\S]*?right: 22px;/);
+  assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 18px;[\s\S]*?right: 18px;/);
   assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.025em/);
-  assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between/);
+  assert.match(css, /\.project-card h3 \{[\s\S]*?font-size: 20px;[\s\S]*?line-height: 27px;/);
+  assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between;[\s\S]*?padding-top: 14px;/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {

@@ -359,8 +359,9 @@ a { color: inherit; }
 /* 项目网格：桌面端一行三列，响应式区会变成两列和一列。 */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 264px));
+  gap: 14px;
+  justify-content: center;
 }
 
 /*
@@ -374,10 +375,10 @@ a { color: inherit; }
 
   position: relative;
   display: flex;
-  min-height: 208px;
+  min-height: 184px;
   flex-direction: column;
   justify-content: space-between;
-  padding: 24px;
+  padding: 20px;
   overflow: hidden;
   border: 1px solid var(--project-card-border);
   border-radius: var(--radius-md);
@@ -451,8 +452,8 @@ a { color: inherit; }
 .project-card .card-arrow {
   position: absolute;
   z-index: 1;
-  top: 22px;
-  right: 22px;
+  top: 18px;
+  right: 18px;
 }
 
 .project-card:hover .card-arrow {
@@ -471,15 +472,15 @@ a { color: inherit; }
 }
 
 .project-card h3 {
-  font-size: 22px;
-  line-height: 29px;
+  font-size: 20px;
+  line-height: 27px;
 }
 
 .project-card p {
-  margin: 12px 0 0;
+  margin: 9px 0 0;
   color: #34312f;
-  font-size: 14px;
-  line-height: 22px;
+  font-size: 13.5px;
+  line-height: 21px;
 }
 
 /* 卡片底部外部链接：沿用首页社交入口的图标、文字下划线和颜色变化。 */
@@ -487,10 +488,10 @@ a { color: inherit; }
   position: relative;
   z-index: 3;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  padding-top: 18px;
+  padding-top: 14px;
   color: rgb(79, 77, 74);
   font-family: var(--title-serif);
   font-size: 12px;
@@ -1180,7 +1181,7 @@ a { color: inherit; }
 /* 正文链接及悬浮下划线颜色。 */
 .prose a {
   color: var(--accent-800);
-  text-decoration-color: rgba(250, 248, 244, 0.76);
+  text-decoration-color: rgb(190, 155, 128);
   text-underline-offset: 4px;
   transition: text-decoration-color 150ms ease;
 }
@@ -1503,7 +1504,7 @@ a.article-pagination-item:hover {
 
 /* 平板适配（≤ 960px）：项目两列、文章目录隐藏。 */
 @media (max-width: 960px) {
-  .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .project-grid { grid-template-columns: repeat(2, minmax(0, 264px)); }
 
   .article-layout {
     display: block;
@@ -1545,9 +1546,13 @@ a.article-pagination-item:hover {
   }
 
   .section-heading .section-kicker { gap: 10px; }
-  .project-grid { grid-template-columns: 1fr; }
-  .project-card { min-height: 200px; padding: 24px; }
-  .project-card h3 { font-size: 22px; line-height: 29px; }
+  .project-grid {
+    max-width: 264px;
+    grid-template-columns: 1fr;
+    margin-inline: auto;
+  }
+  .project-card { min-height: 184px; padding: 20px; }
+  .project-card h3 { font-size: 20px; line-height: 27px; }
 
   .writing-row {
     grid-template-columns: 82px minmax(0, 1fr) 20px;

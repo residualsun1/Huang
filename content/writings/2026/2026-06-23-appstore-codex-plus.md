@@ -20,7 +20,7 @@ description: "在没有海外信用卡的情况下，我终于成功订阅了 Co
 1. 可以成功科学上网的 VPN（必需）
 2. 一个海外邮箱（如 Google、Proton、Outlook 等，国内的 163 邮箱也可以）（必需）
 3. 一个可以正常接受短信的大陆电话号码（必需）
-4. 美国免税州地址生成器（[AddressGen]()）（可选）
+4. 美国免税州地址生成器（[AddressGen](https://addressgen.top/)）（可选）
 5. 一个美区 Apple ID 账户（必需）
 6. UU 加速器（可选）
 7. 支付宝（必需）
