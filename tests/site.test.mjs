@@ -7,13 +7,17 @@ const root = new URL("../dist/client/", import.meta.url);
 
 test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
   assert.match(html, /class="site-header"/);
   assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
+  assert.match(html, /family=Homemade\+Apple/);
   assert.doesNotMatch(html, /class="site-nav"/);
   assert.doesNotMatch(html, /class="home-toc"/);
   assert.doesNotMatch(html, /class="portrait-space"/);
   assert.doesNotMatch(html, /blog-static\/about\/gz\.jpg/);
+  assert.match(css, /--brand-script: "Homemade Apple", cursive;/);
+  assert.match(css, /\.brand-mark \{[\s\S]*?font-family: var\(--brand-script\);[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: 0;/);
   assert.match(html, /01 \/ 项目/);
   assert.match(html, /02 \/ Prompt/);
   assert.match(html, /03 \/ 写作/);
@@ -125,15 +129,19 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
   assert.match(projectCardRule, /--project-card-surface: #eee8de;/);
   assert.match(css, /\.project-grid \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 264px\)\);[\s\S]*?justify-content: center;/);
-  assert.match(projectCardRule, /min-height: 184px;[\s\S]*?padding: 20px;[\s\S]*?border: 1px solid var\(--project-card-border\);[\s\S]*?border-radius: var\(--radius-md\);/);
+  assert.match(projectCardRule, /min-width: 0;[\s\S]*?min-height: 170px;[\s\S]*?padding: 25px;[\s\S]*?border: 1px solid var\(--project-card-border\);[\s\S]*?border-radius: var\(--radius-md\);/);
   assert.match(projectCardRule, /background: var\(--paper-surface\), var\(--project-card-surface\);/);
   assert.match(projectCardRule, /box-shadow:[\s\S]*?3px 4px 0 rgba\(61, 55, 48, 0\.1\),[\s\S]*?0 12px 24px rgba\(45, 41, 36, 0\.08\)/);
   assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-2px\);/);
   assert.doesNotMatch(projectCardRule, /gradient\(|backdrop-filter|filter:/);
   assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 18px;[\s\S]*?right: 18px;/);
-  assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.025em/);
-  assert.match(css, /\.project-card h3 \{[\s\S]*?font-size: 20px;[\s\S]*?line-height: 27px;/);
+  assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.03em/);
+  assert.match(css, /\.project-card h3 \{[\s\S]*?font-size: 17\.5px;[\s\S]*?line-height: 27px;/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between;[\s\S]*?padding-top: 14px;/);
+  assert.match(css, /@media \(max-width: 960px\) \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-grid \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card-actions \{[\s\S]*?flex-direction: column/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-action svg \{[\s\S]*?width: clamp\(9px, 2\.5vw, 12px\)/);
 });
 
 test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
