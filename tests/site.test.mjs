@@ -98,6 +98,7 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
   assert.match(css, /\.listing:not\(\.listing-projects\) \.collection-shell \{[\s\S]*?760px/);
   assert.match(css, /\.collection-header h1 \{[\s\S]*?color: #34312f;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.02em;/);
   assert.match(css, /\.listing:not\(\.listing-projects\) \.writing-row \{[\s\S]*?padding: 16px 4px;[\s\S]*?border-bottom: 0;/);
+  assert.match(css, /\.listing:not\(\.listing-projects\) \.writing-copy strong \{[\s\S]*?color: #34312f;[\s\S]*?font-size: 17px;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.01em;/);
 });
 
 test("实际使用外部资料的文章均保留作者自定义的参考文献或参考资料标题", async () => {

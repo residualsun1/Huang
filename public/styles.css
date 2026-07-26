@@ -730,6 +730,15 @@ a { color: inherit; }
   gap: 0;
 }
 
+/* 归档条目标题使用正常字重和更松的字距，避免窄版面形成粗黑色块。 */
+.listing:not(.listing-projects) .writing-copy strong {
+  color: #34312f;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 25px;
+  letter-spacing: -0.01em;
+}
+
 .listing:not(.listing-projects) .writing-row:hover {
   background: transparent;
 }
