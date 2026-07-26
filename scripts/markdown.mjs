@@ -712,7 +712,7 @@ export function renderMarkdown(markdown, options = {}) {
     const items = footnoteOrder.map((id, index) => {
       const body = extracted.footnotes.get(id);
       if (!body) context.warnings.push(`脚注 [^${id}] 没有对应定义。`);
-      return `<li id="fn-${escapeAttribute(id)}"><span class="footnote-number" aria-hidden="true">[${index + 1}]</span>${inlineMarkdown(body || `缺少脚注定义：${id}`)} <a class="footnote-backref" href="#fnref-${escapeAttribute(id)}" aria-label="返回正文">↩</a></li>`;
+      return `<li id="fn-${escapeAttribute(id)}"><span class="footnote-number" aria-hidden="true">[${index + 1}]</span>${inlineMarkdown(body || `缺少脚注定义：${id}`)} <a class="footnote-backref" href="#fnref-${escapeAttribute(id)}" aria-label="返回正文">&#8617;&#65038;</a></li>`;
     });
     html.push(`<section class="footnotes" aria-label="脚注"><hr><ol>${items.join("")}</ol></section>`);
   }

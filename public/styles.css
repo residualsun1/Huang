@@ -1345,44 +1345,72 @@ a { color: inherit; }
   font-weight: 600;
 }
 
-/* Hugo notice 提示框兼容层。 */
+/* Hugo notice 提示框：低饱和语义色、纸张纹理和克制的编辑式边框。 */
 .notice-box {
+  --notice-surface: #ebe4d9;
+  --notice-border: rgba(106, 85, 65, 0.26);
+  --notice-accent: #79583f;
+
   min-inline-size: 0;
   max-width: 100%;
   margin: 2em 0;
   padding: 0;
-  border: 1px solid var(--gray-alpha-400);
-  border-radius: var(--radius-sm);
-  background: var(--surface-raised);
+  border: 1px solid var(--notice-border);
+  border-left: 3px solid var(--notice-accent);
+  border-radius: 10px;
+  background: var(--paper-surface), var(--notice-surface);
 }
 
-/* 提示框标题胶囊。 */
+/* 标题只保留文字，不再使用胶囊背景或描边。 */
 .notice-box legend {
-  margin-left: 16px;
-  padding: 3px 8px;
-  border: 1px solid var(--gray-alpha-400);
-  border-radius: 9999px;
-  background: var(--background-100);
-  color: var(--accent-800);
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
+  margin-left: 18px;
+  padding: 0 7px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--notice-accent);
+  font-family: var(--source-han-serif);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 21px;
+  letter-spacing: 0.04em;
 }
 
-/* 四类提示框的内容内边距和语义颜色。 */
+/* 内容留出稳定呼吸空间；底色由提示框承担并与纹理共同平铺。 */
 .notice-body {
   min-width: 0;
-  padding: 18px 20px 4px;
+  padding: 16px 20px 5px;
 }
-.notice-warning { background: color-mix(in srgb, var(--amber-100) 48%, var(--surface-raised)); }
-.notice-warning legend { color: var(--amber-800); }
-.notice-info { background: color-mix(in srgb, var(--blue-100) 48%, var(--surface-raised)); }
-.notice-info legend { color: var(--blue-800); }
-.notice-success { background: color-mix(in srgb, var(--green-100) 48%, var(--surface-raised)); }
-.notice-success legend { color: var(--green-800); }
-.notice-danger { background: color-mix(in srgb, var(--red-100) 48%, var(--surface-raised)); }
-.notice-danger legend { color: var(--red-800); }
+
+.notice-content {
+  --notice-surface: #ebe4d9;
+  --notice-border: rgba(106, 85, 65, 0.26);
+  --notice-accent: #79583f;
+}
+
+.notice-warning {
+  --notice-surface: #f0e5cf;
+  --notice-border: rgba(144, 94, 34, 0.3);
+  --notice-accent: #8a571c;
+}
+
+.notice-info {
+  --notice-surface: #e2e9e5;
+  --notice-border: rgba(62, 99, 96, 0.28);
+  --notice-accent: #3f6664;
+}
+
+.notice-success {
+  --notice-surface: #e4e9dc;
+  --notice-border: rgba(81, 107, 72, 0.28);
+  --notice-accent: #536f49;
+}
+
+.notice-danger {
+  --notice-surface: #eee0db;
+  --notice-border: rgba(135, 70, 58, 0.28);
+  --notice-accent: #884a3e;
+}
 
 /* 可折叠 details / summary，用于隐藏较长代码或补充说明。 */
 .prose details {
@@ -1469,7 +1497,14 @@ a { color: inherit; }
   color: var(--accent-800);
   font-family: "Times New Roman", serif;
 }
-.footnote-backref { margin-left: 4px; text-decoration: none !important; }
+.footnote-backref {
+  margin-left: 4px;
+  color: var(--accent-800);
+  font-family: "Times New Roman", Georgia, serif;
+  font-variant-emoji: text;
+  text-decoration: none !important;
+  white-space: nowrap;
+}
 
 /* Hugo imgloop 兼容：可以横向滚动的多图画廊。 */
 .image-loop {

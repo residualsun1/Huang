@@ -260,6 +260,10 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(writing, /<fieldset class="notice-box notice-content">[\s\S]*?<div class="table-scroll">/);
   assert.match(css, /\.table-scroll \{[\s\S]*?overflow-x: auto;[\s\S]*?max-width: 100%;/);
   assert.match(css, /\.notice-box \{[\s\S]*?min-inline-size: 0;[\s\S]*?max-width: 100%;/);
+  assert.match(css, /\.notice-box \{[\s\S]*?border-left: 3px solid var\(--notice-accent\);[\s\S]*?background: var\(--paper-surface\), var\(--notice-surface\);/);
+  assert.match(css, /\.notice-box legend \{[\s\S]*?border: 0;[\s\S]*?background: transparent;[\s\S]*?font-size: 15px;[\s\S]*?font-weight: 700;/);
+  assert.doesNotMatch(css, /\.notice-box legend \{[\s\S]*?border-radius: 9999px;/);
+  assert.match(css, /\.notice-info \{[\s\S]*?--notice-surface: #e2e9e5;[\s\S]*?--notice-accent: #3f6664;/);
   assert.match(css, /\.notice-body \{[\s\S]*?min-width: 0;/);
   assert.match(css, /\.article-pagination-item \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\);/);
   assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #eee8de;/);
@@ -503,6 +507,7 @@ test("正文引用与文末脚注编号均使用方括号", () => {
   const { html } = renderMarkdown("正文脚注[^note]。\n\n[^note]: 脚注内容");
   assert.match(html, /class="footnote-ref"><a[^>]*>\[1\]<\/a><\/sup>/);
   assert.match(html, /<li id="fn-note"><span class="footnote-number"[^>]*>\[1\]<\/span>脚注内容/);
+  assert.match(html, /class="footnote-backref"[^>]*>&#8617;&#65038;<\/a>/);
   assert.doesNotMatch(html, /<a[^>]*>1<\/a><\/sup>/);
 });
 
