@@ -1730,8 +1730,8 @@ a.article-pagination-item:hover {
   .site-footer-inner {
     min-height: 88px;
     align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     gap: 8px;
   }
 
