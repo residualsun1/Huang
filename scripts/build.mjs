@@ -196,7 +196,9 @@ function layout({
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Homemade+Apple&amp;family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
   <link rel="stylesheet" href="/styles.css">${mathAssets}
 </head>
 <body class="${escapeHtml(bodyClass)}">

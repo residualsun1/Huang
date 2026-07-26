@@ -99,11 +99,11 @@
   --title-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --source-han-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
-  --kai: "Libre Baskerville", Georgia, "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
+  --kai: "Libre Baskerville", Georgia, "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   --editorial: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   /* 正文混排：英文字母与数字优先使用 Times New Roman，中文分别回退到宋体或楷体。 */
   --body-reading: "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
-  --body-kai: "Times New Roman", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
+  --body-kai: "Times New Roman", "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   /* Prompt / React 接近 Codex 界面的 UI 字体；系统没有 OpenAI Sans 时自动回退。 */
   --codex-ui-font: "OpenAI Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
   /* 导航 Huang 字标独享的自然手写字体；不影响站内其他标题和正文。 */
@@ -1278,6 +1278,7 @@ a { color: inherit; }
 /* 表格外层：小屏幕时允许横向滚动。 */
 .table-scroll {
   overflow-x: auto;
+  max-width: 100%;
   margin: 2em 0;
   border: 1px solid var(--gray-alpha-400);
   border-radius: var(--radius-sm);
@@ -1314,6 +1315,8 @@ a { color: inherit; }
 
 /* Hugo notice 提示框兼容层。 */
 .notice-box {
+  min-inline-size: 0;
+  max-width: 100%;
   margin: 2em 0;
   padding: 0;
   border: 1px solid var(--gray-alpha-400);
@@ -1336,7 +1339,10 @@ a { color: inherit; }
 }
 
 /* 四类提示框的内容内边距和语义颜色。 */
-.notice-body { padding: 18px 20px 4px; }
+.notice-body {
+  min-width: 0;
+  padding: 18px 20px 4px;
+}
 .notice-warning { background: color-mix(in srgb, var(--amber-100) 48%, var(--surface-raised)); }
 .notice-warning legend { color: var(--amber-800); }
 .notice-info { background: color-mix(in srgb, var(--blue-100) 48%, var(--surface-raised)); }
@@ -1498,10 +1504,10 @@ a { color: inherit; }
   padding: 18px;
   border: 1px solid var(--gray-alpha-400);
   border-radius: var(--radius-sm);
-  background: var(--surface-raised);
+  background: var(--paper-surface), var(--background-100);
   color: var(--gray-900);
   text-decoration: none;
-  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+  transition: border-color 150ms ease, transform 150ms ease;
 }
 
 .article-pagination-item.next { text-align: right; }
@@ -1524,7 +1530,7 @@ a { color: inherit; }
 
 a.article-pagination-item:hover {
   border-color: var(--gray-alpha-500);
-  background: var(--surface-hover);
+  background: var(--paper-surface), #eee8de;
   transform: translateY(-2px);
 }
 
@@ -1582,7 +1588,7 @@ a.article-pagination-item:hover {
   .article-toc { display: none; }
 }
 
-/* 手机适配（≤ 600px）：继续按屏幕宽度缩放，保持三张卡片水平排布。 */
+/* 手机适配（≤ 600px）：首页项目改为可横向滑动的宽卡片，归档页改为单列。 */
 @media (max-width: 600px) {
   /* 手机端全站左右边距由 48px 总留白缩小为 32px。 */
   .site-header-inner,
@@ -1621,15 +1627,36 @@ a.article-pagination-item:hover {
   }
 
   .section-heading .section-kicker { gap: 10px; }
-  .project-grid {
-    gap: clamp(6px, 2vw, 10px);
-    max-width: 100%;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .home .project-grid {
+    grid-template-columns: none;
+    grid-auto-columns: min(78vw, 300px);
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 12px;
+    width: calc(100% + 32px);
+    max-width: none;
+    margin-inline: -16px;
+    padding: 4px 16px 18px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+  }
+
+  .home .project-grid::-webkit-scrollbar { display: none; }
+
+  .listing-projects .project-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .project-card {
-    min-height: clamp(168px, 46vw, 184px);
-    padding: clamp(8px, 2.6vw, 14px);
+    min-height: 0;
+    justify-content: flex-start;
+    gap: 18px;
+    padding: 18px;
+    scroll-snap-align: start;
   }
 
   /* 手机端隐藏装饰箭头，把有限宽度完整留给项目名称。 */
@@ -1637,43 +1664,43 @@ a.article-pagination-item:hover {
 
   .project-card h3 {
     padding-right: 0;
-    font-size: clamp(12px, 3.2vw, 16px);
-    line-height: clamp(17px, 4vw, 23px);
+    font-size: 16px;
+    line-height: 24px;
     letter-spacing: 0.015em;
   }
 
-  /* 简介在极窄卡片中最多显示三行，避免把三个卡片共同撑得过高。 */
+  /* 宽卡片的简介最多显示两行，避免内容长度改变整组卡片高度。 */
   .project-card p {
     display: -webkit-box;
     overflow: hidden;
     margin-top: 6px;
-    font-size: clamp(10px, 2.55vw, 12.5px);
-    line-height: clamp(15px, 3.8vw, 19px);
+    font-size: 13px;
+    line-height: 21px;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
   }
 
   /*
-   * 手机端仍保持三张卡片横排，但每张卡片内部的两个外部入口改为上下排列。
-   * 这样图标和四字标签不会互相挤压，也不需要横向滚动。
+   * 宽卡片为两个外部入口保留横排空间；必要时自然换行，
+   * 不再用强制上下布局制造大块中间留白。
    */
   .project-card-actions {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
-    padding-top: 10px;
-    font-size: clamp(8.5px, 2.2vw, 11px);
-    line-height: 1.35;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding-top: 0;
+    font-size: 11.5px;
+    line-height: 18px;
   }
 
   .project-action {
-    width: 100%;
-    gap: 3px;
+    width: auto;
+    gap: 5px;
   }
 
   .project-action svg {
-    width: clamp(9px, 2.5vw, 12px);
-    height: clamp(9px, 2.5vw, 12px);
+    width: 12px;
+    height: 12px;
   }
 
   .writing-row {
@@ -1720,7 +1747,7 @@ a.article-pagination-item:hover {
   .prompt-toolbar { min-height: 42px; padding: 4px 10px 4px 14px; }
   .prompt-content { padding: 12px 16px 14px; font-size: 15px; }
   .prose blockquote { margin-inline: -8px; }
-  .notice-box { margin-inline: -8px; }
+  .notice-box { margin-inline: 0; }
   .image-loop { grid-auto-columns: 92%; }
 
   /* 手机端上下篇导航改为单列。 */
