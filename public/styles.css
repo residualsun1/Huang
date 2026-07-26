@@ -18,6 +18,24 @@
   font-weight: 100 900;
 }
 
+/* 正文引用使用网站早期的 FandolKai 字体资源，并优先复用设备自带楷体。 */
+@font-face {
+  font-family: "FandolKai";
+  src:
+    local("Kaiti"),
+    local("Kaiti SC"),
+    local("STKaiti"),
+    local("楷体"),
+    local("SimKai"),
+    local("AR PL KaitiM GB"),
+    local("DFKai-SB"),
+    local("FandolKai"),
+    url("https://cdn.jsdelivr.net/gh/residualsun1/infont/AR-PL-KaitiM-GB-from-yihui.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
 /* 全局设计变量：统一管理颜色、字体、圆角和页面最大宽度。 */
 :root {
   color-scheme: light;
@@ -99,11 +117,11 @@
   --title-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --source-han-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
-  --kai: "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
+  --kai: "FandolKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   --editorial: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   /* 正文混排：英文字母与数字优先使用 Times New Roman，中文分别回退到宋体或楷体。 */
   --body-reading: "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
-  --body-kai: "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
+  --body-kai: "FandolKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   /* Prompt / React 接近 Codex 界面的 UI 字体；系统没有 OpenAI Sans 时自动回退。 */
   --codex-ui-font: "OpenAI Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
   /* 导航 Huang 字标独享的自然手写字体；不影响站内其他标题和正文。 */
@@ -1627,16 +1645,7 @@ a.article-pagination-item:hover {
   }
 
   .section-heading .section-kicker { gap: 10px; }
-  .home .project-grid {
-    grid-template-columns: min(78vw, 300px);
-    grid-auto-flow: row;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    margin-inline: auto;
-    padding: 4px 0 18px;
-  }
-
+  .home .project-grid,
   .listing-projects .project-grid {
     grid-template-columns: 1fr;
     gap: 12px;

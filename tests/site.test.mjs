@@ -179,7 +179,7 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   assert.match(css, /\.project-card h3 \{[\s\S]*?font-size: 17\.5px;[\s\S]*?line-height: 27px;/);
   assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between;[\s\S]*?padding-top: 14px;/);
   assert.match(css, /@media \(max-width: 960px\) \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.project-grid \{[\s\S]*?grid-template-columns: min\(78vw, 300px\);[\s\S]*?grid-auto-flow: row;[\s\S]*?justify-content: center;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.project-grid,\s*\.listing-projects \.project-grid \{[\s\S]*?grid-template-columns: 1fr;[\s\S]*?gap: 12px;/);
   assert.doesNotMatch(css, /\.home \.project-grid \{[\s\S]*?overflow-x: auto;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.listing-projects \.project-grid \{[\s\S]*?grid-template-columns: 1fr;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card \{[\s\S]*?min-height: 0;[\s\S]*?padding: 18px;/);
@@ -221,8 +221,9 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
   assert.match(css, /--source-han-serif:/);
   assert.match(css, /--body-reading: "Times New Roman"/);
-  assert.match(css, /--body-kai: "LXGW WenKai", "Kaiti SC"/);
-  assert.match(home, /lxgw-wenkai-webfont@1\.7\.0\/lxgwwenkai-regular\.css/);
+  assert.match(css, /font-family: "FandolKai";[\s\S]*?local\("Kaiti"\)[\s\S]*?AR-PL-KaitiM-GB-from-yihui\.woff2/);
+  assert.match(css, /--body-kai: "FandolKai", "Kaiti SC"/);
+  assert.doesNotMatch(home, /lxgw-wenkai-webfont/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--body-reading\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--body-kai\)/);
   assert.doesNotMatch(css, /body\.detail-writings \{/);
@@ -524,7 +525,7 @@ test("正文目录可独立滚动并随当前章节自动高亮", async () => {
 test("正文使用 Times New Roman 混排，引用整段使用网页楷体，标题和代码保持原有字体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /--body-reading: "Times New Roman"/);
-  assert.match(css, /--body-kai: "LXGW WenKai", "Kaiti SC"/);
+  assert.match(css, /--body-kai: "FandolKai", "Kaiti SC"/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--body-reading\)/);
   assert.match(css, /\.prose h1,[\s\S]*?\.prose h6 \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--body-kai\)/);
@@ -563,7 +564,7 @@ test("普通拉丁文字统一使用 Libre Baskerville，代码保留代码字�
   assert.match(css, /--mono: "Libre Baskerville", Georgia/);
   assert.match(css, /--serif: "Libre Baskerville", Georgia/);
   assert.match(css, /--source-han-serif: "Libre Baskerville", Georgia/);
-  assert.match(css, /--kai: "LXGW WenKai", "Kaiti SC"/);
+  assert.match(css, /--kai: "FandolKai", "Kaiti SC"/);
   assert.match(css, /--editorial: "Libre Baskerville", Georgia/);
   assert.match(css, /\.prose code \{[\s\S]*?font-family: var\(--code-font\)/);
   assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
