@@ -17,6 +17,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
   assert.match(notFound, /页面不存在/);
   assert.match(robots, /User-agent: \*\nAllow: \//);
+  assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /X-Content-Type-Options: nosniff/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
 });
