@@ -8,6 +8,9 @@ const contentRoot = path.join(root, "content");
 const publicRoot = path.join(root, "public");
 const distRoot = path.join(root, "dist");
 const clientRoot = path.join(distRoot, "client");
+const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "")
+  .trim()
+  .replace(/\/+$/, "");
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
@@ -151,7 +154,26 @@ function formatDate(value) {
   return [year, month, day].filter(Boolean).join(".");
 }
 
-function layout({ title, description, content, bodyClass = "", math = false }) {
+function absoluteUrl(pathname) {
+  return siteUrl ? new URL(pathname, `${siteUrl}/`).href : "";
+}
+
+function layout({
+  title,
+  description,
+  content,
+  bodyClass = "",
+  math = false,
+  pathname = "/",
+  index = true,
+}) {
+  const canonicalUrl = absoluteUrl(pathname);
+  const socialImageUrl = absoluteUrl("/og.png");
+  const canonicalAssets = canonicalUrl ? `
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
+  <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
+  <meta property="og:image" content="${escapeHtml(socialImageUrl)}">
+  <meta name="twitter:image" content="${escapeHtml(socialImageUrl)}">` : "";
   const mathAssets = math ? `
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.css" integrity="sha384-1vdNCNel6Tx/NQa8IR1mGOGKsbGreCkOPfbtPPnUURJ5Tu2PRVfQ/7KLZC+Pi1p1" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.js" integrity="sha384-ycJ6GAwiS15LoUPipwJOrWTvkUHl/YqELValBwI5I4awP1EeEQJYarj+w85ntcz7" crossorigin="anonymous"></script>
@@ -165,12 +187,12 @@ function layout({ title, description, content, bodyClass = "", math = false }) {
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <meta name="theme-color" content="#f2ede3">
+  <meta name="robots" content="${index ? "index, follow" : "noindex, follow"}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
-  <meta property="og:image" content="https://huang-ai-learning-notes.residualsun924088.chatgpt.site/og.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://huang-ai-learning-notes.residualsun924088.chatgpt.site/og.png">
+  ${canonicalAssets}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -277,6 +299,7 @@ function homePage(collections) {
   return layout({
     title: "Huang",
     description: "你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。",
+    pathname: "/",
     bodyClass: "home",
     content: `${siteHeader()}
     <main class="site-shell home-layout">
@@ -329,6 +352,7 @@ function collectionPage(collection) {
   return layout({
     title: `${group.label} — Huang`,
     description: `Huang 的${group.label}归档。`,
+    pathname: `/${group.key}/`,
     bodyClass: `listing listing-${group.key}`,
     content: `${siteHeader()}
     <main class="collection-shell">
@@ -392,6 +416,7 @@ function detailPage(entry, previousEntry, nextEntry) {
   return layout({
     title: `${entry.title} — Huang`,
     description: entry.description,
+    pathname: entry.href,
     bodyClass: `detail detail-${entry.group.key} detail-editorial`,
     math: hasMath(entry.body),
     content: `${siteHeader()}
@@ -421,6 +446,51 @@ function detailPage(entry, previousEntry, nextEntry) {
   });
 }
 
+function notFoundPage() {
+  return layout({
+    title: "页面不存在 — Huang",
+    description: "你访问的页面不存在。",
+    pathname: "/404.html",
+    index: false,
+    content: `${siteHeader()}
+    <main class="collection-shell">
+      <header class="collection-header">
+        <p class="section-kicker">404 / NOT FOUND</p>
+        <h1>页面不存在</h1>
+      </header>
+      <p>这个链接可能已经失效，或者页面地址有误。</p>
+      <a class="collection-back" href="/">← 返回首页</a>
+    </main>
+    ${siteFooter()}`,
+  });
+}
+
+async function writeDiscoveryFiles(collections) {
+  await writeFile(
+    path.join(clientRoot, "robots.txt"),
+    `User-agent: *\nAllow: /\n${siteUrl ? `Sitemap: ${absoluteUrl("/sitemap.xml")}\n` : ""}`,
+    "utf8",
+  );
+
+  if (!siteUrl) return;
+
+  const paths = [
+    "/",
+    ...collections.flatMap(({ group, entries }) => [
+      `/${group.key}/`,
+      ...entries.map((entry) => entry.href),
+    ]),
+  ];
+  const urls = paths
+    .map((pathname) => `  <url><loc>${escapeHtml(absoluteUrl(pathname))}</loc></url>`)
+    .join("\n");
+  await writeFile(
+    path.join(clientRoot, "sitemap.xml"),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+    "utf8",
+  );
+}
+
 export async function buildSite() {
   await rm(distRoot, { recursive: true, force: true });
   await mkdir(clientRoot, { recursive: true });
@@ -440,11 +510,13 @@ export async function buildSite() {
   }
 
   await writeFile(path.join(clientRoot, "index.html"), homePage(collections), "utf8");
+  await writeFile(path.join(clientRoot, "404.html"), notFoundPage(), "utf8");
   for (const collection of collections) {
     const target = path.join(clientRoot, collection.group.key);
     await mkdir(target, { recursive: true });
     await writeFile(path.join(target, "index.html"), collectionPage(collection), "utf8");
   }
+  await writeDiscoveryFiles(collections);
   await mkdir(path.join(distRoot, "server"), { recursive: true });
   await writeFile(
     path.join(distRoot, "server", "index.js"),

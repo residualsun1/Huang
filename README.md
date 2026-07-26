@@ -1,42 +1,45 @@
-# AI 学习与理解 · Demo
+# Huang 的 AI 学习与思考
 
-一个零依赖、Markdown 驱动的中文个人网站 Demo。
+一个零运行时依赖、Markdown 驱动的中文个人网站。内容在构建阶段生成静态 HTML，适合长期写作、项目展示和求职作品集。
 
-## 使用
+## 本地使用
 
-```bash
+需要 Node.js 24。项目根目录的 `.node-version` 与 `package.json` 已固定运行时主版本。
+
+```powershell
+npm ci
 npm run dev
 ```
 
-浏览器访问终端显示的本地地址。生成可部署文件：
+浏览器访问终端显示的本地地址。提交前运行完整检查：
 
-```bash
-npm run build
+```powershell
+npm test
 ```
+
+`npm run build` 会将可部署文件生成到 `dist/client/`。不要直接修改 `dist/`，它会在下次构建时被覆盖。
 
 ## 添加内容
 
-在以下任一目录新增 `.md` 文件：
+在以下任一目录中新增 `.md` 文件：
 
 - `content/projects/`
 - `content/writings/`
 - `content/prompts/`
 - `content/readings/`
 
-栏目目录支持继续按年份建立子文件夹，例如：
+栏目目录支持按年份继续分层，例如：
 
 ```text
 content/
-└─ writings/
-   ├─ 2026/
-   │  └─ example.md
-   └─ 2027/
-      └─ another-article.md
+└── writings/
+    ├── 2026/
+    │   └── example.md
+    └── 2027/
+        └── another-article.md
 ```
 
-生成器会递归读取所有层级中的 `.md` 文件；尚未迁移进年份文件夹的文章也可以继续保留在栏目根目录。
-
-每篇内容使用相同的头部字段：
+每篇内容至少需要 `title` 和 `date`：
 
 ```md
 ---
@@ -46,18 +49,21 @@ date: 2026-07-14
 ---
 ```
 
-文件名会成为网址的一部分。无论文件位于 `content/writings/example.md`，还是
-`content/writings/2026/example.md`，都会生成 `/writings/example/`；年份目录只负责文件管理，
-不会进入公开网址。也可以继续通过 Front Matter 中的 `slug` 自定义网址。
+文件名默认成为网址的一部分。无论文章位于 `content/writings/example.md` 还是 `content/writings/2026/example.md`，都会生成 `/writings/example/`；也可以通过 Front Matter 的 `slug` 自定义网址。
 
-首页按“项目 → 提示词 → 写作 → 阅读”排列，每个栏目最多展示最新 3 项；
-阅读内容放入 `content/readings/` 后会自动出现在首页和 `/readings/` 归档页。
+首页按照“项目 → Prompt → 写作 → 阅读”排列，每个栏目展示最新三项。社交链接集中定义在 `scripts/build.mjs` 顶部的 `socialLinks`。
 
-首页 X 与 GitHub 地址集中定义在 `scripts/build.mjs` 顶部的 `socialLinks` 对象中，
-将其中的平台首页地址替换为自己的个人主页即可。
+## 项目结构
 
-从 Hugo 迁移文章、可用扩展格式和未知格式的处理方式，见
-[`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)。
+```text
+content/             Markdown 内容
+public/              浏览器直接加载的 CSS、脚本和图片
+scripts/build.mjs    页面模板、内容读取和静态站点构建
+scripts/markdown.mjs Markdown 与旧 Hugo 格式转换
+scripts/dev.mjs      本地预览与自动重建
+tests/               构建结果和 Markdown 转换测试
+docs/                维护、内容兼容和部署文档
+dist/client/         自动生成的部署产物（不提交 Git）
+```
 
-站点的 Warm Geist 视觉原则和设计 Token，见
-[`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)。
+详细部署方案与 Git 工作流见 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)。内容迁移格式见 [`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)，视觉规范见 [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)。

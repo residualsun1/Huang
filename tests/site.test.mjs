@@ -5,6 +5,22 @@ import { hasMath, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
 
+test("构建产物可独立部署并包含基础上线文件", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const notFound = await readFile(new URL("404.html", root), "utf8");
+  const robots = await readFile(new URL("robots.txt", root), "utf8");
+  const headers = await readFile(new URL("_headers", root), "utf8");
+  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
+
+  assert.doesNotMatch(html, /chatgpt\.site/);
+  assert.match(html, /<meta name="robots" content="index, follow">/);
+  assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
+  assert.match(notFound, /页面不存在/);
+  assert.match(robots, /User-agent: \*\nAllow: \//);
+  assert.match(headers, /X-Content-Type-Options: nosniff/);
+  assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
+});
+
 test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");

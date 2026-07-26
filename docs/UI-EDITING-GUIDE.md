@@ -25,7 +25,7 @@
 2. 修改全站最大宽度：搜索 `--page-width`。
 3. 修改文章正文宽度：搜索 `--article-width`。
 4. 修改首页简介：搜索 `.hero-intro`。
-5. 修改项目卡片外观：在 `public/styles.css` 搜索 `.project-grid`、`.project-card`、`.project-card::before`、`.project-card::after` 和 `.project-card-actions`；卡片底色继承 `--background-100`，纸纤维强度主要由 `::before` 的 `contrast` 与 `opacity` 控制，磨砂感主要由 `::after` 的渐变和 `opacity` 控制；纸纹文件位于 `public/images/project-card-paper.webp`。
+5. 修改项目卡片外观：在 `public/styles.css` 搜索 `.project-grid`、`.project-card`、`.project-card::before`、`.project-card::after` 和 `.project-card-actions`；卡片底色继承 `--background-100`，纸纤维与磨砂感由两个伪元素的 CSS 渐变和 `opacity` 共同控制。
 6. 修改项目卡片结构或字段：在 `scripts/build.mjs` 搜索 `projectAction` 和 `const projects`。
 7. 设置项目链接：打开对应的 `content/projects/年份/项目名.md`，填写 `repository` 和 `website`。
 8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。

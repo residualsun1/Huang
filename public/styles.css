@@ -248,9 +248,7 @@ a { color: inherit; }
 .hero-copy { width: 100%; }
 
 /* 英文栏目编号和小标签统一使用 Libre Baskerville。 */
-.eyebrow,
-.section-kicker,
-.component-label {
+.section-kicker {
   margin: 0;
   color: var(--accent-700);
   font-family: var(--title-serif);
@@ -280,13 +278,6 @@ a { color: inherit; }
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: -0.035em;
-}
-
-.detail-editorial .article-description {
-  max-width: 740px;
-  color: var(--gray-900);
-  font-family: var(--body-reading);
-  line-height: 1.85;
 }
 
 /* 首页三段个人简介：统一使用首段的字号、颜色和字重。 */
@@ -335,14 +326,6 @@ a { color: inherit; }
 .social-links a:hover span { border-bottom-color: rgb(29, 27, 27); }
 .social-links svg { flex: 0 0 auto; }
 .social-separator { color: var(--gray-alpha-500); }
-
-/* 首页时间信息：使用等宽数字，避免日期宽度跳动。 */
-.hero-meta time {
-  color: var(--gray-700);
-  font-family: var(--editorial);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
 
 /* 首页栏目通用间距；scroll-margin 避免锚点被顶部导航遮挡。 */
 .content-section {
@@ -802,7 +785,7 @@ a { color: inherit; }
 .breadcrumb a { text-decoration: none; }
 .breadcrumb a:hover { color: var(--gray-1000); }
 
-/* 文章标题区域：标题、可选摘要、作者、发布日期和文章标签。 */
+/* 文章标题区域：标题、作者、发布日期和文章标签。 */
 .article-header {
   max-width: 920px;
   padding: 64px 0;
@@ -814,14 +797,6 @@ a { color: inherit; }
   margin: 0;
   font-size: clamp(38px, 5vw, 52px);
   line-height: 1.08;
-}
-
-.article-description {
-  max-width: 780px;
-  margin: 24px 0 0;
-  color: var(--gray-900);
-  font-size: 18px;
-  line-height: 30px;
 }
 
 .article-meta {
@@ -1722,10 +1697,9 @@ a.article-pagination-item:hover {
 
   .breadcrumb { padding-top: 24px; }
 
-  /* 手机端文章标题、摘要和元信息。 */
+  /* 手机端文章标题和元信息。 */
   .article-header { padding: 48px 0; }
   .article-header h1 { font-size: 36px; line-height: 41px; letter-spacing: -0.045em; }
-  .article-description { font-size: 17px; line-height: 28px; }
   .article-meta { align-items: flex-start; flex-direction: column; }
   .article-tags { justify-content: flex-start; }
 

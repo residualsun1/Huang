@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: Geist
-description: Vercel’s Geist design system, Light theme (the Dark theme is documented at /design.dark.md).
+description: Vercel’s Geist design system, Light theme reference retained for design history.
 colors:
   primary: "#171717"
   secondary: "#4d4d4d"

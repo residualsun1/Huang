@@ -1,10 +1,10 @@
 {
-  "name": "ai-learning-notes-demo",
+  "name": "huang-ai-notebook",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=24 <25"
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
