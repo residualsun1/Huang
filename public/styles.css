@@ -1651,11 +1651,11 @@ a.article-pagination-item:hover {
   .hero-intro { gap: 10px; font-size: 14px; line-height: 1.8; }
 
   /* 手机端首页栏目、项目卡片和文章列表。 */
-  .content-section { padding-top: 72px; }
+  .content-section { padding-top: 48px; }
 
   .section-heading {
-    margin-bottom: 24px;
-    padding-top: 24px;
+    margin-bottom: 16px;
+    padding-top: 16px;
   }
 
   .section-heading .section-kicker { gap: 10px; }
