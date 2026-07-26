@@ -99,11 +99,11 @@
   --title-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --source-han-serif: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
-  --kai: "Libre Baskerville", Georgia, "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
+  --kai: "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   --editorial: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   /* 正文混排：英文字母与数字优先使用 Times New Roman，中文分别回退到宋体或楷体。 */
   --body-reading: "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
-  --body-kai: "Times New Roman", "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
+  --body-kai: "LXGW WenKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif;
   /* Prompt / React 接近 Codex 界面的 UI 字体；系统没有 OpenAI Sans 时自动回退。 */
   --codex-ui-font: "OpenAI Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
   /* 导航 Huang 字标独享的自然手写字体；不影响站内其他标题和正文。 */
@@ -1628,23 +1628,14 @@ a.article-pagination-item:hover {
 
   .section-heading .section-kicker { gap: 10px; }
   .home .project-grid {
-    grid-template-columns: none;
-    grid-auto-columns: min(78vw, 300px);
-    grid-auto-flow: column;
-    justify-content: start;
+    grid-template-columns: min(78vw, 300px);
+    grid-auto-flow: row;
+    justify-content: center;
     gap: 12px;
-    width: calc(100% + 32px);
-    max-width: none;
-    margin-inline: -16px;
-    padding: 4px 16px 18px;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-padding-inline: 16px;
-    scroll-snap-type: inline mandatory;
-    scrollbar-width: none;
+    width: 100%;
+    margin-inline: auto;
+    padding: 4px 0 18px;
   }
-
-  .home .project-grid::-webkit-scrollbar { display: none; }
 
   .listing-projects .project-grid {
     grid-template-columns: 1fr;
@@ -1656,7 +1647,6 @@ a.article-pagination-item:hover {
     justify-content: flex-start;
     gap: 18px;
     padding: 18px;
-    scroll-snap-align: start;
   }
 
   /* 手机端隐藏装饰箭头，把有限宽度完整留给项目名称。 */
