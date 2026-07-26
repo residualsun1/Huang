@@ -10,10 +10,21 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   const notFound = await readFile(new URL("404.html", root), "utf8");
   const robots = await readFile(new URL("robots.txt", root), "utf8");
   const headers = await readFile(new URL("_headers", root), "utf8");
+  const favicon = await readFile(new URL("favicon.svg", root), "utf8");
   const version = JSON.parse(await readFile(new URL("version.json", root), "utf8"));
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
 
   assert.doesNotMatch(html, /chatgpt\.site/);
+  assert.match(
+    html,
+    new RegExp(`<link rel="icon" href="/favicon\\.svg\\?v=${version.assetVersion}" type="image/svg\\+xml">`),
+  );
+  assert.match(favicon, /viewBox="0 0 64 64"/);
+  assert.match(favicon, /<title id="title">Huang<\/title>/);
+  assert.match(favicon, /fill="#f2ede3"/);
+  assert.match(favicon, /fill="#1d1b1b"/);
+  assert.doesNotMatch(favicon, /<text\b/);
+  assert.doesNotMatch(favicon, /#68C4FF|#0C79D8|#2E9EFF/i);
   assert.match(html, /<meta name="robots" content="index, follow">/);
   assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
   assert.match(notFound, /页面不存在/);

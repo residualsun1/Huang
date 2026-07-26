@@ -196,7 +196,7 @@ function layout({
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta name="twitter:card" content="summary_large_image">
   ${canonicalAssets}
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.svg?v=${stylesVersion}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
