@@ -67,6 +67,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 3);
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 2);
   assert.match(projectSection, /href="\/projects\/">所有项目/);
+  assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 24px;/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);

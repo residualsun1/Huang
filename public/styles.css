@@ -669,6 +669,11 @@ a { color: inherit; }
   margin-top: 18px;
 }
 
+/* 项目卡片带有下沿阴影，额外补偿 6px，使入口与其他栏目保持相近的视觉间距。 */
+.home #projects .section-more {
+  margin-top: 24px;
+}
+
 .section-more a,
 .collection-back {
   display: inline-flex;
