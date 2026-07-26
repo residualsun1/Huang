@@ -703,11 +703,14 @@ a { color: inherit; }
 
 .collection-header h1 {
   margin: 10px 0 0;
+  /* 与正文共用暖深灰，避免近黑色标题在羊皮纸背景上显得生硬。 */
+  color: #34312f;
   font-family: var(--serif);
   font-size: clamp(32px, 5vw, 44px);
-  font-weight: 500;
+  /* 当前字体实际提供 400 / 700；使用真实 400 字重比模拟 300 更稳定。 */
+  font-weight: 400;
   line-height: 1.08;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 
 /*
