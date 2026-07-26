@@ -247,10 +247,8 @@ function listRow(entry, { summary = entry.description } = {}) {
   </a>`;
 }
 
-function homePage(collections) {
-  const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
-  const projects = byKey.projects.entries.slice(0, 3).map((entry) => {
-    return `
+function projectCard(entry) {
+  return `
     <article class="project-card">
       <a class="project-card-link" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}"></a>
       <span class="card-arrow" aria-hidden="true">↗</span>
@@ -263,7 +261,11 @@ function homePage(collections) {
         ${projectAction({ href: entry.website, label: "项目网址", icon: projectIcons.link, field: "website" })}
       </div>
     </article>`;
-  }).join("");
+}
+
+function homePage(collections) {
+  const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
+  const projects = byKey.projects.entries.slice(0, 3).map(projectCard).join("");
   const prompts = byKey.prompts.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
   const writings = byKey.writings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
   const readings = byKey.readings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
@@ -293,6 +295,7 @@ function homePage(collections) {
       <section class="content-section" id="projects" aria-labelledby="projects-title">
         ${sectionHeader(byKey.projects.group)}
         <div class="project-grid">${projects}</div>
+        <div class="section-more"><a href="/projects/">所有项目<span aria-hidden="true">→</span></a></div>
       </section>
 
       <section class="content-section" id="prompts" aria-labelledby="prompts-title">
@@ -319,17 +322,21 @@ function homePage(collections) {
 
 function collectionPage(collection) {
   const { group, entries } = collection;
+  const archive = group.key === "projects"
+    ? `<div class="project-grid">${entries.map(projectCard).join("")}</div>`
+    : `<div class="writing-list">${entries.map((entry) => listRow(entry, { summary: "" })).join("")}</div>`;
+
   return layout({
     title: `${group.label} — Huang`,
     description: `Huang 的${group.label}归档。`,
-    bodyClass: "listing",
+    bodyClass: `listing listing-${group.key}`,
     content: `${siteHeader()}
     <main class="collection-shell">
       <header class="collection-header">
         <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
         <h1>${group.label}</h1>
       </header>
-      <div class="writing-list">${entries.map(listRow).join("")}</div>
+      ${archive}
       <a class="collection-back" href="/#${group.key}">← 返回首页</a>
     </main>
     ${siteFooter()}`,
@@ -390,7 +397,7 @@ function detailPage(entry, previousEntry, nextEntry) {
     content: `${siteHeader()}
     <main class="article-shell">
       <nav class="breadcrumb" aria-label="面包屑">
-        <a href="/">首页</a><span aria-hidden="true">/</span><a href="${entry.group.key === "projects" ? `/#${entry.group.key}` : `/${entry.group.key}/`}">${entry.group.label}</a>
+        <a href="/">首页</a><span aria-hidden="true">/</span><a href="/${entry.group.key}/">${entry.group.label}</a>
       </nav>
       <header class="article-header">
         <h1>${escapeHtml(entry.title)}</h1>
@@ -433,7 +440,7 @@ export async function buildSite() {
   }
 
   await writeFile(path.join(clientRoot, "index.html"), homePage(collections), "utf8");
-  for (const collection of collections.filter(({ group }) => ["writings", "prompts", "readings"].includes(group.key))) {
+  for (const collection of collections) {
     const target = path.join(clientRoot, collection.group.key);
     await mkdir(target, { recursive: true });
     await writeFile(path.join(target, "index.html"), collectionPage(collection), "utf8");

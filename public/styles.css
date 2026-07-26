@@ -683,25 +683,55 @@ a { color: inherit; }
 .section-more a span { transition: transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1); }
 .section-more a:hover span { transform: translateX(3px); }
 
-/* 写作、Prompt 与阅读归档页主体底部留白。 */
-.collection-shell { padding-bottom: 96px; }
+/* 归档页采用更集中的阅读宽度；项目归档保留三列卡片需要的展示空间。 */
+.collection-shell {
+  padding-bottom: 96px;
+}
+
+.listing:not(.listing-projects) .collection-shell {
+  width: min(calc(100% - 48px), 760px);
+}
+
+.listing-projects .collection-shell {
+  width: min(calc(100% - 48px), 900px);
+}
 
 /* 归档页标题区域。 */
 .collection-header {
-  padding: 72px 0 32px;
-  border-bottom: 1px solid var(--gray-alpha-400);
+  padding: 64px 0 26px;
 }
 
 .collection-header h1 {
   margin: 10px 0 0;
   font-family: var(--serif);
-  font-size: clamp(36px, 6vw, 52px);
+  font-size: clamp(32px, 5vw, 44px);
   font-weight: 500;
   line-height: 1.08;
   letter-spacing: -0.035em;
 }
 
-.collection-back { margin-top: 32px; }
+/*
+ * 文字归档只保留日期、标题和箭头：
+ * 无摘要、无上下分隔线，以紧凑留白组织阅读顺序。
+ */
+.listing:not(.listing-projects) .writing-list {
+  border-top: 0;
+}
+
+.listing:not(.listing-projects) .writing-row {
+  padding: 16px 4px;
+  border-bottom: 0;
+}
+
+.listing:not(.listing-projects) .writing-copy {
+  gap: 0;
+}
+
+.listing:not(.listing-projects) .writing-row:hover {
+  background: transparent;
+}
+
+.collection-back { margin-top: 28px; }
 
 /* 全站页脚：无分隔线，桌面端横向排列邮箱与年份。 */
 .site-footer-inner {
@@ -1568,6 +1598,14 @@ a.article-pagination-item:hover {
   .article-shell,
   .collection-shell {
     width: min(calc(100% - 32px), var(--page-width));
+  }
+
+  .listing:not(.listing-projects) .collection-shell {
+    width: min(calc(100% - 32px), 760px);
+  }
+
+  .listing-projects .collection-shell {
+    width: min(calc(100% - 32px), 900px);
   }
 
   /* 手机端顶部导航与 Huang 字标。 */

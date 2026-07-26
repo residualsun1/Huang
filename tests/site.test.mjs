@@ -66,25 +66,37 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 3);
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 2);
+  assert.match(projectSection, /href="\/projects\/">所有项目/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
 });
 
-test("写作、Prompt 和阅读归档页可访问", async () => {
+test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布局", async () => {
+  const projects = await readFile(new URL("projects/index.html", root), "utf8");
   const writings = await readFile(new URL("writings/index.html", root), "utf8");
   const prompts = await readFile(new URL("prompts/index.html", root), "utf8");
   const readings = await readFile(new URL("readings/index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
 
+  assert.match(projects, /<body class="listing listing-projects">/);
+  assert.match(projects, /<h1>项目<\/h1>/);
+  assert.ok((projects.match(/class="project-card"/g) ?? []).length >= 1);
   assert.match(writings, /class="collection-shell"/);
+  assert.match(writings, /<body class="listing listing-writings">/);
   assert.match(writings, /<h1>写作<\/h1>/);
   assert.ok((writings.match(/class="writing-row"/g) ?? []).length >= 5);
+  assert.doesNotMatch(writings, /<\/strong>\s*<span>/);
   assert.match(prompts, /02 \/ Prompt/);
   assert.match(prompts, /<h1>Prompt<\/h1>/);
   assert.match(prompts, /GPT-Live-Samantha/);
+  assert.doesNotMatch(prompts, /<\/strong>\s*<span>/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.match(readings, /we-have-never-been-modern/);
   assert.match(readings, /the-spears-of-twilight/);
+  assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
+  assert.match(css, /\.listing:not\(\.listing-projects\) \.collection-shell \{[\s\S]*?760px/);
+  assert.match(css, /\.listing:not\(\.listing-projects\) \.writing-row \{[\s\S]*?padding: 16px 4px;[\s\S]*?border-bottom: 0;/);
 });
 
 test("实际使用外部资料的文章均保留作者自定义的参考文献或参考资料标题", async () => {
