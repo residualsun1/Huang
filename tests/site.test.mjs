@@ -18,6 +18,9 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.doesNotMatch(html, /blog-static\/about\/gz\.jpg/);
   assert.match(css, /--brand-script: "Homemade Apple", cursive;/);
   assert.match(css, /\.brand-mark \{[\s\S]*?font-family: var\(--brand-script\);[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: 0;/);
+  assert.match(css, /html \{[\s\S]*?-webkit-text-size-adjust: 100%;[\s\S]*?text-size-adjust: 100%;/);
+  assert.match(css, /body \{[\s\S]*?-webkit-font-smoothing: antialiased;[\s\S]*?text-rendering: auto;/);
+  assert.match(css, /\.brand-mark,[\s\S]*?\.prose h4 \{[\s\S]*?font-kerning: normal;[\s\S]*?text-rendering: optimizeLegibility;/);
   assert.match(html, /01 \/ 项目/);
   assert.match(html, /02 \/ Prompt/);
   assert.match(html, /03 \/ 写作/);
