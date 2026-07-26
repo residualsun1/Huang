@@ -1,4 +1,5 @@
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { hasMath, renderMarkdown } from "./markdown.mjs";
@@ -11,6 +12,8 @@ const clientRoot = path.join(distRoot, "client");
 const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "")
   .trim()
   .replace(/\/+$/, "");
+const buildCommit = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "").trim();
+let stylesVersion = "development";
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
@@ -199,7 +202,7 @@ function layout({
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Homemade+Apple&amp;family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
-  <link rel="stylesheet" href="/styles.css">${mathAssets}
+  <link rel="stylesheet" href="/styles.css?v=${stylesVersion}">${mathAssets}
 </head>
 <body class="${escapeHtml(bodyClass)}">
 ${content}
@@ -497,6 +500,8 @@ export async function buildSite() {
   await rm(distRoot, { recursive: true, force: true });
   await mkdir(clientRoot, { recursive: true });
   await cp(publicRoot, clientRoot, { recursive: true });
+  const styles = await readFile(path.join(publicRoot, "styles.css"));
+  stylesVersion = createHash("sha256").update(styles).digest("hex").slice(0, 12);
 
   const collections = [];
   for (const group of groups) {
@@ -519,6 +524,16 @@ export async function buildSite() {
     await writeFile(path.join(target, "index.html"), collectionPage(collection), "utf8");
   }
   await writeDiscoveryFiles(collections);
+  await writeFile(
+    path.join(clientRoot, "version.json"),
+    `${JSON.stringify({
+      commit: buildCommit || "local",
+      shortCommit: buildCommit ? buildCommit.slice(0, 7) : "local",
+      branch: String(process.env.CF_PAGES_BRANCH || "").trim() || "local",
+      assetVersion: stylesVersion,
+    }, null, 2)}\n`,
+    "utf8",
+  );
   await mkdir(path.join(distRoot, "server"), { recursive: true });
   await writeFile(
     path.join(distRoot, "server", "index.js"),

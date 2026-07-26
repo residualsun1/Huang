@@ -10,6 +10,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   const notFound = await readFile(new URL("404.html", root), "utf8");
   const robots = await readFile(new URL("robots.txt", root), "utf8");
   const headers = await readFile(new URL("_headers", root), "utf8");
+  const version = JSON.parse(await readFile(new URL("version.json", root), "utf8"));
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
 
   assert.doesNotMatch(html, /chatgpt\.site/);
@@ -19,7 +20,11 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(robots, /User-agent: \*\nAllow: \//);
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /X-Content-Type-Options: nosniff/);
+  assert.match(headers, /\/version\.json[\s\S]*?Cache-Control: no-store/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
+  assert.match(html, new RegExp(`/styles\\.css\\?v=${version.assetVersion}`));
+  assert.match(version.assetVersion, /^[0-9a-f]{12}$/);
+  assert.equal(version.commit, process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "local");
 });
 
 test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async () => {
