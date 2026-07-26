@@ -405,9 +405,11 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
   assert.match(css, /\.home \.writing-copy strong:hover \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #34312f/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 14\.4px/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 24\.48px/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #74685d/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-family: var\(--body-reading\)/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 13\.8px/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 23\.5px/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?text-align: left/);
 });
 
 test("首页三段简介统一使用首段的字号颜色与字重", async () => {

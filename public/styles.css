@@ -646,13 +646,14 @@ a { color: inherit; }
 
 /* 首页可选摘要来自 Markdown Front Matter 的 description；没有字段时不生成元素。 */
 .home .writing-copy > span {
-  /* 与正文统一为 #34312f，让首页摘要在暖纸背景上保持稳定可读。 */
-  color: #34312f;
-  font-family: var(--title-serif);
-  font-size: 14.4px;
+  /* 暖灰仍保持正文级对比度；英文字母使用 Times New Roman，中文沿用原宋体回退。 */
+  color: #74685d;
+  font-family: var(--body-reading);
+  font-size: 13.8px;
   hyphens: auto;
-  line-height: 24.48px;
-  text-align: justify;
+  line-height: 23.5px;
+  /* 窄屏禁用两端对齐，避免中英文换行时被强行拉出不自然的大间隔。 */
+  text-align: left;
 }
 
 /* 悬浮时箭头向右移动，提示整行可以点击。 */
