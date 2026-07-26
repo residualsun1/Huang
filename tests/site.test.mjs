@@ -222,7 +222,10 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   assert.match(css, /--source-han-serif:/);
   assert.match(css, /--body-reading: "Times New Roman"/);
   assert.match(css, /font-family: "FandolKai";[\s\S]*?local\("Kaiti"\)[\s\S]*?AR-PL-KaitiM-GB-from-yihui\.woff2/);
-  assert.match(css, /--body-kai: "Times New Roman", "FandolKai", "Kaiti SC"/);
+  assert.match(css, /font-family: "FandolKai TC";[\s\S]*?local\("Kaiti TC"\)[\s\S]*?\/fonts\/AR-PL-KaitiM-Big5\.woff2/);
+  assert.match(css, /--body-kai: "Times New Roman", "FandolKai", "FandolKai TC", "Kaiti SC", "Kaiti TC"/);
+  const traditionalKai = await readFile(new URL("fonts/AR-PL-KaitiM-Big5.woff2", root));
+  assert.equal(traditionalKai.subarray(0, 4).toString("ascii"), "wOF2");
   assert.doesNotMatch(home, /lxgw-wenkai-webfont/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--body-reading\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--body-kai\)/);
@@ -525,7 +528,7 @@ test("正文目录可独立滚动并随当前章节自动高亮", async () => {
 test("正文与引用中的西文使用 Times New Roman，引用中文使用网页楷体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /--body-reading: "Times New Roman"/);
-  assert.match(css, /--body-kai: "Times New Roman", "FandolKai", "Kaiti SC"/);
+  assert.match(css, /--body-kai: "Times New Roman", "FandolKai", "FandolKai TC", "Kaiti SC", "Kaiti TC"/);
   assert.match(css, /\.prose \{[\s\S]*?font-family: var\(--body-reading\)/);
   assert.match(css, /\.prose h1,[\s\S]*?\.prose h6 \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   assert.match(css, /\.prose blockquote \{[\s\S]*?font-family: var\(--body-kai\)/);
