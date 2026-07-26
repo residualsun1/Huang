@@ -1,0 +1,15 @@
+# Keep repository text files consistent across Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Windows command scripts require CRLF when executed by cmd.exe.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets must never undergo line-ending conversion.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff2 binary
