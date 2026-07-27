@@ -210,8 +210,19 @@ test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
   assert.match(agent, /class="article-pagination"/);
   assert.match(agent, /上一篇文章/);
   assert.match(agent, /下一篇文章/);
-  assert.match(agent, /href="\/writings\/deploy-an-agent-with-python\/"/);
-  assert.match(agent, /href="\/writings\/codex-desktop-reconnecting-problem\/"/);
+  const agentPagination = agent.match(/<nav class="article-pagination"[\s\S]*?<\/nav>/)?.[0] ?? "";
+  const writingDirectories = new Set(
+    (await readdir(new URL("writings/", root), { withFileTypes: true }))
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name),
+  );
+  const paginationTargets = [...agentPagination.matchAll(/href="\/writings\/([^/]+)\/"/g)]
+    .map((match) => match[1]);
+  assert.equal((agentPagination.match(/class="article-pagination-item/g) ?? []).length, 2);
+  assert.ok(paginationTargets.length > 0);
+  for (const target of paginationTargets) {
+    assert.ok(writingDirectories.has(target), `翻页链接必须指向当前存在的文章：${target}`);
+  }
   assert.match(appStore, /class="image-loop"/);
   assert.match(appStore, /<mark>/);
   assert.match(deploy, /<details>/);
