@@ -1,9 +1,38 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import { detailPage } from "../scripts/build.mjs";
 import { hasMath, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
+const fixtureRoot = new URL("./fixtures/", import.meta.url);
+const groupDefinitions = [
+  { key: "projects", label: "项目" },
+  { key: "prompts", label: "Prompt" },
+  { key: "writings", label: "写作" },
+  { key: "readings", label: "阅读" },
+];
+
+const readFixture = (path) => readFile(new URL(path, fixtureRoot), "utf8");
+
+function fixtureEntry(group, overrides = {}) {
+  return {
+    title: "固定测试文章",
+    description: "这是一篇不会发布的测试文章。",
+    author: "测试作者",
+    date: "2026-01-02",
+    tags: ["测试"],
+    href: `/${group.key}/fixture-current/`,
+    group,
+    body: "",
+    ...overrides,
+  };
+}
+
+async function groupDirectoryNames(groupKey) {
+  const entries = await readdir(new URL(`${groupKey}/`, root), { withFileTypes: true });
+  return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+}
 
 test("构建产物可独立部署并包含基础上线文件", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
@@ -78,27 +107,37 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(html, /<p>你好，我是 Huang。<\/p>/);
   assert.match(html, /<p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。<\/p>/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
-  assert.match(html, /海外 AI 产品和概念的区分与关系梳理/);
 
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
   const writingSection = html.match(/<section class="content-section" id="writings"[\s\S]*?<\/section>/)?.[0] ?? "";
   const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
   const readingSection = html.match(/<section class="content-section" id="readings"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const archivePages = {
+    projects: await readFile(new URL("projects/index.html", root), "utf8"),
+    prompts: await readFile(new URL("prompts/index.html", root), "utf8"),
+    writings: await readFile(new URL("writings/index.html", root), "utf8"),
+    readings: await readFile(new URL("readings/index.html", root), "utf8"),
+  };
+  const archiveCount = (group) => (
+    archivePages[group].match(group === "projects" ? /class="project-card"/g : /class="writing-row"/g) ?? []
+  ).length;
+  const homeCount = (section, group) => (
+    section.match(group === "projects" ? /class="project-card"/g : /class="writing-row"/g) ?? []
+  ).length;
   assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
   assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
-  assert.equal((projectSection.match(/class="project-card"/g) ?? []).length, 3);
-  assert.equal((writingSection.match(/class="writing-row"/g) ?? []).length, 3);
-  assert.equal((promptSection.match(/class="writing-row"/g) ?? []).length, 1);
-  assert.equal((readingSection.match(/class="writing-row"/g) ?? []).length, 2);
+  assert.equal(homeCount(projectSection, "projects"), Math.min(archiveCount("projects"), 3));
+  assert.equal(homeCount(promptSection, "prompts"), Math.min(archiveCount("prompts"), 3));
+  assert.equal(homeCount(writingSection, "writings"), Math.min(archiveCount("writings"), 3));
+  assert.equal(homeCount(readingSection, "readings"), Math.min(archiveCount("readings"), 3));
   assert.match(buildSource, /byKey\.projects\.entries\.slice\(0, 3\)/);
   assert.match(buildSource, /byKey\.prompts\.entries\.slice\(0, 3\)/);
   assert.match(buildSource, /byKey\.writings\.entries\.slice\(0, 3\)/);
   assert.match(buildSource, /byKey\.readings\.entries\.slice\(0, 3\)/);
-  assert.match(promptSection, /每一次对话，既是我在了解大模型，也是大模型在了解我/);
-  assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, 1);
-  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 3);
-  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, 2);
+  assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(promptSection, "prompts"));
+  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection, "writings"));
+  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection, "readings"));
   assert.match(projectSection, /href="\/projects\/">所有项目/);
   assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 24px;/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
@@ -119,15 +158,11 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<body class="listing listing-writings">/);
   assert.match(writings, /<h1>写作<\/h1>/);
-  assert.ok((writings.match(/class="writing-row"/g) ?? []).length >= 5);
   assert.doesNotMatch(writings, /<\/strong>\s*<span>/);
   assert.match(prompts, /02 \/ Prompt/);
   assert.match(prompts, /<h1>Prompt<\/h1>/);
-  assert.match(prompts, /GPT-Live-Samantha/);
   assert.doesNotMatch(prompts, /<\/strong>\s*<span>/);
   assert.match(readings, /<h1>阅读<\/h1>/);
-  assert.match(readings, /we-have-never-been-modern/);
-  assert.match(readings, /the-spears-of-twilight/);
   assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
   assert.match(css, /\.listing:not\(\.listing-projects\) \.collection-shell \{[\s\S]*?760px/);
   assert.match(css, /\.collection-header h1 \{[\s\S]*?color: #34312f;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.02em;/);
@@ -135,33 +170,17 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
   assert.match(css, /\.listing:not\(\.listing-projects\) \.writing-copy strong \{[\s\S]*?color: #34312f;[\s\S]*?font-size: 17px;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.01em;/);
 });
 
-test("实际使用外部资料的文章均保留作者自定义的参考文献或参考资料标题", async () => {
-  const paths = [
-    "prompts/GPT-Live-Samantha/index.html",
-    "readings/we-have-never-been-modern/index.html",
-    "readings/the-spears-of-twilight/index.html",
-    "writings/deploy-an-agent-with-python/index.html",
-    "writings/what-is-agent/index.html",
-    "writings/ai-products-and-concepts/index.html",
-    "writings/cscw-in-bnu/index.html",
-  ];
-
-  for (const path of paths) {
-    const html = await readFile(new URL(path, root), "utf8");
-    assert.match(html, /<h2 id="[^"]*参考(?:文献|资料)">[^<]*参考(?:文献|资料)<\/h2>/);
-  }
+test("固定夹具保留参考资料标题，不依赖正式文章", async () => {
+  const fixture = await readFixture("markdown/legacy-features.md");
+  const { html } = renderMarkdown(fixture);
+  assert.match(html, /<h2 id="参考资料">参考资料<\/h2>/);
 });
 
 test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
-  const prompt = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
-  const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
-  const reading = await readFile(new URL("readings/the-spears-of-twilight/index.html", root), "utf8");
-  const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
-
-  assert.match(prompt, /Samantha 会理解我吗？/);
-  assert.match(writing, /我眼中的智能体/);
-  assert.match(reading, /暮光之矛/);
-  assert.match(project, /全球民族志档案数据库/);
+  for (const { key } of groupDefinitions) {
+    const archive = await readFile(new URL(`${key}/index.html`, root), "utf8");
+    assert.doesNotMatch(archive, new RegExp(`href="/${key}/\\d{4}/`));
+  }
 });
 
 test("项目卡片使用统一纸张纹理并展示详情入口与可选外部链接", async () => {
@@ -170,7 +189,7 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
   const projectCardRule = css.match(/\.project-card \{[\s\S]*?\n\}/)?.[0] ?? "";
 
-  assert.match(projectSection, /class="project-card-link" href="\/projects\/global-enthnography\/"/);
+  assert.match(projectSection, /class="project-card-link" href="\/projects\/[^"]+\/"/);
   assert.match(projectSection, /class="card-arrow" aria-hidden="true">↗<\/span>[\s\S]*?class="project-card-copy"/);
   assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
   assert.match(projectSection, />项目仓库<\/span>/);
@@ -197,50 +216,74 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card-actions \{[\s\S]*?flex-wrap: wrap;/);
 });
 
-test("旧 Hugo 正文格式已转换为站点 HTML", async () => {
-  const agent = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
-  const appStore = await readFile(new URL("writings/appstore-codex-plus/index.html", root), "utf8");
-  const deploy = await readFile(new URL("writings/deploy-an-agent-with-python/index.html", root), "utf8");
+test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
+  const fixture = await readFixture("markdown/legacy-features.md");
+  const group = groupDefinitions.find(({ key }) => key === "writings");
+  const current = fixtureEntry(group, { body: fixture });
+  const previous = fixtureEntry(group, {
+    title: "较早的测试文章",
+    href: "/writings/fixture-previous/",
+  });
+  const next = fixtureEntry(group, {
+    title: "较新的测试文章",
+    href: "/writings/fixture-next/",
+  });
+  const rendered = renderMarkdown(fixture).html;
+  const page = detailPage(current, previous, next);
 
-  assert.match(agent, /class="notice-box notice-content"/);
-  assert.match(agent, /class="table-scroll"/);
-  assert.match(agent, /class="footnotes"/);
-  assert.match(agent, /class="article-toc"/);
-  assert.match(agent, /class="breadcrumb"/);
-  assert.match(agent, /class="article-pagination"/);
-  assert.match(agent, /上一篇文章/);
-  assert.match(agent, /下一篇文章/);
-  const agentPagination = agent.match(/<nav class="article-pagination"[\s\S]*?<\/nav>/)?.[0] ?? "";
-  const writingDirectories = new Set(
-    (await readdir(new URL("writings/", root), { withFileTypes: true }))
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name),
-  );
-  const paginationTargets = [...agentPagination.matchAll(/href="\/writings\/([^/]+)\/"/g)]
-    .map((match) => match[1]);
-  assert.equal((agentPagination.match(/class="article-pagination-item/g) ?? []).length, 2);
-  assert.ok(paginationTargets.length > 0);
-  for (const target of paginationTargets) {
-    assert.ok(writingDirectories.has(target), `翻页链接必须指向当前存在的文章：${target}`);
+  assert.match(rendered, /class="notice-box notice-content"/);
+  assert.match(rendered, /class="table-scroll"/);
+  assert.match(rendered, /class="footnotes"/);
+  assert.match(rendered, /class="image-loop"/);
+  assert.match(rendered, /<mark>/);
+  assert.match(rendered, /<details>/);
+  assert.match(rendered, /<summary>查看测试内容<\/summary>/);
+  assert.match(page, /class="article-toc"/);
+  assert.match(page, /class="breadcrumb"/);
+  assert.match(page, /class="article-pagination"/);
+  assert.match(page, /上一篇文章/);
+  assert.match(page, /下一篇文章/);
+  assert.match(page, /href="\/writings\/fixture-previous\/"/);
+  assert.match(page, /href="\/writings\/fixture-next\/"/);
+  assert.doesNotMatch(page, /class="article-description"/);
+  assert.match(page, /class="article-author">测试作者<\/span>/);
+  assert.match(page, /class="article-tags"/);
+  assert.match(page, /<li>测试<\/li>/);
+  assert.match(page, /src="\/code-blocks\.js"/);
+});
+
+test("归档和翻页链接只指向当前存在的文章", async () => {
+  for (const { key } of groupDefinitions) {
+    const directoryNames = await groupDirectoryNames(key);
+    const existingSlugs = new Set(directoryNames);
+    const archive = await readFile(new URL(`${key}/index.html`, root), "utf8");
+    const archiveTargets = [...archive.matchAll(new RegExp(`href="/${key}/([^/]+)/"`, "g"))]
+      .map((match) => match[1]);
+
+    for (const target of archiveTargets) {
+      assert.ok(existingSlugs.has(target), `归档链接必须指向当前存在的页面：${key}/${target}`);
+    }
+
+    for (const slug of directoryNames) {
+      const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
+      const pagination = page.match(/<nav class="article-pagination"[\s\S]*?<\/nav>/)?.[0] ?? "";
+      const paginationTargets = [...pagination.matchAll(new RegExp(`href="/${key}/([^/]+)/"`, "g"))]
+        .map((match) => match[1]);
+      assert.equal((pagination.match(/class="article-pagination-item/g) ?? []).length, 2);
+      for (const target of paginationTargets) {
+        assert.ok(existingSlugs.has(target), `翻页链接必须指向当前存在的页面：${key}/${target}`);
+      }
+    }
   }
-  assert.match(appStore, /class="image-loop"/);
-  assert.match(appStore, /<mark>/);
-  assert.match(deploy, /<details>/);
-  assert.match(deploy, /<summary>查看完整代码<\/summary>/);
-  assert.doesNotMatch(agent, /class="article-description"/);
-  assert.match(agent, /class="article-author">黄国政<\/span>/);
-  assert.match(agent, /class="article-tags"/);
-  assert.match(agent, /<li>Agent<\/li>/);
-  assert.match(agent, /src="\/code-blocks\.js"/);
 });
 
 test("正文英数与中文正文、引用分别使用对应的阅读字体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const home = await readFile(new URL("index.html", root), "utf8");
-  const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
-  const prompt = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
-  const reading = await readFile(new URL("readings/we-have-never-been-modern/index.html", root), "utf8");
-  const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
+  const fixture = await readFixture("markdown/legacy-features.md");
+  const detailPages = Object.fromEntries(
+    groupDefinitions.map((group) => [group.key, detailPage(fixtureEntry(group, { body: fixture }))]),
+  );
   assert.match(css, /--source-han-serif:/);
   assert.match(css, /--body-reading: "Times New Roman"/);
   assert.match(css, /font-family: "FandolKai";[\s\S]*?local\("Kaiti"\)[\s\S]*?AR-PL-KaitiM-GB-from-yihui\.woff2/);
@@ -256,28 +299,19 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   assert.match(css, /\.detail-editorial \.prose blockquote \{[\s\S]*?background: transparent/);
   assert.match(css, /\.detail-editorial \.article-pagination \{[\s\S]*?border-top: 0/);
   assert.match(css, /\.hero-intro \{[\s\S]*?font-family: var\(--source-han-serif\)/);
-  assert.match(writing, /<body class="detail detail-writings detail-editorial">/);
-  assert.match(prompt, /<body class="detail detail-prompts detail-editorial">/);
-  assert.match(reading, /<body class="detail detail-readings detail-editorial">/);
-  assert.match(project, /<body class="detail detail-projects detail-editorial">/);
-  assert.doesNotMatch(prompt, /<body class="detail detail-writings">/);
-  assert.doesNotMatch(writing, /class="article-description"/);
-  assert.doesNotMatch(prompt, /class="article-description"/);
-  assert.doesNotMatch(reading, /class="article-description"/);
-  assert.doesNotMatch(project, /class="article-description"/);
-  assert.match(writing, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
-  assert.match(prompt, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
-  assert.match(reading, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
-  assert.match(project, /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
-  assert.doesNotMatch(writing, /class="eyebrow"/);
-  assert.doesNotMatch(prompt, /class="eyebrow"/);
-  assert.doesNotMatch(reading, /class="eyebrow"/);
-  assert.doesNotMatch(project, /class="eyebrow"/);
+  for (const { key } of groupDefinitions) {
+    assert.match(detailPages[key], new RegExp(`<body class="detail detail-${key} detail-editorial">`));
+    assert.doesNotMatch(detailPages[key], /class="article-description"/);
+    assert.match(detailPages[key], /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
+    assert.doesNotMatch(detailPages[key], /class="eyebrow"/);
+  }
+  assert.doesNotMatch(detailPages.prompts, /<body class="detail detail-writings">/);
 });
 
 test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const writing = await readFile(new URL("writings/ai-products-and-concepts/index.html", root), "utf8");
+  const fixture = await readFixture("markdown/legacy-features.md");
+  const writing = renderMarkdown(fixture).html;
 
   assert.match(writing, /<fieldset class="notice-box notice-content">[\s\S]*?<div class="table-scroll">/);
   assert.match(css, /\.table-scroll \{[\s\S]*?overflow-x: auto;[\s\S]*?max-width: 100%;/);
@@ -344,9 +378,10 @@ test("所有写作页面均不残留已知 Hugo 短代码", async () => {
 });
 
 test("文章代码块包含语言类并被安全转义", async () => {
-  const html = await readFile(new URL("prompts/GPT-Live-Samantha/index.html", root), "utf8");
+  const fixture = await readFixture("markdown/legacy-features.md");
+  const html = renderMarkdown(fixture).html;
   assert.match(html, /class="code-toolbar"/);
-  assert.match(html, /class="toolbar-left"><span class="toolbar-label">和 Samantha 的核心共识记录<\/span><\/div>/);
+  assert.match(html, /class="toolbar-left"><span class="toolbar-label">测试代码<\/span><\/div>/);
   assert.match(html, /class="toolbar-right"><button class="inline-prompt-copy-btn" title="Copy prompt">[\s\S]*?<rect x="4" y="8" width="12" height="12" rx="2" ry="2"><\/rect>[\s\S]*?<path d="M8 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"><\/path>/);
   assert.match(html, /<pre data-language="fiodor"><code class="language-fiodor" data-copy-source>/);
   assert.match(html, /称呼共识/);
@@ -535,7 +570,9 @@ test("正文引用与文末脚注编号均使用方括号", () => {
 
 test("正文目录可独立滚动并随当前章节自动高亮", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const agent = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
+  const fixture = await readFixture("markdown/legacy-features.md");
+  const writingGroup = groupDefinitions.find(({ key }) => key === "writings");
+  const page = detailPage(fixtureEntry(writingGroup, { body: fixture }));
   const tocScript = await readFile(new URL("toc.js", root), "utf8");
   assert.match(css, /\.article-toc > p \{[\s\S]*?font-size: 14\.5px/);
   assert.match(css, /\.article-toc a \{[\s\S]*?font-size: 13\.5px/);
@@ -545,8 +582,8 @@ test("正文目录可独立滚动并随当前章节自动高亮", async () => {
   assert.match(css, /\.article-toc \{[\s\S]*?scrollbar-width: none/);
   assert.match(css, /\.article-toc::-webkit-scrollbar \{ display: none; \}/);
   assert.match(css, /\.article-toc a:hover,[\s\S]*?\.article-toc a\[aria-current="location"\][\s\S]*?color: var\(--gray-1000\)/);
-  assert.match(agent, /class="article-toc" aria-label="文章目录" tabindex="0"/);
-  assert.match(agent, /src="\/toc\.js"/);
+  assert.match(page, /class="article-toc" aria-label="文章目录" tabindex="0"/);
+  assert.match(page, /src="\/toc\.js"/);
   assert.match(tocScript, /setAttribute\("aria-current", "location"\)/);
   assert.match(tocScript, /getBoundingClientRect\(\)\.top <= readingLine/);
   assert.match(tocScript, /window\.requestAnimationFrame\(updateActiveHeading\)/);
@@ -579,12 +616,12 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
 });
 
 test("所有正文的回到首页入口位于正文主列最左侧", async () => {
-  const writing = await readFile(new URL("writings/what-is-agent/index.html", root), "utf8");
-  const project = await readFile(new URL("projects/global-enthnography/index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.match(writing, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);
-  assert.match(project, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);
-  assert.doesNotMatch(writing, /回到写作|回到Prompt|回到阅读|回到项目/);
+  for (const group of groupDefinitions) {
+    const page = detailPage(fixtureEntry(group));
+    assert.match(page, /<div class="article-main">[\s\S]*?<footer class="article-footer"><a href="\/">← 回到首页<\/a><\/footer>[\s\S]*?<\/div>/);
+    assert.doesNotMatch(page, /回到写作|回到Prompt|回到阅读|回到项目/);
+  }
   assert.match(css, /\.article-footer \{[\s\S]*?margin: 24px 0 96px/);
 });
 

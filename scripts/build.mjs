@@ -385,7 +385,7 @@ function createTableOfContents(html) {
   </aside>`;
 }
 
-function articlePagination(previousEntry, nextEntry) {
+export function articlePagination(previousEntry, nextEntry) {
   const item = (entry, direction) => {
     const isPrevious = direction === "previous";
     const label = isPrevious ? "← 上一篇文章" : "下一篇文章 →";
@@ -407,7 +407,7 @@ function articlePagination(previousEntry, nextEntry) {
   </nav>`;
 }
 
-function detailPage(entry, previousEntry, nextEntry) {
+export function detailPage(entry, previousEntry, nextEntry) {
   const warnings = [];
   const rendered = renderMarkdown(entry.body, { warnings });
   for (const warning of warnings) {

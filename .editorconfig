@@ -1,0 +1,12 @@
+# EditorConfig asks supported editors to save text consistently.
+# Git still enforces the repository copy through .gitattributes.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+# Windows command scripts are the intentional exception.
+[*.{bat,cmd}]
+end_of_line = crlf
