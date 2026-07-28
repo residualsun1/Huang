@@ -367,6 +367,11 @@ a { color: inherit; }
 
 .home-layout > #projects { padding-top: 15px; }
 
+/* 桌面端后续栏目为右侧 Clawd 留出垂直呼吸空间；项目与自我介绍的距离保持不变。 */
+@media (min-width: 601px) {
+  .home-layout > .content-section + .content-section { padding-top: 48px; }
+}
+
 /* 栏目标题区域：编号与中文名称保持小字号，水平线从文字右侧延伸。 */
 .section-heading {
   margin-bottom: 20px;
@@ -407,7 +412,7 @@ a { color: inherit; }
 .section-pet {
   position: absolute;
   z-index: 1;
-  right: clamp(16px, 12vw, 108px);
+  right: 4px;
   bottom: calc(50% - 1px);
   display: block;
   width: auto;
@@ -1728,7 +1733,6 @@ a.article-pagination-item:hover {
   .section-heading .section-kicker { gap: 10px; }
 
   .section-pet {
-    right: 4px;
     height: 56px;
   }
 

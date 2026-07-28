@@ -352,8 +352,10 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   assert.match(css, /background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
-  assert.match(css, /\.section-pet \{[\s\S]*?height: 72px;/);
+  assert.match(css, /\.section-pet \{[\s\S]*?right: 4px;[\s\S]*?height: 72px;/);
   assert.match(css, /\.section-pet img \{[\s\S]*?image-rendering: pixelated;/);
+  assert.match(css, /@media \(min-width: 601px\) \{[\s\S]*?\.home-layout > \.content-section \+ \.content-section \{ padding-top: 48px; \}/);
+  assert.match(css, /\.home-layout > #projects \{ padding-top: 15px; \}/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-pet \{[\s\S]*?height: 56px;/);
 });
 
