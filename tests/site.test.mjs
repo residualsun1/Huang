@@ -344,8 +344,14 @@ test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
   assert.match(projectSection, /<audio data-vinyl-audio data-src="\/audio\/site-theme\.mp3" preload="none"><\/audio>/);
   assert.doesNotMatch(promptSection, /data-vinyl-player/);
   assert.match(html, /<script defer src="\/music-player\.js"><\/script>/);
+  assert.match(css, /\.vinyl-player \{[\s\S]*?--vinyl-size: 96px;[\s\S]*?--vinyl-rise: 8px;/);
+  assert.match(css, /\.vinyl-player__surface::before \{[\s\S]*?background: #c3a27f;/);
+  assert.match(css, /\.vinyl-player__label::before \{[\s\S]*?content: "H";/);
+  assert.match(css, /\.vinyl-player__label::after \{[\s\S]*?background: rgba\(242, 237, 227, 0\.72\);/);
   assert.match(css, /\.vinyl-player__surface \{[\s\S]*?repeating-radial-gradient/);
   assert.match(css, /\.vinyl-player:hover \.vinyl-player__disc,[\s\S]*?translateY\(calc\(var\(--vinyl-rise\) \* -1\)\)/);
+  assert.match(css, /\.vinyl-player__button\[data-playing="true"\] \.vinyl-player__surface \{[\s\S]*?animation: vinyl-player-spin 12s linear infinite;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.vinyl-player \{[\s\S]*?--vinyl-size: 56px;/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\.vinyl-player__button\[data-playing="true"\] \.vinyl-player__surface \{[\s\S]*?animation: none/);
   assert.match(playerScript, /audio\.volume = 0\.45/);
   assert.match(playerScript, /audio\.src = source/);
