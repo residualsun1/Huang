@@ -370,10 +370,10 @@ a { color: inherit; }
 /* 栏目标题区域：编号与中文名称保持小字号，水平线从文字右侧延伸。 */
 .section-heading {
   margin-bottom: 20px;
-  padding-top: 32px;
+  padding-top: 48px;
 }
 
-/* 伪元素承担原本位于标题上方的分隔线，并在右侧占满剩余宽度。 */
+/* 栏目名称与横线各自占一列，宠物坐在横线上且不挤压标题。 */
 .section-heading .section-kicker {
   display: flex;
   width: 100%;
@@ -385,11 +385,43 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
-.section-heading .section-kicker::after {
-  width: 100%;
+.section-kicker__rail {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 20px;
+  flex: 1;
+}
+
+.section-kicker__rail::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
   height: 1px;
   background: var(--gray-alpha-400);
   content: "";
+}
+
+/* 四种 Clawd 状态共用同一套图片规则，底部始终落在栏目横线上。 */
+.section-pet {
+  position: absolute;
+  z-index: 1;
+  right: clamp(16px, 12vw, 108px);
+  bottom: calc(50% - 1px);
+  display: block;
+  width: auto;
+  height: 72px;
+  pointer-events: none;
+}
+
+.section-pet img {
+  display: block;
+  width: auto;
+  height: 100%;
+  filter: drop-shadow(0 2px 0 rgba(43, 26, 19, 0.1));
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 /* 项目网格：三个项目在所有屏幕上保持同一横排，窄屏由等分列自动压缩。 */
@@ -1694,6 +1726,12 @@ a.article-pagination-item:hover {
   }
 
   .section-heading .section-kicker { gap: 10px; }
+
+  .section-pet {
+    right: 4px;
+    height: 56px;
+  }
+
   .home .project-grid,
   .listing-projects .project-grid {
     grid-template-columns: 1fr;

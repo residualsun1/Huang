@@ -326,12 +326,26 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
 });
 
-test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
+test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.match(css, /\.section-heading \.section-kicker::after \{/);
+  const pets = html.match(/<picture class="section-pet"/g) ?? [];
+
+  assert.equal(pets.length, 4);
+  assert.match(html, /clawd-building-still\.png[\s\S]*?clawd-building\.gif/);
+  assert.match(html, /clawd-thinking-still\.png[\s\S]*?clawd-thinking\.gif/);
+  assert.match(html, /clawd-typing-still\.png[\s\S]*?clawd-typing\.gif/);
+  assert.match(html, /clawd-idle-still\.png[\s\S]*?clawd-idle\.gif/);
+  assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
+  assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
+  assert.match(html, /loading="lazy" decoding="async"/);
+  assert.match(css, /\.section-kicker__rail::before \{/);
   assert.match(css, /background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
+  assert.match(css, /\.section-pet \{[\s\S]*?height: 72px;/);
+  assert.match(css, /\.section-pet img \{[\s\S]*?image-rendering: pixelated;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-pet \{[\s\S]*?height: 56px;/);
 });
 
 test("首页使用 880px 中等宽度与无照片的单列简介", async () => {

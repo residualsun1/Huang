@@ -289,6 +289,23 @@ function projectCard(entry) {
     </article>`;
 }
 
+const sectionPetAssets = {
+  projects: { name: "building", width: 161, height: 128 },
+  prompts: { name: "thinking", width: 127, height: 142 },
+  writings: { name: "typing", width: 115, height: 157 },
+  readings: { name: "idle", width: 117, height: 112 },
+};
+
+function sectionPet(key) {
+  const asset = sectionPetAssets[key];
+  const source = `/images/clawd/clawd-${asset.name}`;
+
+  return `<picture class="section-pet" aria-hidden="true">
+      <source media="(prefers-reduced-motion: reduce)" srcset="${source}-still.png">
+      <img src="${source}.gif" alt="" width="${asset.width}" height="${asset.height}" loading="lazy" decoding="async">
+    </picture>`;
+}
+
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
   const projects = byKey.projects.entries.slice(0, 3).map(projectCard).join("");
@@ -297,7 +314,10 @@ function homePage(collections) {
   const readings = byKey.readings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
-    <p class="section-kicker" id="${group.key}-title">${group.number} / ${group.label}</p>
+    <p class="section-kicker" id="${group.key}-title">
+      <span class="section-kicker__label">${group.number} / ${group.label}</span>
+      <span class="section-kicker__rail" aria-hidden="true">${sectionPet(group.key)}</span>
+    </p>
   </header>`;
 
   return layout({
