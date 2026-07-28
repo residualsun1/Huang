@@ -61,6 +61,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /X-Content-Type-Options: nosniff/);
   assert.match(headers, /\/version\.json[\s\S]*?Cache-Control: no-store/);
+  assert.match(headers, /\/images\/clawd\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
   assert.match(html, new RegExp(`/styles\\.css\\?v=${version.assetVersion}`));
   assert.match(version.assetVersion, /^[0-9a-f]{12}$/);
@@ -330,15 +331,23 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const pets = html.match(/<picture class="section-pet"/g) ?? [];
+  const assetNames = ["building", "thinking", "typing", "idle"];
 
   assert.equal(pets.length, 4);
+  for (const name of assetNames) {
+    const animation = await readFile(new URL(`images/clawd/clawd-${name}.gif`, root));
+    const still = await readFile(new URL(`images/clawd/clawd-${name}-still.png`, root));
+    assert.equal(animation.subarray(0, 6).toString("ascii"), "GIF89a");
+    assert.deepEqual([...still.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  }
   assert.match(html, /clawd-building-still\.png[\s\S]*?clawd-building\.gif/);
   assert.match(html, /clawd-thinking-still\.png[\s\S]*?clawd-thinking\.gif/);
   assert.match(html, /clawd-typing-still\.png[\s\S]*?clawd-typing\.gif/);
   assert.match(html, /clawd-idle-still\.png[\s\S]*?clawd-idle\.gif/);
   assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
   assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
-  assert.match(html, /loading="lazy" decoding="async"/);
+  assert.doesNotMatch(html, /clawd-[^"]+\.gif"[^>]*loading="lazy"/);
+  assert.match(html, /clawd-[^"]+\.gif"[^>]*decoding="async"/);
   assert.match(css, /\.section-kicker__rail::before \{/);
   assert.match(css, /background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);

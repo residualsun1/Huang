@@ -302,7 +302,7 @@ function sectionPet(key) {
 
   return `<picture class="section-pet" aria-hidden="true">
       <source media="(prefers-reduced-motion: reduce)" srcset="${source}-still.png">
-      <img src="${source}.gif" alt="" width="${asset.width}" height="${asset.height}" loading="lazy" decoding="async">
+      <img src="${source}.gif" alt="" width="${asset.width}" height="${asset.height}" decoding="async">
     </picture>`;
 }
 
