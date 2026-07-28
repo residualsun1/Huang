@@ -330,6 +330,7 @@ test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const playerScript = await readFile(new URL("music-player.js", root), "utf8");
+  const audioFile = await readFile(new URL("audio/site-theme.mp3", root));
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
   const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
 
@@ -349,6 +350,8 @@ test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
   assert.match(playerScript, /audio\.volume = 0\.45/);
   assert.match(playerScript, /audio\.src = source/);
   assert.match(playerScript, /window\.addEventListener\("pagehide"/);
+  assert.ok(audioFile.length > 1_000_000);
+  assert.equal(audioFile.subarray(0, 3).toString("ascii"), "ID3");
 });
 
 test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
