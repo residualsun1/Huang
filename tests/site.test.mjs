@@ -327,11 +327,28 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
 });
 
 test("首页栏目标题使用右侧延伸的水平分隔线", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const playerScript = await readFile(new URL("music-player.js", root), "utf8");
+  const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
+
   assert.match(css, /\.section-heading \.section-kicker::after \{/);
   assert.match(css, /background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
+  assert.match(projectSection, /class="vinyl-player" data-vinyl-player/);
+  assert.match(projectSection, /来首 Huang，看看文章/);
+  assert.match(projectSection, /aria-pressed="false"/);
+  assert.match(projectSection, /<audio data-vinyl-audio data-src="\/audio\/site-theme\.mp3" preload="none"><\/audio>/);
+  assert.doesNotMatch(promptSection, /data-vinyl-player/);
+  assert.match(html, /<script defer src="\/music-player\.js"><\/script>/);
+  assert.match(css, /\.vinyl-player__surface \{[\s\S]*?repeating-radial-gradient/);
+  assert.match(css, /\.vinyl-player:hover \.vinyl-player__disc,[\s\S]*?translateY\(calc\(var\(--vinyl-rise\) \* -1\)\)/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\.vinyl-player__button\[data-playing="true"\] \.vinyl-player__surface \{[\s\S]*?animation: none/);
+  assert.match(playerScript, /audio\.volume = 0\.45/);
+  assert.match(playerScript, /audio\.src = source/);
+  assert.match(playerScript, /window\.addEventListener\("pagehide"/);
 });
 
 test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
@@ -347,10 +364,15 @@ test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
 
 test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const cssWithoutPaperSurface = css.replace(
-    /--paper-surface:[\s\S]*?\) 0 0 \/ 8px 8px;/,
-    "",
-  );
+  const cssWithoutComponentTextures = css
+    .replace(
+      /--paper-surface:[\s\S]*?\) 0 0 \/ 8px 8px;/,
+      "",
+    )
+    .replace(
+      /\.vinyl-player__surface \{[\s\S]*?\n\}/,
+      "",
+    );
 
   assert.match(css, /--background-100: #f2ede3;/);
   assert.match(css, /--surface-raised: rgba\(250, 247, 241, 0\.8\);/);
@@ -363,7 +385,7 @@ test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
     /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(112, 90, 66, 0\.024\)[\s\S]*?\) 0 0 \/ 8px 8px/,
   );
   assert.doesNotMatch(css, /circle at 13% 7%|circle at 88% 18%/);
-  assert.doesNotMatch(cssWithoutPaperSurface, /(?:radial|linear)-gradient\(/);
+  assert.doesNotMatch(cssWithoutComponentTextures, /(?:radial|linear)-gradient\(/);
   assert.match(css, /body \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
   assert.match(css, /\.site-header \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
 });
