@@ -273,7 +273,7 @@ function listRow(entry, { summary = entry.description } = {}) {
   </a>`;
 }
 
-function projectCard(entry) {
+export function projectCard(entry) {
   return `
     <article class="project-card">
       <a class="project-card-link" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}"></a>

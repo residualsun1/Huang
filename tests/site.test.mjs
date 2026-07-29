@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { detailPage } from "../scripts/build.mjs";
+import { detailPage, projectCard } from "../scripts/build.mjs";
 import { hasMath, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
@@ -195,7 +195,6 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
   assert.match(projectSection, />项目仓库<\/span>/);
   assert.match(projectSection, />项目网址<\/span>/);
-  assert.match(projectSection, /aria-disabled="true"/);
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
   assert.match(projectCardRule, /--project-card-surface: #eee8de;/);
@@ -215,6 +214,25 @@ test("项目卡片使用统一纸张纹理并展示详情入口与可选外部�
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.listing-projects \.project-grid \{[\s\S]*?grid-template-columns: 1fr;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card \{[\s\S]*?min-height: 0;[\s\S]*?padding: 18px;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card-actions \{[\s\S]*?flex-wrap: wrap;/);
+});
+
+test("项目外部链接的可用与缺失状态由固定夹具覆盖", () => {
+  const group = groupDefinitions.find(({ key }) => key === "projects");
+  const linkedCard = projectCard(fixtureEntry(group, {
+    repository: "https://github.com/example/project",
+    website: "https://example.com/project",
+  }));
+  const unlinkedCard = projectCard(fixtureEntry(group, {
+    repository: "",
+    website: "",
+  }));
+
+  assert.match(linkedCard, /href="https:\/\/github\.com\/example\/project"/);
+  assert.match(linkedCard, /href="https:\/\/example\.com\/project"/);
+  assert.doesNotMatch(linkedCard, /aria-disabled="true"/);
+  assert.equal((unlinkedCard.match(/aria-disabled="true"/g) ?? []).length, 2);
+  assert.match(unlinkedCard, /title="在项目 Markdown 中填写 repository"/);
+  assert.match(unlinkedCard, /title="在项目 Markdown 中填写 website"/);
 });
 
 test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
