@@ -290,22 +290,21 @@ export function projectCard(entry) {
     </article>`;
 }
 
-const sectionPetCanvas = { width: 127, height: 157 };
 const sectionPetAssets = {
-  projects: "typing",
-  prompts: "thinking",
-  writings: "ide",
-  readings: "idle",
+  projects: { name: "typing", width: 115, height: 157 },
+  prompts: { name: "thinking", width: 127, height: 142 },
+  writings: { name: "ide", width: 115, height: 157 },
+  readings: { name: "idle", width: 117, height: 112 },
 };
 
 function sectionPet(key) {
-  const name = sectionPetAssets[key];
-  const source = `/images/clawd/clawd-${name}`;
-  const version = sectionPetVersions[name] || "development";
+  const asset = sectionPetAssets[key];
+  const source = `/images/clawd/clawd-${asset.name}`;
+  const version = sectionPetVersions[asset.name] || "development";
 
   return `<picture class="section-pet" aria-hidden="true">
       <source media="(prefers-reduced-motion: reduce)" srcset="${source}-still.png?v=${version}">
-      <img src="${source}.gif?v=${version}" alt="" width="${sectionPetCanvas.width}" height="${sectionPetCanvas.height}" decoding="async">
+      <img src="${source}.gif?v=${version}" alt="" width="${asset.width}" height="${asset.height}" decoding="async">
     </picture>`;
 }
 
@@ -525,7 +524,7 @@ export async function buildSite() {
   const styles = await readFile(path.join(publicRoot, "styles.css"));
   stylesVersion = createHash("sha256").update(styles).digest("hex").slice(0, 12);
   sectionPetVersions = {};
-  for (const name of new Set(Object.values(sectionPetAssets))) {
+  for (const name of new Set(Object.values(sectionPetAssets).map((asset) => asset.name))) {
     const still = await readFile(path.join(publicRoot, "images", "clawd", `clawd-${name}-still.png`));
     const animation = await readFile(path.join(publicRoot, "images", "clawd", `clawd-${name}.gif`));
     sectionPetVersions[name] = createHash("sha256")

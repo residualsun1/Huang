@@ -351,6 +351,12 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   const css = await readFile(new URL("styles.css", root), "utf8");
   const pets = html.match(/<picture class="section-pet"/g) ?? [];
   const assetNames = ["typing", "thinking", "ide", "idle"];
+  const assetDimensions = {
+    typing: [115, 157],
+    thinking: [127, 142],
+    ide: [115, 157],
+    idle: [117, 112],
+  };
   const section = (key) => (
     html.match(new RegExp(`<section class="content-section" id="${key}"[\\s\\S]*?<\\/section>`))?.[0] ?? ""
   );
@@ -367,18 +373,19 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
     const versionedReferences = html.match(
       new RegExp(`clawd-${name}-still\\.png\\?v=([0-9a-f]{12})[\\s\\S]*?clawd-${name}\\.gif\\?v=\\1`),
     );
+    const [width, height] = assetDimensions[name];
     assert.equal(animation.subarray(0, 6).toString("ascii"), "GIF89a");
     assert.deepEqual([...still.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
-    assert.equal(animation.readUInt16LE(6), 127);
-    assert.equal(animation.readUInt16LE(8), 157);
-    assert.equal(still.readUInt32BE(16), 127);
-    assert.equal(still.readUInt32BE(20), 157);
+    assert.equal(animation.readUInt16LE(6), width);
+    assert.equal(animation.readUInt16LE(8), height);
+    assert.equal(still.readUInt32BE(16), width);
+    assert.equal(still.readUInt32BE(20), height);
     assert.equal(versionedReferences?.[1], expectedVersion);
   }
-  assert.match(section("projects"), /clawd-typing-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-typing\.gif\?v=\1"[^>]*width="127" height="157"/);
-  assert.match(section("prompts"), /clawd-thinking-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-thinking\.gif\?v=\1"[^>]*width="127" height="157"/);
-  assert.match(section("writings"), /clawd-ide-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-ide\.gif\?v=\1"[^>]*width="127" height="157"/);
-  assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="127" height="157"/);
+  assert.match(section("projects"), /clawd-typing-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-typing\.gif\?v=\1"[^>]*width="115" height="157"/);
+  assert.match(section("prompts"), /clawd-thinking-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-thinking\.gif\?v=\1"[^>]*width="127" height="142"/);
+  assert.match(section("writings"), /clawd-ide-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-ide\.gif\?v=\1"[^>]*width="115" height="157"/);
+  assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="117" height="112"/);
   assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
   assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
   assert.doesNotMatch(html, /clawd-[^"]+\.gif\?v=[^"]+"[^>]*loading="lazy"/);
