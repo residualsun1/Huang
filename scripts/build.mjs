@@ -292,7 +292,7 @@ export function projectCard(entry) {
 const sectionPetAssets = {
   projects: { name: "typing", width: 115, height: 157 },
   prompts: { name: "thinking", width: 127, height: 142 },
-  writings: { name: "ide", width: 110, height: 74 },
+  writings: { name: "ide", width: 117, height: 112 },
   readings: { name: "idle", width: 117, height: 112 },
 };
 

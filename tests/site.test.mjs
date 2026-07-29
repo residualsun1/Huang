@@ -363,7 +363,7 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   }
   assert.match(section("projects"), /clawd-typing-still\.png[\s\S]*?clawd-typing\.gif/);
   assert.match(section("prompts"), /clawd-thinking-still\.png[\s\S]*?clawd-thinking\.gif/);
-  assert.match(section("writings"), /clawd-ide-still\.png[\s\S]*?clawd-ide\.gif/);
+  assert.match(section("writings"), /clawd-ide-still\.png[\s\S]*?clawd-ide\.gif"[^>]*width="117" height="112"/);
   assert.match(section("readings"), /clawd-idle-still\.png[\s\S]*?clawd-idle\.gif/);
   assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
   assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
