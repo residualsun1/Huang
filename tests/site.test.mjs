@@ -355,7 +355,7 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
     typing: [115, 157],
     thinking: [127, 142],
     notification: [147, 157],
-    idle: [117, 112],
+    idle: [127, 142],
   };
   const section = (key) => (
     html.match(new RegExp(`<section class="content-section" id="${key}"[\\s\\S]*?<\\/section>`))?.[0] ?? ""
@@ -385,7 +385,7 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   assert.match(section("projects"), /clawd-typing-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-typing\.gif\?v=\1"[^>]*width="115" height="157"/);
   assert.match(section("prompts"), /clawd-thinking-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-thinking\.gif\?v=\1"[^>]*width="127" height="142"/);
   assert.match(section("writings"), /clawd-notification-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-notification\.gif\?v=\1"[^>]*width="147" height="157"/);
-  assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="117" height="112"/);
+  assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="127" height="142"/);
   assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
   assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
   assert.doesNotMatch(html, /clawd-[^"]+\.gif\?v=[^"]+"[^>]*loading="lazy"/);
