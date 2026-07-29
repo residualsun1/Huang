@@ -14,6 +14,7 @@ const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "")
   .replace(/\/+$/, "");
 const buildCommit = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "").trim();
 let stylesVersion = "development";
+let sectionPetVersions = {};
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
@@ -289,20 +290,22 @@ export function projectCard(entry) {
     </article>`;
 }
 
+const sectionPetCanvas = { width: 127, height: 157 };
 const sectionPetAssets = {
-  projects: { name: "typing", width: 115, height: 157 },
-  prompts: { name: "thinking", width: 127, height: 142 },
-  writings: { name: "ide", width: 117, height: 112 },
-  readings: { name: "idle", width: 117, height: 112 },
+  projects: "typing",
+  prompts: "thinking",
+  writings: "ide",
+  readings: "idle",
 };
 
 function sectionPet(key) {
-  const asset = sectionPetAssets[key];
-  const source = `/images/clawd/clawd-${asset.name}`;
+  const name = sectionPetAssets[key];
+  const source = `/images/clawd/clawd-${name}`;
+  const version = sectionPetVersions[name] || "development";
 
   return `<picture class="section-pet" aria-hidden="true">
-      <source media="(prefers-reduced-motion: reduce)" srcset="${source}-still.png">
-      <img src="${source}.gif" alt="" width="${asset.width}" height="${asset.height}" decoding="async">
+      <source media="(prefers-reduced-motion: reduce)" srcset="${source}-still.png?v=${version}">
+      <img src="${source}.gif?v=${version}" alt="" width="${sectionPetCanvas.width}" height="${sectionPetCanvas.height}" decoding="async">
     </picture>`;
 }
 
@@ -521,6 +524,16 @@ export async function buildSite() {
   await cp(publicRoot, clientRoot, { recursive: true });
   const styles = await readFile(path.join(publicRoot, "styles.css"));
   stylesVersion = createHash("sha256").update(styles).digest("hex").slice(0, 12);
+  sectionPetVersions = {};
+  for (const name of new Set(Object.values(sectionPetAssets))) {
+    const still = await readFile(path.join(publicRoot, "images", "clawd", `clawd-${name}-still.png`));
+    const animation = await readFile(path.join(publicRoot, "images", "clawd", `clawd-${name}.gif`));
+    sectionPetVersions[name] = createHash("sha256")
+      .update(still)
+      .update(animation)
+      .digest("hex")
+      .slice(0, 12);
+  }
 
   const collections = [];
   for (const group of groups) {

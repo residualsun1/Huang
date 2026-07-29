@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 import { detailPage, projectCard } from "../scripts/build.mjs";
@@ -358,17 +359,30 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   for (const name of assetNames) {
     const animation = await readFile(new URL(`images/clawd/clawd-${name}.gif`, root));
     const still = await readFile(new URL(`images/clawd/clawd-${name}-still.png`, root));
+    const expectedVersion = createHash("sha256")
+      .update(still)
+      .update(animation)
+      .digest("hex")
+      .slice(0, 12);
+    const versionedReferences = html.match(
+      new RegExp(`clawd-${name}-still\\.png\\?v=([0-9a-f]{12})[\\s\\S]*?clawd-${name}\\.gif\\?v=\\1`),
+    );
     assert.equal(animation.subarray(0, 6).toString("ascii"), "GIF89a");
     assert.deepEqual([...still.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+    assert.equal(animation.readUInt16LE(6), 127);
+    assert.equal(animation.readUInt16LE(8), 157);
+    assert.equal(still.readUInt32BE(16), 127);
+    assert.equal(still.readUInt32BE(20), 157);
+    assert.equal(versionedReferences?.[1], expectedVersion);
   }
-  assert.match(section("projects"), /clawd-typing-still\.png[\s\S]*?clawd-typing\.gif/);
-  assert.match(section("prompts"), /clawd-thinking-still\.png[\s\S]*?clawd-thinking\.gif/);
-  assert.match(section("writings"), /clawd-ide-still\.png[\s\S]*?clawd-ide\.gif"[^>]*width="117" height="112"/);
-  assert.match(section("readings"), /clawd-idle-still\.png[\s\S]*?clawd-idle\.gif/);
+  assert.match(section("projects"), /clawd-typing-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-typing\.gif\?v=\1"[^>]*width="127" height="157"/);
+  assert.match(section("prompts"), /clawd-thinking-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-thinking\.gif\?v=\1"[^>]*width="127" height="157"/);
+  assert.match(section("writings"), /clawd-ide-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-ide\.gif\?v=\1"[^>]*width="127" height="157"/);
+  assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="127" height="157"/);
   assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
   assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
-  assert.doesNotMatch(html, /clawd-[^"]+\.gif"[^>]*loading="lazy"/);
-  assert.match(html, /clawd-[^"]+\.gif"[^>]*decoding="async"/);
+  assert.doesNotMatch(html, /clawd-[^"]+\.gif\?v=[^"]+"[^>]*loading="lazy"/);
+  assert.match(html, /clawd-[^"]+\.gif\?v=[^"]+"[^>]*decoding="async"/);
   assert.match(css, /\.section-kicker__rail::before \{/);
   assert.match(css, /background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
