@@ -290,9 +290,9 @@ export function projectCard(entry) {
 }
 
 const sectionPetAssets = {
-  projects: { name: "building", width: 161, height: 128 },
+  projects: { name: "typing", width: 115, height: 157 },
   prompts: { name: "thinking", width: 127, height: 142 },
-  writings: { name: "typing", width: 115, height: 157 },
+  writings: { name: "ide", width: 110, height: 74 },
   readings: { name: "idle", width: 117, height: 112 },
 };
 

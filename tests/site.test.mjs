@@ -349,7 +349,10 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const pets = html.match(/<picture class="section-pet"/g) ?? [];
-  const assetNames = ["building", "thinking", "typing", "idle"];
+  const assetNames = ["typing", "thinking", "ide", "idle"];
+  const section = (key) => (
+    html.match(new RegExp(`<section class="content-section" id="${key}"[\\s\\S]*?<\\/section>`))?.[0] ?? ""
+  );
 
   assert.equal(pets.length, 4);
   for (const name of assetNames) {
@@ -358,10 +361,10 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
     assert.equal(animation.subarray(0, 6).toString("ascii"), "GIF89a");
     assert.deepEqual([...still.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
   }
-  assert.match(html, /clawd-building-still\.png[\s\S]*?clawd-building\.gif/);
-  assert.match(html, /clawd-thinking-still\.png[\s\S]*?clawd-thinking\.gif/);
-  assert.match(html, /clawd-typing-still\.png[\s\S]*?clawd-typing\.gif/);
-  assert.match(html, /clawd-idle-still\.png[\s\S]*?clawd-idle\.gif/);
+  assert.match(section("projects"), /clawd-typing-still\.png[\s\S]*?clawd-typing\.gif/);
+  assert.match(section("prompts"), /clawd-thinking-still\.png[\s\S]*?clawd-thinking\.gif/);
+  assert.match(section("writings"), /clawd-ide-still\.png[\s\S]*?clawd-ide\.gif/);
+  assert.match(section("readings"), /clawd-idle-still\.png[\s\S]*?clawd-idle\.gif/);
   assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
   assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
   assert.doesNotMatch(html, /clawd-[^"]+\.gif"[^>]*loading="lazy"/);
