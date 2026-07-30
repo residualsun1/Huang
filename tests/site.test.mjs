@@ -215,8 +215,12 @@ test("项目使用紧凑图标列表并展示详情入口与可选外部链接",
   assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-row:hover \{[\s\S]*?background: rgba\(139, 69, 19, 0\.035\);/);
   assert.doesNotMatch(projectHoverRule, /transform:/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) auto;[\s\S]*?gap: 10px;[\s\S]*?padding: 10px 0;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-icon \{[\s\S]*?width: 56px;[\s\S]*?height: 56px;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row-actions \{[\s\S]*?flex-direction: column;[\s\S]*?align-items: flex-end;[\s\S]*?flex-wrap: nowrap;[\s\S]*?margin-left: 0;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row-main \{[\s\S]*?grid-template-columns: 52px minmax\(0, 1fr\);[\s\S]*?gap: 12px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-icon \{[\s\S]*?width: 52px;[\s\S]*?height: 52px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row h3 \{[\s\S]*?font-size: 15px;[\s\S]*?line-height: 22px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-description \{[\s\S]*?font-size: 12\.5px;[\s\S]*?line-height: 19px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row-actions \{[\s\S]*?flex-direction: column;[\s\S]*?gap: 8px;[\s\S]*?align-items: flex-end;[\s\S]*?flex-wrap: nowrap;[\s\S]*?margin-left: 0;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-action \{[\s\S]*?min-height: 20px;/);
 });
 
 test("项目外部链接的可用与缺失状态由固定夹具覆盖", () => {
