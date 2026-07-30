@@ -322,11 +322,41 @@ function homePage(collections) {
   const writings = byKey.writings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
   const readings = byKey.readings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
 
+  const vinylPlayer = `<div class="vinyl-player" data-vinyl-player>
+    <button
+      class="vinyl-player__button"
+      type="button"
+      aria-label="播放背景音乐"
+      aria-describedby="vinyl-player-note vinyl-player-status"
+      aria-pressed="false"
+      data-playing="false"
+    >
+      <span class="vinyl-player__viewport" aria-hidden="true">
+        <span class="vinyl-player__disc">
+          <span class="vinyl-player__surface">
+            <span class="vinyl-player__label">
+              <span class="vinyl-player__spindle"></span>
+            </span>
+          </span>
+        </span>
+      </span>
+    </button>
+    <span class="vinyl-player__note" id="vinyl-player-note">
+      <span class="vinyl-player__note-text">来首 Huang，看看文章</span>
+      <svg class="vinyl-player__leader" viewBox="0 0 36 34" aria-hidden="true">
+        <path d="M3 5c11 1 22 8 28 23"></path>
+      </svg>
+    </span>
+    <audio data-vinyl-audio data-src="/audio/site-theme.mp3" preload="none"></audio>
+    <span class="vinyl-player__status sr-only" id="vinyl-player-status" aria-live="polite"></span>
+  </div>`;
+
   const sectionHeader = (group) => `<header class="section-heading">
     <p class="section-kicker" id="${group.key}-title">
       <span class="section-kicker__label">${group.number} / ${group.label}</span>
-      <span class="section-kicker__rail" aria-hidden="true">${sectionPet(group.key)}</span>
+      <span class="section-kicker__rail" aria-hidden="true">${group.key === "projects" ? "" : sectionPet(group.key)}</span>
     </p>
+    ${group.key === "projects" ? vinylPlayer : ""}
   </header>`;
 
   return layout({
@@ -372,7 +402,8 @@ function homePage(collections) {
         <div class="section-more"><a href="/readings/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
     </main>
-    ${siteFooter()}`,
+    ${siteFooter()}
+    <script defer src="/music-player.js"></script>`,
   });
 }
 

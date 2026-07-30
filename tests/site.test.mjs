@@ -351,13 +351,12 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
 });
 
-test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async () => {
+test("首页后三个栏目在水平分隔线上展示对应状态的 Clawd", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const pets = html.match(/<picture class="section-pet"/g) ?? [];
-  const assetNames = ["typing", "thinking", "notification", "idle"];
+  const assetNames = ["thinking", "notification", "idle"];
   const assetDimensions = {
-    typing: [115, 157],
     thinking: [127, 142],
     notification: [147, 157],
     idle: [127, 142],
@@ -366,7 +365,7 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
     html.match(new RegExp(`<section class="content-section" id="${key}"[\\s\\S]*?<\\/section>`))?.[0] ?? ""
   );
 
-  assert.equal(pets.length, 4);
+  assert.equal(pets.length, 3);
   for (const name of assetNames) {
     const animation = await readFile(new URL(`images/clawd/clawd-${name}.gif`, root));
     const still = await readFile(new URL(`images/clawd/clawd-${name}-still.png`, root));
@@ -387,7 +386,7 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
     assert.equal(still.readUInt32BE(20), height);
     assert.equal(versionedReferences?.[1], expectedVersion);
   }
-  assert.match(section("projects"), /clawd-typing-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-typing\.gif\?v=\1"[^>]*width="115" height="157"/);
+  assert.doesNotMatch(section("projects"), /class="section-pet"/);
   assert.match(section("prompts"), /clawd-thinking-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-thinking\.gif\?v=\1"[^>]*width="127" height="142"/);
   assert.match(section("writings"), /clawd-notification-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-notification\.gif\?v=\1"[^>]*width="147" height="157"/);
   assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="127" height="142"/);
@@ -406,6 +405,35 @@ test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-pet \{[\s\S]*?height: 56px;/);
 });
 
+test("项目栏目在分隔线上展示可播放的唱片", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+  const playerScript = await readFile(new URL("music-player.js", root), "utf8");
+  const audioFile = await readFile(new URL("audio/site-theme.mp3", root));
+  const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
+
+  assert.match(css, /\.section-kicker__rail::before \{/);
+  assert.match(css, /background: var\(--gray-alpha-400\)/);
+  assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
+  assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
+  assert.match(projectSection, /class="vinyl-player" data-vinyl-player/);
+  assert.match(projectSection, /来首 Huang，看看文章/);
+  assert.match(projectSection, /aria-pressed="false"/);
+  assert.match(projectSection, /<audio data-vinyl-audio data-src="\/audio\/site-theme\.mp3" preload="none"><\/audio>/);
+  assert.doesNotMatch(promptSection, /data-vinyl-player/);
+  assert.match(html, /<script defer src="\/music-player\.js"><\/script>/);
+  assert.match(css, /\.vinyl-player__surface \{[\s\S]*?repeating-radial-gradient/);
+  assert.match(css, /\.vinyl-player \{[\s\S]*?top: calc\(48px \+ 10px - 44px\);/);
+  assert.match(css, /\.vinyl-player:hover \.vinyl-player__disc,[\s\S]*?translateY\(calc\(var\(--vinyl-rise\) \* -1\)\)/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?\.vinyl-player__button\[data-playing="true"\] \.vinyl-player__surface \{[\s\S]*?animation: none/);
+  assert.match(playerScript, /audio\.volume = 0\.45/);
+  assert.match(playerScript, /audio\.src = source/);
+  assert.match(playerScript, /window\.addEventListener\("pagehide"/);
+  assert.ok(audioFile.length > 1_000_000);
+  assert.equal(audioFile.subarray(0, 3).toString("ascii"), "ID3");
+});
+
 test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const heroRule = css.match(/\.hero \{([^}]*)\}/)?.[1] ?? "";
@@ -419,10 +447,15 @@ test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
 
 test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const cssWithoutPaperSurface = css.replace(
-    /--paper-surface:[\s\S]*?\) 0 0 \/ 8px 8px;/,
-    "",
-  );
+  const cssWithoutComponentTextures = css
+    .replace(
+      /--paper-surface:[\s\S]*?\) 0 0 \/ 8px 8px;/,
+      "",
+    )
+    .replace(
+      /\.vinyl-player__surface \{[\s\S]*?\n\}/,
+      "",
+    );
 
   assert.match(css, /--background-100: #f2ede3;/);
   assert.match(css, /--surface-raised: rgba\(250, 247, 241, 0\.8\);/);
@@ -435,7 +468,7 @@ test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
     /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(112, 90, 66, 0\.024\)[\s\S]*?\) 0 0 \/ 8px 8px/,
   );
   assert.doesNotMatch(css, /circle at 13% 7%|circle at 88% 18%/);
-  assert.doesNotMatch(cssWithoutPaperSurface, /(?:radial|linear)-gradient\(/);
+  assert.doesNotMatch(cssWithoutComponentTextures, /(?:radial|linear)-gradient\(/);
   assert.match(css, /body \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
   assert.match(css, /\.site-header \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
 });
