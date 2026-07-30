@@ -25,7 +25,7 @@
 2. 修改全站最大宽度：搜索 `--page-width`。
 3. 修改文章正文宽度：搜索 `--article-width`。
 4. 修改首页简介：搜索 `.hero-intro`。
-5. 修改项目列表外观：在 `public/styles.css` 搜索 `.project-list`、`.project-row`、`.project-icon` 和 `.project-row-actions`；桌面端图标、文字与外部入口横排，手机端外部入口自动换到文字下方。
+5. 修改项目列表外观：在 `public/styles.css` 搜索 `.project-list`、`.project-row`、`.project-icon` 和 `.project-row-actions`；桌面端图标、文字与外部入口横排，手机端两个外部入口在简介右侧上下排列。
 6. 修改项目卡片结构或字段：在 `scripts/build.mjs` 搜索 `projectAction` 和 `const projects`。
 7. 设置项目链接：打开对应的 `content/projects/年份/项目名.md`，填写 `repository` 和 `website`。
 8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
