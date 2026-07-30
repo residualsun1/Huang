@@ -1710,7 +1710,7 @@ a.article-pagination-item:hover {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 0;
     gap: 10px;
-    padding: 12px 0;
+    padding: 14px 0;
   }
 
   .project-row-main {
@@ -1737,7 +1737,7 @@ a.article-pagination-item:hover {
 
   .project-row-actions {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     align-items: flex-end;
     justify-content: center;
     flex-wrap: nowrap;
@@ -1749,7 +1749,7 @@ a.article-pagination-item:hover {
 
   .project-action {
     width: auto;
-    min-height: 22px;
+    min-height: 24px;
     gap: 5px;
   }
 
