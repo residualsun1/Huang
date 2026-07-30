@@ -4,6 +4,7 @@ date: "2026-07-14"
 author: "黄国政"
 slug: "her"
 description: "如果 Samantha 来到现实……"
+icon: "/images/projects/her.png"
 repository: "https://github.com/residualsun1/Her"
 website: "https://her.sonder53231323.workers.dev"
 ---

@@ -429,150 +429,128 @@ a { color: inherit; }
   image-rendering: pixelated;
 }
 
-/* 项目网格：三个项目在所有屏幕上保持同一横排，窄屏由等分列自动压缩。 */
-.project-grid {
+/* 项目使用紧凑的编辑式列表；图标负责识别，文字和外部入口保持清晰层级。 */
+.project-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 264px));
-  gap: 20px;
-  width: min(100%, 900px);
+  width: min(100%, 880px);
   margin-inline: auto;
-  justify-content: center;
 }
 
-/*
- * 项目卡片使用与全站一致的羊皮纸材质：
- * 纯色表面承接页面底色，直接复用 --paper-surface 的均匀颗粒和斜向纹理。
- * 不使用透明模糊、局部高光或大范围渐变，保持视觉克制和代码简洁。
- */
-.project-card {
-  --project-card-surface: #eee8de;
-  --project-card-border: rgba(71, 65, 58, 0.18);
-
-  position: relative;
-  display: flex;
+.project-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   width: 100%;
-  max-width: 100%;
+  min-height: 96px;
+  padding: 12px 4px;
   min-width: 0;
-  min-height: 170px;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 25px;
-  overflow: hidden;
-  border: 1px solid var(--project-card-border);
-  border-radius: var(--radius-md);
-  background: var(--paper-surface), var(--project-card-surface);
-  box-shadow:
-    3px 4px 0 rgba(61, 55, 48, 0.1),
-    0 12px 24px rgba(45, 41, 36, 0.08);
-  color: inherit;
+  align-items: center;
+  border-radius: var(--radius-sm);
   transition:
-    border-color 180ms ease,
-    box-shadow 220ms ease,
-    transform 220ms ease;
+    background-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-/* 整张卡片的透明主链接：既让卡片可点击，也避免与底部两个外部链接产生嵌套。 */
-.project-card-link {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  border-radius: inherit;
+.project-row + .project-row {
+  border-top: 1px solid var(--gray-alpha-400);
 }
 
-.project-card-link:focus-visible {
-  outline: 2px solid var(--accent-700);
-  outline-offset: 3px;
-}
-
-/* 键盘聚焦时强化纸张边缘，不依赖鼠标操作。 */
-.project-card:focus-within {
-  border-color: rgba(139, 69, 19, 0.34);
-  box-shadow:
-    3px 4px 0 rgba(61, 55, 48, 0.13),
-    0 14px 28px rgba(45, 41, 36, 0.1);
-}
-
-/*
- * 只有具备精确指针的设备才启用轻微上移和按压反馈，
- * 避免手机触摸后残留 Hover 状态。
- */
-@media (hover: hover) and (pointer: fine) {
-  .project-card:hover {
-    border-color: rgba(71, 65, 58, 0.3);
-    box-shadow:
-      4px 5px 0 rgba(61, 55, 48, 0.14),
-      0 16px 30px rgba(45, 41, 36, 0.11);
-    transform: translateY(-2px);
-  }
-
-  .project-card:active {
-    box-shadow:
-      2px 3px 0 rgba(61, 55, 48, 0.11),
-      0 8px 18px rgba(45, 41, 36, 0.08);
-    transform: translateY(0) scale(0.99);
-    transition-duration: 100ms;
-  }
-}
-
-/* 项目名称与简介从卡片顶部自然开始；箭头独立定位，不占用内容高度。 */
-.project-card-copy {
-  position: relative;
-  z-index: 1;
+.project-row-main {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
   min-width: 0;
+  gap: 18px;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
 }
 
-.card-arrow,
-.row-arrow {
-  color: var(--gray-700);
-  font-family: var(--mono);
-  transition: color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
+.project-row-main:focus-visible {
+  outline: 2px solid var(--accent-700);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
-.project-card .card-arrow {
-  position: absolute;
-  z-index: 1;
-  top: 18px;
-  right: 18px;
+.project-row:focus-within {
+  background: rgba(139, 69, 19, 0.045);
+  box-shadow: 0 0 0 1px rgba(139, 69, 19, 0.1);
 }
 
-.project-card:hover .card-arrow {
-  color: var(--gray-1000);
-  transform: translate(2px, -2px);
+@media (hover: hover) and (pointer: fine) {
+  .project-row:hover {
+    background: rgba(139, 69, 19, 0.035);
+  }
+
+  .project-row:hover .project-icon {
+    border-color: rgba(139, 69, 19, 0.3);
+  }
 }
 
-/* 项目标题与简介。 */
-.project-card h3 {
+.project-icon {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid rgba(71, 65, 58, 0.16);
+  border-radius: 12px;
+  background: #eae3d7;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  transition: border-color 180ms ease;
+}
+
+.project-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(var(--project-icon-scale, 1));
+}
+
+.project-icon--global-enthnography { --project-icon-scale: 1.04; }
+.project-icon--her { --project-icon-scale: 1.12; }
+.project-icon--time-gambler { --project-icon-scale: 1.03; }
+
+.project-icon-fallback {
+  color: var(--accent-700);
+  font-family: var(--title-serif);
+  font-size: 24px;
+}
+
+.project-row-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.project-row h3 {
+  overflow: hidden;
   margin: 0;
-  padding-right: 25px;
-  color: var(--gray-1000);
+  color: rgb(139, 69, 19);
+  font-size: 17px;
   font-optical-sizing: auto;
   font-weight: 600;
-  letter-spacing: 0.03em;
-}
-
-.project-card h3 {
-  color: rgb(139, 69, 19);
-  font-size: 17.5px;
-  line-height: 27px;
-}
-
-.project-card p {
-  margin: 9px 0 0;
-  color: #34312f;
-  font-size: 13.5px;
   line-height: 25px;
+  letter-spacing: 0.015em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 卡片底部外部链接：沿用首页社交入口的图标、文字下划线和颜色变化。 */
-.project-card-actions {
-  position: relative;
-  z-index: 3;
+.project-description {
+  overflow: hidden;
+  color: #4f4d4a;
+  font-size: 13.5px;
+  line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 右侧入口沿用首页社交链接的克制下划线，不与项目主入口争夺视觉焦点。 */
+.project-row-actions {
   display: flex;
   min-width: 0;
-  gap: 9px;
+  gap: 20px;
   align-items: center;
-  justify-content: space-between;
-  padding-top: 14px;
+  justify-content: flex-end;
+  padding-left: 28px;
   color: rgb(79, 77, 74);
   font-family: var(--title-serif);
   font-size: 12px;
@@ -603,6 +581,12 @@ a { color: inherit; }
 
 .project-action:not(.is-disabled):hover { color: rgb(29, 27, 27); }
 .project-action:not(.is-disabled):hover span { border-bottom-color: rgb(29, 27, 27); }
+
+.row-arrow {
+  color: var(--gray-700);
+  font-family: var(--mono);
+  transition: color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
 
 /* 尚未填写链接时仍保留入口位置，但用较低透明度表明当前不可点击。 */
 .project-action.is-disabled {
@@ -721,9 +705,9 @@ a { color: inherit; }
   margin-top: 18px;
 }
 
-/* 项目卡片带有下沿阴影，额外补偿 6px，使入口与其他栏目保持相近的视觉间距。 */
+/* 项目列表没有厚卡片阴影，入口与正文保持同一紧凑节奏。 */
 .home #projects .section-more {
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .section-more a,
@@ -1668,21 +1652,7 @@ a.article-pagination-item:hover {
   box-shadow: 0 0 0 2px var(--background-100), 0 0 0 4px var(--accent-700);
 }
 
-/* 平板适配（≤ 960px）：仍保持三张项目卡片并排，但按屏幕宽度自动缩小。 */
 @media (max-width: 960px) {
-  .project-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(10px, 1.8vw, 16px);
-    max-width: 100%;
-  }
-
-  .project-card {
-    width: 100%;
-    max-width: 100%;
-    min-height: clamp(158px, 22vw, 170px);
-    padding: clamp(12px, 2.2vw, 20px);
-  }
-
   .article-layout {
     display: block;
     width: min(100%, var(--article-width));
@@ -1692,7 +1662,7 @@ a.article-pagination-item:hover {
   .article-toc { display: none; }
 }
 
-/* 手机适配（≤ 600px）：首页项目改为可横向滑动的宽卡片，归档页改为单列。 */
+/* 手机适配（≤ 600px）：外部入口换到文字下方，仍保持一行一个项目。 */
 @media (max-width: 600px) {
   /* 手机端全站左右边距由 48px 总留白缩小为 32px。 */
   .site-header-inner,
@@ -1736,49 +1706,41 @@ a.article-pagination-item:hover {
     height: 56px;
   }
 
-  .home .project-grid,
-  .listing-projects .project-grid {
+  .project-row {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .project-card {
     min-height: 0;
-    justify-content: flex-start;
-    gap: 18px;
-    padding: 18px;
+    gap: 7px;
+    padding: 10px 0;
   }
 
-  /* 手机端隐藏装饰箭头，把有限宽度完整留给项目名称。 */
-  .project-card .card-arrow { display: none; }
+  .project-row-main {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 14px;
+  }
 
-  .project-card h3 {
-    padding-right: 0;
+  .project-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+  }
+
+  .project-row h3 {
     font-size: 16px;
     line-height: 24px;
     letter-spacing: 0.015em;
   }
 
-  /* 宽卡片的简介最多显示两行，避免内容长度改变整组卡片高度。 */
-  .project-card p {
-    display: -webkit-box;
-    overflow: hidden;
-    margin-top: 6px;
+  .project-description {
     font-size: 13px;
-    line-height: 21px;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-height: 20px;
   }
 
-  /*
-   * 宽卡片为两个外部入口保留横排空间；必要时自然换行，
-   * 不再用强制上下布局制造大块中间留白。
-   */
-  .project-card-actions {
+  .project-row-actions {
     justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 8px 18px;
-    padding-top: 0;
+    gap: 6px 18px;
+    margin-left: 70px;
+    padding-left: 0;
     font-size: 11.5px;
     line-height: 18px;
   }
@@ -1870,21 +1832,10 @@ a.article-pagination-item:hover {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }
-
-  /* 项目卡片仍保留层级变化，但不再移动或缩放。 */
-  .project-card,
-  .project-card:hover,
-  .project-card:active {
-    transform: none;
-  }
 }
 
-/* 高对比度偏好下强化项目卡片边界和正文。 */
+/* 高对比度偏好下强化项目图标边界和正文。 */
 @media (prefers-contrast: more) {
-  .project-card {
-    border-color: rgba(29, 27, 27, 0.46);
-    background: var(--paper-surface), #f0e9de;
-  }
-
-  .project-card p { color: var(--gray-1000); }
+  .project-icon { border-color: rgba(29, 27, 27, 0.46); }
+  .project-description { color: var(--gray-1000); }
 }

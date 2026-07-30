@@ -76,15 +76,17 @@ title: 全球民族志档案数据库
 date: 2026-07-14
 slug: global-enthnography
 description: 一个 3D 与 2D 地球民族志档案库
+icon: /images/projects/global-ethnography.png
 repository: https://github.com/你的用户名/仓库名
 website: https://项目网址.example
 ---
 ```
 
-- `repository` 对应卡片底部左侧的「项目仓库」。
-- `website` 对应卡片底部右侧的「项目网址」。
+- `icon` 对应项目行左侧的正方形图标；省略时会使用项目名称首字作为占位。
+- `repository` 对应项目行右侧的「项目仓库」。
+- `website` 对应项目行右侧的「项目地址」。
 - 链接暂时留空时，两个入口会以弱化的不可点击状态保留；以后直接填入完整的 `https://` 地址即可。
-- 点击卡片的其他区域会进入该项目 Markdown 生成的正文页面。
+- 点击项目图标、名称或简介会进入该项目 Markdown 生成的正文页面。
 
 ### 多级列表
 

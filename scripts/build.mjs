@@ -275,17 +275,24 @@ function listRow(entry, { summary = entry.description } = {}) {
 }
 
 export function projectCard(entry) {
+  const icon = String(entry.icon || "").trim();
+  const iconClass = String(entry.slug || "project").replace(/[^a-z0-9_-]/gi, "-");
+  const iconContent = icon
+    ? `<img src="${escapeHtml(icon)}" alt="" width="192" height="192" loading="lazy" decoding="async">`
+    : `<span class="project-icon-fallback" aria-hidden="true">${escapeHtml(String(entry.title || "?").trim().slice(0, 1))}</span>`;
+
   return `
-    <article class="project-card">
-      <a class="project-card-link" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}"></a>
-      <span class="card-arrow" aria-hidden="true">↗</span>
-      <div class="project-card-copy">
-        <h3>${escapeHtml(entry.title)}</h3>
-        <p>${escapeHtml(entry.description)}</p>
-      </div>
-      <div class="project-card-actions" aria-label="${escapeHtml(entry.title)}的外部链接">
+    <article class="project-row">
+      <a class="project-row-main" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}">
+        <span class="project-icon project-icon--${escapeHtml(iconClass)}">${iconContent}</span>
+        <span class="project-row-copy">
+          <h3>${escapeHtml(entry.title)}</h3>
+          <span class="project-description">${escapeHtml(entry.description)}</span>
+        </span>
+      </a>
+      <div class="project-row-actions" aria-label="${escapeHtml(entry.title)}的外部链接">
         ${projectAction({ href: entry.repository, label: "项目仓库", icon: projectIcons.github, field: "repository" })}
-        ${projectAction({ href: entry.website, label: "项目网址", icon: projectIcons.link, field: "website" })}
+        ${projectAction({ href: entry.website, label: "项目地址", icon: projectIcons.link, field: "website" })}
       </div>
     </article>`;
 }
@@ -343,7 +350,7 @@ function homePage(collections) {
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
         ${sectionHeader(byKey.projects.group)}
-        <div class="project-grid">${projects}</div>
+        <div class="project-list">${projects}</div>
         <div class="section-more"><a href="/projects/">所有项目<span aria-hidden="true">→</span></a></div>
       </section>
 
@@ -372,7 +379,7 @@ function homePage(collections) {
 function collectionPage(collection) {
   const { group, entries } = collection;
   const archive = group.key === "projects"
-    ? `<div class="project-grid">${entries.map(projectCard).join("")}</div>`
+    ? `<div class="project-list">${entries.map(projectCard).join("")}</div>`
     : `<div class="writing-list">${entries.map((entry) => listRow(entry, { summary: "" })).join("")}</div>`;
 
   return layout({

@@ -63,6 +63,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(headers, /X-Content-Type-Options: nosniff/);
   assert.match(headers, /\/version\.json[\s\S]*?Cache-Control: no-store/);
   assert.match(headers, /\/images\/clawd\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
+  assert.match(headers, /\/images\/projects\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
   assert.match(html, new RegExp(`/styles\\.css\\?v=${version.assetVersion}`));
   assert.match(version.assetVersion, /^[0-9a-f]{12}$/);
@@ -90,7 +91,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(html, /03 \/ 写作/);
   assert.match(html, /04 \/ 阅读/);
   assert.doesNotMatch(html, /<h2 id="(?:projects|prompts|writings|readings)-title">/);
-  assert.match(html, /class="project-card"/);
+  assert.match(html, /class="project-row"/);
   assert.match(html, /class="writing-row"/);
   assert.doesNotMatch(html, /class="prompt-card"/);
   assert.doesNotMatch(html, /class="hero-scene"/);
@@ -121,10 +122,10 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     readings: await readFile(new URL("readings/index.html", root), "utf8"),
   };
   const archiveCount = (group) => (
-    archivePages[group].match(group === "projects" ? /class="project-card"/g : /class="writing-row"/g) ?? []
+    archivePages[group].match(group === "projects" ? /class="project-row"/g : /class="writing-row"/g) ?? []
   ).length;
   const homeCount = (section, group) => (
-    section.match(group === "projects" ? /class="project-card"/g : /class="writing-row"/g) ?? []
+    section.match(group === "projects" ? /class="project-row"/g : /class="writing-row"/g) ?? []
   ).length;
   assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
   assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
@@ -141,7 +142,7 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection, "writings"));
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection, "readings"));
   assert.match(projectSection, /href="\/projects\/">所有项目/);
-  assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 24px;/);
+  assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 18px;/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
   assert.match(promptSection, /href="\/prompts\/">所有文章/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
@@ -156,7 +157,7 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
 
   assert.match(projects, /<body class="listing listing-projects">/);
   assert.match(projects, /<h1>项目<\/h1>/);
-  assert.ok((projects.match(/class="project-card"/g) ?? []).length >= 1);
+  assert.ok((projects.match(/class="project-row"/g) ?? []).length >= 1);
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<body class="listing listing-writings">/);
   assert.match(writings, /<h1>写作<\/h1>/);
@@ -185,41 +186,43 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   }
 });
 
-test("项目卡片使用统一纸张纹理并展示详情入口与可选外部链接", async () => {
+test("项目使用紧凑图标列表并展示详情入口与可选外部链接", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const projectCardRule = css.match(/\.project-card \{[\s\S]*?\n\}/)?.[0] ?? "";
+  const projectRowRule = css.match(/\.project-row \{[\s\S]*?\n\}/)?.[0] ?? "";
+  const projectHoverRule = css.match(/\.project-row:hover \{[\s\S]*?\n\s*\}/)?.[0] ?? "";
 
-  assert.match(projectSection, /class="project-card-link" href="\/projects\/[^"]+\/"/);
-  assert.match(projectSection, /class="card-arrow" aria-hidden="true">↗<\/span>[\s\S]*?class="project-card-copy"/);
+  assert.match(projectSection, /class="project-list"/);
+  assert.match(projectSection, /class="project-row-main" href="\/projects\/[^"]+\/"/);
+  assert.match(projectSection, /class="project-icon project-icon--[^"]+"><img src="\/images\/projects\/[^"]+\.png" alt="" width="192" height="192" loading="lazy" decoding="async">/);
   assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
   assert.match(projectSection, />项目仓库<\/span>/);
-  assert.match(projectSection, />项目网址<\/span>/);
+  assert.match(projectSection, />项目地址<\/span>/);
   assert.doesNotMatch(projectSection, /更新于/);
+  assert.doesNotMatch(projectSection, /project-card|card-arrow/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
-  assert.match(projectCardRule, /--project-card-surface: #eee8de;/);
-  assert.match(css, /\.project-grid \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 264px\)\);[\s\S]*?justify-content: center;/);
-  assert.match(projectCardRule, /min-width: 0;[\s\S]*?min-height: 170px;[\s\S]*?padding: 25px;[\s\S]*?border: 1px solid var\(--project-card-border\);[\s\S]*?border-radius: var\(--radius-md\);/);
-  assert.match(projectCardRule, /background: var\(--paper-surface\), var\(--project-card-surface\);/);
-  assert.match(projectCardRule, /box-shadow:[\s\S]*?3px 4px 0 rgba\(61, 55, 48, 0\.1\),[\s\S]*?0 12px 24px rgba\(45, 41, 36, 0\.08\)/);
-  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-card:hover \{[\s\S]*?transform: translateY\(-2px\);/);
-  assert.doesNotMatch(projectCardRule, /gradient\(|backdrop-filter|filter:/);
-  assert.match(css, /\.project-card \.card-arrow \{[\s\S]*?position: absolute;[\s\S]*?top: 18px;[\s\S]*?right: 18px;/);
-  assert.match(css, /\.project-card h3 \{[\s\S]*?letter-spacing: 0\.03em/);
-  assert.match(css, /\.project-card h3 \{[\s\S]*?font-size: 17\.5px;[\s\S]*?line-height: 27px;/);
-  assert.match(css, /\.project-card-actions \{[\s\S]*?justify-content: space-between;[\s\S]*?padding-top: 14px;/);
-  assert.match(css, /@media \(max-width: 960px\) \{[\s\S]*?grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.project-grid,\s*\.listing-projects \.project-grid \{[\s\S]*?grid-template-columns: 1fr;[\s\S]*?gap: 12px;/);
-  assert.doesNotMatch(css, /\.home \.project-grid \{[\s\S]*?overflow-x: auto;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.listing-projects \.project-grid \{[\s\S]*?grid-template-columns: 1fr;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card \{[\s\S]*?min-height: 0;[\s\S]*?padding: 18px;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-card-actions \{[\s\S]*?flex-wrap: wrap;/);
+  assert.match(css, /\.project-list \{[\s\S]*?display: grid;[\s\S]*?width: min\(100%, 880px\);[\s\S]*?margin-inline: auto;/);
+  assert.match(projectRowRule, /grid-template-columns: minmax\(0, 1fr\) auto;[\s\S]*?min-height: 96px;[\s\S]*?padding: 12px 4px;[\s\S]*?border-radius: var\(--radius-sm\);/);
+  assert.doesNotMatch(projectRowRule, /var\(--paper-surface\)|gradient\(|backdrop-filter|transform:/);
+  assert.match(css, /\.project-row \+ \.project-row \{[\s\S]*?border-top: 1px solid var\(--gray-alpha-400\);/);
+  assert.match(css, /\.project-row-main \{[\s\S]*?grid-template-columns: 72px minmax\(0, 1fr\);[\s\S]*?gap: 18px;/);
+  assert.match(css, /\.project-icon \{[\s\S]*?width: 72px;[\s\S]*?height: 72px;[\s\S]*?border-radius: 12px;/);
+  assert.match(css, /\.project-icon--her \{ --project-icon-scale: 1\.12; \}/);
+  assert.match(css, /\.project-row h3 \{[\s\S]*?font-size: 17px;[\s\S]*?line-height: 25px;[\s\S]*?white-space: nowrap;/);
+  assert.match(css, /\.project-description \{[\s\S]*?font-size: 13\.5px;[\s\S]*?line-height: 22px;[\s\S]*?white-space: nowrap;/);
+  assert.match(css, /\.project-row-actions \{[\s\S]*?gap: 20px;[\s\S]*?justify-content: flex-end;[\s\S]*?padding-left: 28px;/);
+  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-row:hover \{[\s\S]*?background: rgba\(139, 69, 19, 0\.035\);/);
+  assert.doesNotMatch(projectHoverRule, /transform:/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row \{[\s\S]*?grid-template-columns: 1fr;[\s\S]*?padding: 10px 0;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-icon \{[\s\S]*?width: 56px;[\s\S]*?height: 56px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row-actions \{[\s\S]*?flex-wrap: wrap;[\s\S]*?margin-left: 70px;/);
 });
 
 test("项目外部链接的可用与缺失状态由固定夹具覆盖", () => {
   const group = groupDefinitions.find(({ key }) => key === "projects");
   const linkedCard = projectCard(fixtureEntry(group, {
+    icon: "/images/projects/fixture.png",
     repository: "https://github.com/example/project",
     website: "https://example.com/project",
   }));
@@ -230,8 +233,10 @@ test("项目外部链接的可用与缺失状态由固定夹具覆盖", () => {
 
   assert.match(linkedCard, /href="https:\/\/github\.com\/example\/project"/);
   assert.match(linkedCard, /href="https:\/\/example\.com\/project"/);
+  assert.match(linkedCard, /src="\/images\/projects\/fixture\.png"/);
   assert.doesNotMatch(linkedCard, /aria-disabled="true"/);
   assert.equal((unlinkedCard.match(/aria-disabled="true"/g) ?? []).length, 2);
+  assert.match(unlinkedCard, /class="project-icon-fallback" aria-hidden="true">固<\/span>/);
   assert.match(unlinkedCard, /title="在项目 Markdown 中填写 repository"/);
   assert.match(unlinkedCard, /title="在项目 Markdown 中填写 website"/);
 });

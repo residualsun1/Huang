@@ -4,6 +4,7 @@ date: "2026-02-01"
 author: "黄国政"
 slug: "time-gambler"
 description: "赌注驱动的专注力协议"
+icon: "/images/projects/time-gambler.png"
 repository: "https://github.com/0x-IHRR/ADHD_BlockChain"
 website: "https://adhd-block-chain.vercel.app/"
 ---
