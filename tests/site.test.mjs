@@ -273,9 +273,12 @@ test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
   assert.equal(selectHomeEntries(entries.map((entry) => ({ ...entry, pinned: true }))).length, 4);
 
   const homeRow = listRow(entries[1], { showPinned: true });
+  const ordinaryHomeRow = listRow(entries[0], { showPinned: true });
   const archiveRow = listRow(entries[1]);
+  assert.match(homeRow, /class="writing-row is-pinned"/);
   assert.match(homeRow, /<strong><span class="writing-title-text">较新置顶内容<\/span><span class="pin-badge">置顶<\/span><\/strong>/);
-  assert.doesNotMatch(homeRow, /class="writing-row is-pinned"|class="pin-label"|class="pin-marker"/);
+  assert.doesNotMatch(homeRow, /class="pin-label"|class="pin-marker"/);
+  assert.doesNotMatch(ordinaryHomeRow, /class="writing-row is-pinned"|class="pin-badge"/);
   assert.doesNotMatch(homeRow, /class="writing-meta"/);
   assert.doesNotMatch(archiveRow, /class="pin-badge"/);
 
@@ -723,6 +726,7 @@ test("网易云音频支持结构化 ID 与页面 URL，并单独按需加载 Me
 
 test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const homeTitleRule = css.match(/\.home \.writing-title-text \{[\s\S]*?\n\}/)?.[0] ?? "";
   assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
   assert.match(css, /\.home \.writing-row \{[\s\S]*?padding-block: \d+px;[\s\S]*?border-bottom: 0;/);
   assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: 112px minmax\(0, 1fr\) 32px/);
@@ -738,7 +742,9 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy \.pin-badge \{[\s\S]*?margin-left: 8px;[\s\S]*?vertical-align: 0\.12em;/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
-  assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);
+  assert.doesNotMatch(homeTitleRule, /text-decoration-line: underline/);
+  assert.match(css, /\.home \.writing-row\.is-pinned \.writing-title-text \{[\s\S]*?text-decoration-line: underline;/);
+  assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-line: underline;[\s\S]*?text-decoration-thickness: 1\.5px/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #74685d/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-family: var\(--body-reading\)/);

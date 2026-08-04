@@ -320,7 +320,7 @@ export function selectHomeEntries(entries, minimum = 3) {
 export function listRow(entry, { summary = entry.description, showPinned = false } = {}) {
   const isPinned = showPinned && entry.pinned;
   const pinBadge = isPinned ? `<span class="pin-badge">置顶</span>` : "";
-  return `<a class="writing-row" href="${entry.href}">
+  return `<a class="writing-row${isPinned ? " is-pinned" : ""}" href="${entry.href}">
     <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="writing-copy">
       <strong><span class="writing-title-text">${escapeHtml(entry.title)}</span>${pinBadge}</strong>

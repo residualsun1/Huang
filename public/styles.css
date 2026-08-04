@@ -729,11 +729,14 @@ a { color: inherit; }
   white-space: normal;
   overflow-wrap: anywhere;
   text-decoration-color: rgb(190, 155, 128);
-  text-decoration-line: underline;
   text-decoration-style: solid;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
   transition: text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.home .writing-row.is-pinned .writing-title-text {
+  text-decoration-line: underline;
 }
 
 .home .writing-copy .pin-badge {
@@ -743,6 +746,7 @@ a { color: inherit; }
 
 .home .writing-row:hover .writing-title-text {
   text-decoration-color: rgb(139, 69, 19);
+  text-decoration-line: underline;
   text-decoration-thickness: 1.5px;
 }
 
