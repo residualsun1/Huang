@@ -714,7 +714,9 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?width: 100%;/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?display: block;[\s\S]*?width: 100%;[\s\S]*?overflow: visible;/);
+  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?display: inline;[\s\S]*?text-overflow: clip;[\s\S]*?white-space: normal;[\s\S]*?overflow-wrap: anywhere;/);
+  assert.match(css, /\.home \.writing-copy \.pin-badge \{[\s\S]*?margin-left: 8px;[\s\S]*?vertical-align: 0\.12em;/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
   assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);

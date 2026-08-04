@@ -710,7 +710,9 @@ a { color: inherit; }
 .home .writing-row:hover { background: transparent; }
 
 .home .writing-copy strong {
+  display: block;
   width: 100%;
+  overflow: visible;
   justify-self: start;
   color: rgb(139, 69, 19);
   font-family: var(--title-serif);
@@ -721,12 +723,22 @@ a { color: inherit; }
 }
 
 .home .writing-title-text {
+  display: inline;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
   text-decoration-color: rgb(190, 155, 128);
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
   transition: text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.home .writing-copy .pin-badge {
+  margin-left: 8px;
+  vertical-align: 0.12em;
 }
 
 .home .writing-row:hover .writing-title-text {
