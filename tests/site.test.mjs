@@ -219,8 +219,8 @@ test("项目使用紧凑图标列表并展示详情入口与可选外部链接",
   assert.match(css, /\.project-icon--her \{ --project-icon-scale: 1\.12; \}/);
   assert.match(css, /\.project-row h3 \{[\s\S]*?display: flex;[\s\S]*?font-size: 17px;[\s\S]*?line-height: 25px;/);
   assert.match(css, /\.project-title-text \{[\s\S]*?text-overflow: ellipsis;[\s\S]*?white-space: nowrap;/);
-  assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid rgba\(139, 69, 19, 0\.32\);[\s\S]*?border-radius: 999px;[\s\S]*?background: rgba\(139, 69, 19, 0\.12\);[\s\S]*?color: var\(--accent-700\);[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
-  assert.match(css, /\.pin-badge::before \{[\s\S]*?width: 5px;[\s\S]*?height: 5px;[\s\S]*?border-radius: 50%;/);
+  assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid var\(--red-800\);[\s\S]*?border-radius: 999px;[\s\S]*?background: var\(--red-800\);[\s\S]*?color: #fff;[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
+  assert.doesNotMatch(css, /\.pin-badge::before/);
   assert.doesNotMatch(css, /\.home \.is-pinned|box-shadow: inset 2px 0 0 rgba\(139, 69, 19, 0\.68\)/);
   assert.match(css, /\.project-description \{[\s\S]*?color: #74685d;[\s\S]*?font-size: 13\.5px;[\s\S]*?line-height: 22px;[\s\S]*?white-space: nowrap;/);
   assert.match(css, /\.project-row-actions \{[\s\S]*?gap: 20px;[\s\S]*?justify-content: flex-end;[\s\S]*?padding-left: 28px;/);
@@ -276,10 +276,10 @@ test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
   const ordinaryHomeRow = listRow(entries[0], { showPinned: true });
   const archiveRow = listRow(entries[1]);
   assert.match(homeRow, /class="writing-row is-pinned"/);
-  assert.match(homeRow, /<strong><span class="writing-title-text">较新置顶内容<\/span><span class="pin-badge">置顶<\/span><\/strong>/);
+  assert.match(homeRow, /class="writing-meta">[\s\S]*?<time[\s\S]*?<span class="pin-badge pin-badge--writing-meta">置顶<\/span>/);
+  assert.match(homeRow, /<strong><span class="writing-title-text">较新置顶内容<\/span><span class="pin-badge pin-badge--writing-title">置顶<\/span><\/strong>/);
   assert.doesNotMatch(homeRow, /class="pin-label"|class="pin-marker"/);
   assert.doesNotMatch(ordinaryHomeRow, /class="writing-row is-pinned"|class="pin-badge"/);
-  assert.doesNotMatch(homeRow, /class="writing-meta"/);
   assert.doesNotMatch(archiveRow, /class="pin-badge"/);
 
   const projectGroup = groupDefinitions.find(({ key }) => key === "projects");
@@ -739,12 +739,13 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?display: block;[\s\S]*?width: 100%;[\s\S]*?overflow: visible;/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?display: inline;[\s\S]*?text-overflow: clip;[\s\S]*?white-space: normal;[\s\S]*?overflow-wrap: anywhere;/);
-  assert.match(css, /\.home \.writing-copy \.pin-badge \{[\s\S]*?margin-left: 8px;[\s\S]*?vertical-align: 0\.12em;/);
+  assert.match(css, /\.home \.writing-copy \.pin-badge--writing-title \{[\s\S]*?margin-left: 8px;[\s\S]*?vertical-align: 0\.12em;/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
   assert.doesNotMatch(homeTitleRule, /text-decoration-line: underline/);
-  assert.match(css, /\.home \.writing-row\.is-pinned \.writing-title-text \{[\s\S]*?text-decoration-line: underline;/);
+  assert.doesNotMatch(css, /\.home \.writing-row\.is-pinned \.writing-title-text/);
   assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-line: underline;[\s\S]*?text-decoration-thickness: 1\.5px/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.pin-badge--writing-title \{ display: none; \}[\s\S]*?\.home \.writing-meta \{[\s\S]*?width: max-content;[\s\S]*?justify-items: center;[\s\S]*?\.home \.pin-badge--writing-meta \{[\s\S]*?display: inline-flex;[\s\S]*?margin-top: 3px;/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #74685d/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-family: var\(--body-reading\)/);

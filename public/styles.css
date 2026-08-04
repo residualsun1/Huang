@@ -547,12 +547,11 @@ a { color: inherit; }
   flex: 0 0 auto;
   height: 18px;
   padding: 0 7px;
-  gap: 5px;
   align-items: center;
-  border: 1px solid rgba(139, 69, 19, 0.32);
+  border: 1px solid var(--red-800);
   border-radius: 999px;
-  background: rgba(139, 69, 19, 0.12);
-  color: var(--accent-700);
+  background: var(--red-800);
+  color: #fff;
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 700;
@@ -561,13 +560,7 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
-.pin-badge::before {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-  content: "";
-}
+.pin-badge--writing-meta { display: none; }
 
 .project-description {
   overflow: hidden;
@@ -650,6 +643,14 @@ a { color: inherit; }
 .writing-row:hover { background: var(--gray-alpha-100); }
 
 /* 列表日期。 */
+.writing-meta {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  align-content: start;
+  justify-items: start;
+}
+
 .writing-row time {
   padding-top: 3px;
   color: var(--gray-700);
@@ -735,11 +736,7 @@ a { color: inherit; }
   transition: text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
 }
 
-.home .writing-row.is-pinned .writing-title-text {
-  text-decoration-line: underline;
-}
-
-.home .writing-copy .pin-badge {
+.home .writing-copy .pin-badge--writing-title {
   margin-left: 8px;
   vertical-align: 0.12em;
 }
@@ -1949,6 +1946,18 @@ a.article-pagination-item:hover {
   }
 
   .pin-badge { height: 17px; padding-inline: 6px; font-size: 9.5px; }
+
+  .home .pin-badge--writing-title { display: none; }
+
+  .home .writing-meta {
+    width: max-content;
+    justify-items: center;
+  }
+
+  .home .pin-badge--writing-meta {
+    display: inline-flex;
+    margin-top: 3px;
+  }
 
   .project-description {
     font-size: 12.5px;
