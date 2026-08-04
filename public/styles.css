@@ -522,16 +522,51 @@ a { color: inherit; }
 }
 
 .project-row h3 {
+  display: flex;
   overflow: hidden;
   margin: 0;
+  gap: 7px;
+  align-items: center;
   color: rgb(139, 69, 19);
   font-size: 17px;
   font-optical-sizing: auto;
   font-weight: 600;
   line-height: 25px;
   letter-spacing: 0.015em;
+}
+
+.project-title-text {
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.pin-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 18px;
+  padding: 0 7px;
+  gap: 5px;
+  align-items: center;
+  border: 1px solid rgba(139, 69, 19, 0.32);
+  border-radius: 999px;
+  background: rgba(139, 69, 19, 0.12);
+  color: var(--accent-700);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.pin-badge::before {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
 }
 
 .project-description {
@@ -632,11 +667,22 @@ a { color: inherit; }
 }
 
 .writing-copy strong {
+  display: flex;
+  min-width: 0;
+  gap: 8px;
+  align-items: center;
   color: var(--gray-1000);
   font-size: 18px;
   font-weight: 600;
   line-height: 26px;
   letter-spacing: -0.025em;
+}
+
+.writing-title-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .writing-copy > span {
@@ -658,6 +704,7 @@ a { color: inherit; }
   border-bottom: 0;
 }
 .home .writing-row:hover { background: transparent; }
+
 .home .writing-copy strong {
   width: auto;
   justify-self: start;
@@ -667,6 +714,9 @@ a { color: inherit; }
   font-weight: 700;
   line-height: 24px;
   /* 常态使用浅棕色下划线，悬浮时自然过渡为标题的深棕色。 */
+}
+
+.home .writing-title-text {
   text-decoration-color: rgb(190, 155, 128);
   text-decoration-line: underline;
   text-decoration-style: solid;
@@ -675,7 +725,7 @@ a { color: inherit; }
   transition: text-decoration-color 0.2s ease, text-decoration-thickness 0.2s ease;
 }
 
-.home .writing-copy strong:hover {
+.home .writing-row:hover .writing-title-text {
   text-decoration-color: rgb(139, 69, 19);
   text-decoration-thickness: 1.5px;
 }
@@ -1868,6 +1918,8 @@ a.article-pagination-item:hover {
     line-height: 22px;
     letter-spacing: 0.015em;
   }
+
+  .pin-badge { height: 17px; padding-inline: 6px; font-size: 9.5px; }
 
   .project-description {
     font-size: 12.5px;

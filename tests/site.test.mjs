@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { detailPage, projectCard } from "../scripts/build.mjs";
+import { detailPage, listRow, projectCard, selectHomeEntries } from "../scripts/build.mjs";
 import { createBuildQueue } from "../scripts/build-queue.mjs";
 import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "../scripts/markdown.mjs";
 
@@ -125,22 +125,27 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     readings: await readFile(new URL("readings/index.html", root), "utf8"),
   };
   const archiveCount = (group) => (
-    archivePages[group].match(group === "projects" ? /class="project-row"/g : /class="writing-row"/g) ?? []
+    archivePages[group].match(group === "projects" ? /class="project-row(?: [^"]+)?"/g : /class="writing-row(?: [^"]+)?"/g) ?? []
   ).length;
   const homeCount = (section, group) => (
-    section.match(group === "projects" ? /class="project-row"/g : /class="writing-row"/g) ?? []
+    section.match(group === "projects" ? /class="project-row(?: [^"]+)?"/g : /class="writing-row(?: [^"]+)?"/g) ?? []
   ).length;
   assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
   assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
-  assert.equal(homeCount(projectSection, "projects"), Math.min(archiveCount("projects"), 3));
-  assert.equal(homeCount(promptSection, "prompts"), Math.min(archiveCount("prompts"), 3));
-  assert.equal(homeCount(writingSection, "writings"), Math.min(archiveCount("writings"), 3));
-  assert.equal(homeCount(readingSection, "readings"), Math.min(archiveCount("readings"), 3));
-  assert.match(buildSource, /byKey\.projects\.entries\.slice\(0, 3\)/);
-  assert.match(buildSource, /byKey\.prompts\.entries\.slice\(0, 3\)/);
-  assert.match(buildSource, /byKey\.writings\.entries\.slice\(0, 3\)/);
-  assert.match(buildSource, /byKey\.readings\.entries\.slice\(0, 3\)/);
+  for (const [section, group] of [
+    [projectSection, "projects"],
+    [promptSection, "prompts"],
+    [writingSection, "writings"],
+    [readingSection, "readings"],
+  ]) {
+    assert.ok(homeCount(section, group) >= Math.min(archiveCount(group), 3));
+    assert.ok(homeCount(section, group) <= archiveCount(group));
+  }
+  assert.match(buildSource, /selectHomeEntries\(byKey\.projects\.entries\)/);
+  assert.match(buildSource, /selectHomeEntries\(byKey\.prompts\.entries\)/);
+  assert.match(buildSource, /selectHomeEntries\(byKey\.writings\.entries\)/);
+  assert.match(buildSource, /selectHomeEntries\(byKey\.readings\.entries\)/);
   assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(promptSection, "prompts"));
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection, "writings"));
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection, "readings"));
@@ -212,7 +217,11 @@ test("项目使用紧凑图标列表并展示详情入口与可选外部链接",
   assert.match(css, /\.project-row-main \{[\s\S]*?grid-template-columns: 72px minmax\(0, 1fr\);[\s\S]*?gap: 18px;/);
   assert.match(css, /\.project-icon \{[\s\S]*?width: 72px;[\s\S]*?height: 72px;[\s\S]*?border-radius: 12px;/);
   assert.match(css, /\.project-icon--her \{ --project-icon-scale: 1\.12; \}/);
-  assert.match(css, /\.project-row h3 \{[\s\S]*?font-size: 17px;[\s\S]*?line-height: 25px;[\s\S]*?white-space: nowrap;/);
+  assert.match(css, /\.project-row h3 \{[\s\S]*?display: flex;[\s\S]*?font-size: 17px;[\s\S]*?line-height: 25px;/);
+  assert.match(css, /\.project-title-text \{[\s\S]*?text-overflow: ellipsis;[\s\S]*?white-space: nowrap;/);
+  assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid rgba\(139, 69, 19, 0\.32\);[\s\S]*?border-radius: 999px;[\s\S]*?background: rgba\(139, 69, 19, 0\.12\);[\s\S]*?color: var\(--accent-700\);[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
+  assert.match(css, /\.pin-badge::before \{[\s\S]*?width: 5px;[\s\S]*?height: 5px;[\s\S]*?border-radius: 50%;/);
+  assert.doesNotMatch(css, /\.home \.is-pinned|box-shadow: inset 2px 0 0 rgba\(139, 69, 19, 0\.68\)/);
   assert.match(css, /\.project-description \{[\s\S]*?color: #74685d;[\s\S]*?font-size: 13\.5px;[\s\S]*?line-height: 22px;[\s\S]*?white-space: nowrap;/);
   assert.match(css, /\.project-row-actions \{[\s\S]*?gap: 20px;[\s\S]*?justify-content: flex-end;[\s\S]*?padding-left: 28px;/);
   assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-row:hover \{[\s\S]*?background: rgba\(139, 69, 19, 0\.035\);/);
@@ -246,6 +255,35 @@ test("项目外部链接的可用与缺失状态由固定夹具覆盖", () => {
   assert.match(unlinkedCard, /class="project-icon-fallback" aria-hidden="true">固<\/span>/);
   assert.match(unlinkedCard, /title="在项目 Markdown 中填写 repository"/);
   assert.match(unlinkedCard, /title="在项目 Markdown 中填写 website"/);
+});
+
+test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
+  const group = groupDefinitions.find(({ key }) => key === "writings");
+  const entries = [
+    fixtureEntry(group, { title: "最新普通内容", date: "2026-08-05", pinned: false }),
+    fixtureEntry(group, { title: "较新置顶内容", date: "2026-08-04", pinned: true }),
+    fixtureEntry(group, { title: "次新普通内容", date: "2026-08-03", pinned: false }),
+    fixtureEntry(group, { title: "较早置顶内容", date: "2026-08-02", pinned: true }),
+  ];
+
+  assert.deepEqual(
+    selectHomeEntries(entries).map(({ title }) => title),
+    ["较新置顶内容", "较早置顶内容", "最新普通内容"],
+  );
+  assert.equal(selectHomeEntries(entries.map((entry) => ({ ...entry, pinned: true }))).length, 4);
+
+  const homeRow = listRow(entries[1], { showPinned: true });
+  const archiveRow = listRow(entries[1]);
+  assert.match(homeRow, /<strong><span class="writing-title-text">较新置顶内容<\/span><span class="pin-badge">置顶<\/span><\/strong>/);
+  assert.doesNotMatch(homeRow, /class="writing-row is-pinned"|class="pin-label"|class="pin-marker"/);
+  assert.doesNotMatch(homeRow, /class="writing-meta"/);
+  assert.doesNotMatch(archiveRow, /class="pin-badge"/);
+
+  const projectGroup = groupDefinitions.find(({ key }) => key === "projects");
+  const pinnedProject = fixtureEntry(projectGroup, { title: "置顶项目", pinned: true });
+  assert.match(projectCard(pinnedProject, { showPinned: true }), /<h3><span class="project-title-text">置顶项目<\/span><span class="pin-badge">置顶<\/span><\/h3>/);
+  assert.doesNotMatch(projectCard(pinnedProject, { showPinned: true }), /class="project-row is-pinned"|class="pin-label"|class="pin-marker"/);
+  assert.doesNotMatch(projectCard(pinnedProject), /class="pin-badge"/);
 });
 
 test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
@@ -673,9 +711,9 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
-  assert.match(css, /\.home \.writing-copy strong:hover \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);
+  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
+  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
+  assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-thickness: 1\.5px/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #74685d/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-family: var\(--body-reading\)/);

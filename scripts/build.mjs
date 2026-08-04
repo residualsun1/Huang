@@ -140,6 +140,7 @@ async function loadContent(group) {
     entries.push({
       ...data,
       slug,
+      pinned: String(data.pinned || "").trim().toLowerCase() === "true",
       author: String(data.author || "").trim(),
       tags: normalizeList(data.tags),
       homeDescription: String(data.description || "").trim(),
@@ -271,19 +272,29 @@ function projectAction({ href, label, icon, field }) {
   return `<a class="project-action" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${content}</a>`;
 }
 
-function listRow(entry, { summary = entry.description } = {}) {
+export function selectHomeEntries(entries, minimum = 3) {
+  const pinned = entries.filter((entry) => entry.pinned);
+  const unpinned = entries.filter((entry) => !entry.pinned);
+  return [...pinned, ...unpinned.slice(0, Math.max(0, minimum - pinned.length))];
+}
+
+export function listRow(entry, { summary = entry.description, showPinned = false } = {}) {
+  const isPinned = showPinned && entry.pinned;
+  const pinBadge = isPinned ? `<span class="pin-badge">置顶</span>` : "";
   return `<a class="writing-row" href="${entry.href}">
     <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
     <span class="writing-copy">
-      <strong>${escapeHtml(entry.title)}</strong>
+      <strong><span class="writing-title-text">${escapeHtml(entry.title)}</span>${pinBadge}</strong>
       ${summary ? `<span>${escapeHtml(summary)}</span>` : ""}
     </span>
     <span class="row-arrow" aria-hidden="true">→</span>
   </a>`;
 }
 
-export function projectCard(entry) {
+export function projectCard(entry, { showPinned = false } = {}) {
   const icon = String(entry.icon || "").trim();
+  const isPinned = showPinned && entry.pinned;
+  const pinBadge = isPinned ? `<span class="pin-badge">置顶</span>` : "";
   const iconClass = String(entry.slug || "project").replace(/[^a-z0-9_-]/gi, "-");
   const iconContent = icon
     ? `<img src="${escapeHtml(icon)}" alt="" width="192" height="192" loading="lazy" decoding="async">`
@@ -294,7 +305,7 @@ export function projectCard(entry) {
       <a class="project-row-main" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}">
         <span class="project-icon project-icon--${escapeHtml(iconClass)}">${iconContent}</span>
         <span class="project-row-copy">
-          <h3>${escapeHtml(entry.title)}</h3>
+          <h3><span class="project-title-text">${escapeHtml(entry.title)}</span>${pinBadge}</h3>
           <span class="project-description">${escapeHtml(entry.description)}</span>
         </span>
       </a>
@@ -325,10 +336,18 @@ function sectionPet(key) {
 
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
-  const projects = byKey.projects.entries.slice(0, 3).map(projectCard).join("");
-  const prompts = byKey.prompts.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
-  const writings = byKey.writings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
-  const readings = byKey.readings.entries.slice(0, 3).map((entry) => listRow(entry, { summary: entry.homeDescription })).join("");
+  const projects = selectHomeEntries(byKey.projects.entries)
+    .map((entry) => projectCard(entry, { showPinned: true }))
+    .join("");
+  const prompts = selectHomeEntries(byKey.prompts.entries)
+    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
+    .join("");
+  const writings = selectHomeEntries(byKey.writings.entries)
+    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
+    .join("");
+  const readings = selectHomeEntries(byKey.readings.entries)
+    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
+    .join("");
 
   const sectionHeader = (group) => `<header class="section-heading">
     <p class="section-kicker" id="${group.key}-title">

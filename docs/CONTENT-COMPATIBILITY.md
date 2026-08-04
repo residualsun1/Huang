@@ -26,6 +26,7 @@
 title: 文章标题
 author: Huang
 date: 2026-07-14
+pinned: true
 description: 可选；不写时自动提取正文摘要
 slug: optional-custom-url
 tags:
@@ -34,7 +35,9 @@ tags:
 ---
 ```
 
-当前生成器通用字段包括 `title`、`author`、`date`、`description`、`slug` 和 `tags`。
+`pinned: true` 会把该内容置顶到首页对应栏目；省略该字段或写成 `false` 时按普通内容处理。首页先按日期从新到旧展示全部置顶内容，再用最新的非置顶内容补足三项；如果置顶内容超过三项，则全部展示。该字段不改变归档页的日期顺序，也不在归档页或详情页显示置顶标记。
+
+当前生成器通用字段包括 `title`、`author`、`date`、`description`、`slug`、`tags` 和 `pinned`。
 `author` 与 `tags` 会显示在文章标题下方；`title` 与 `date` 必填。
 
 ## 按年份管理文件
