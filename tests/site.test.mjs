@@ -553,6 +553,17 @@ test("链接文字与普通正文中的 Markdown 斜体都能正常渲染", () =
   assert.match(html, /<a href="https:\/\/example\.com\/her"[^>]*><em>Her<\/em><\/a>/);
 });
 
+test("正文支持安全的无属性下划线标签", async () => {
+  const underlined = renderMarkdown("这是 <u>带下划线的文字</u>，也支持 <U>大写标签</U>。").html;
+  const unsafeAttribute = renderMarkdown('这是 <u onclick="alert(1)">不安全的标签</u>。').html;
+  const css = await readFile(new URL("styles.css", root), "utf8");
+
+  assert.match(underlined, /<p>这是 <u>带下划线的文字<\/u>，也支持 <u>大写标签<\/u>。<\/p>/);
+  assert.doesNotMatch(unsafeAttribute, /<u\s+onclick=/i);
+  assert.match(unsafeAttribute, /&lt;u onclick=&quot;alert\(1\)&quot;&gt;/);
+  assert.match(css, /\.prose u \{[\s\S]*?text-decoration-line: underline;[\s\S]*?text-underline-offset: 0\.16em;/);
+});
+
 test("普通段落与引用保留 Markdown 行末双空格换行", () => {
   const paragraph = renderMarkdown("第一行。  \n第二行。").html;
   const quote = renderMarkdown("> **规划(Reasoning)**：第一行。  \n> **反应(Acting & Observing)**：第二行。").html;

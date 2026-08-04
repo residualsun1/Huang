@@ -102,7 +102,9 @@ function createInlineRenderer({ references, footnoteOrder }) {
     source = source.replace(/`([^`]+)`/g, (_, code) => store(`<code>${escapeHtml(code)}</code>`));
 
     source = source.replace(/<(br\s*\/?)>/gi, () => store("<br>"));
-    source = source.replace(/<(\/?(?:kbd|mark))>/gi, (_, tag) => store(`<${tag.toLocaleLowerCase()}>`));
+    // Keep the inline HTML allowlist deliberately narrow: supported tags may
+    // not carry attributes, so Markdown content cannot inject event handlers.
+    source = source.replace(/<(\/?(?:kbd|mark|u))>/gi, (_, tag) => store(`<${tag.toLocaleLowerCase()}>`));
 
     source = source.replace(/!\[([^\]]*)\]\((\S+?)(?:\s+["']([^"']*)["'])?\)/g, (_, alt, url, title) => {
       const src = safeUrl(url, { image: true });

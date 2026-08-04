@@ -1297,6 +1297,15 @@ a { color: inherit; }
 
 .prose a:hover { text-decoration-color: var(--accent-700); }
 
+/* Markdown 中显式使用 <u> 时，保持跨浏览器一致的正文下划线。 */
+.prose u {
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
 /* Markdown 水平分隔线。 */
 .prose hr {
   height: 1px;
