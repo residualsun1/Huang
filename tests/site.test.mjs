@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 import { detailPage, projectCard } from "../scripts/build.mjs";
-import { hasMath, renderMarkdown } from "../scripts/markdown.mjs";
+import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
 const fixtureRoot = new URL("./fixtures/", import.meta.url);
@@ -64,6 +64,8 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(headers, /\/version\.json[\s\S]*?Cache-Control: no-store/);
   assert.match(headers, /\/images\/clawd\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
   assert.match(headers, /\/images\/projects\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
+  assert.match(headers, /\/vendor\/aplayer\/1\.10\.1\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
+  assert.match(headers, /\/vendor\/meting\/2\.0\.2\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
   assert.match(html, new RegExp(`/styles\\.css\\?v=${version.assetVersion}`));
   assert.match(version.assetVersion, /^[0-9a-f]{12}$/);
@@ -582,6 +584,83 @@ test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
   assert.match(buildSource, /integrity="sha384-/);
   assert.match(mathScript, /renderMathInElement/);
   assert.match(mathScript, /document\.querySelector\("\.prose"\)/);
+});
+
+test("文章音频安全渲染、原生降级并按需加载本地 APlayer", async () => {
+  const source = '{{< audio title="测试 & 音频" artist="测试作者" url="https://media.example.com/song.mp3" cover="/images/cover.jpg" link="https://example.com/song" >}}';
+  const rendered = renderMarkdown(source).html;
+  const group = groupDefinitions.find(({ key }) => key === "projects");
+  const audioPage = detailPage(fixtureEntry(group, { body: source }));
+  const plainPage = detailPage(fixtureEntry(group, { body: "没有音频的正文。" }));
+  const playerScript = await readFile(new URL("audio-player.js", root), "utf8");
+  const playerCss = await readFile(new URL("vendor/aplayer/1.10.1/APlayer.min.css", root), "utf8");
+  const playerLicense = await readFile(new URL("vendor/aplayer/1.10.1/LICENSE", root), "utf8");
+
+  assert.equal(hasAudio(source), true);
+  assert.equal(hasAudio(`\`\`\`md\n${source}\n\`\`\``), false);
+  assert.doesNotMatch(renderMarkdown(`\`\`\`md\n${source}\n\`\`\``).html, /data-audio-player/);
+  assert.doesNotMatch(renderMarkdown(`示例：\`${source}\``).html, /data-audio-player/);
+  assert.match(rendered, /class="audio-embed" data-audio-player/);
+  assert.match(rendered, /data-audio-title="测试 &amp; 音频"/);
+  assert.match(rendered, /<audio class="audio-native-fallback" controls preload="none" aria-label="播放：测试 &amp; 音频">/);
+  assert.match(rendered, /<source src="https:\/\/media\.example\.com\/song\.mp3">/);
+  assert.match(rendered, /rel="noreferrer">打开音频来源<\/a>/);
+  assert.match(audioPage, /href="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.css"/);
+  assert.match(audioPage, /src="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.js"[\s\S]*?src="\/audio-player\.js"/);
+  assert.doesNotMatch(audioPage, /Meting\.min\.js/);
+  assert.doesNotMatch(plainPage, /APlayer\.min|audio-player\.js/);
+  assert.match(playerScript, /autoplay: false/);
+  assert.match(playerScript, /preload: "none"/);
+  assert.match(playerScript, /if \(fallback\) fallback\.hidden = true/);
+  assert.match(playerCss, /\.aplayer\{/);
+  assert.match(playerLicense, /MIT License/);
+});
+
+test("文章音频拒绝不安全地址并转义文字", () => {
+  const warnings = [];
+  const unsafe = renderMarkdown('{{< audio title="<script>alert(1)</script>" url="javascript:alert(1)" >}}', { warnings }).html;
+  const http = renderMarkdown('{{< audio url="http://media.example.com/song.mp3" >}}').html;
+
+  assert.match(unsafe, /<strong>音频不可用<\/strong>/);
+  assert.doesNotMatch(unsafe, /javascript:alert/);
+  assert.match(http, /<strong>音频不可用<\/strong>/);
+  assert.equal(warnings.length, 1);
+});
+
+test("网易云音频支持结构化 ID 与页面 URL，并单独按需加载 MetingJS", async () => {
+  const structured = '{{< audio server="netease" type="song" id="28226058" >}}';
+  const compatibleUrl = '{{< audio url="https://music.163.com/#/playlist?id=60198" >}}';
+  const group = groupDefinitions.find(({ key }) => key === "projects");
+  const structuredHtml = renderMarkdown(structured).html;
+  const compatibleHtml = renderMarkdown(compatibleUrl).html;
+  const metingPage = detailPage(fixtureEntry(group, { body: structured }));
+  const directPage = detailPage(fixtureEntry(group, { body: '{{< audio url="/audio/song.mp3" >}}' }));
+  const metingScript = await readFile(new URL("vendor/meting/2.0.2/Meting.min.js", root));
+  const metingLicense = await readFile(new URL("vendor/meting/2.0.2/LICENSE", root), "utf8");
+  const playerScript = await readFile(new URL("audio-player.js", root), "utf8");
+  const siteCss = await readFile(new URL("styles.css", root), "utf8");
+
+  assert.equal(hasAudio(structured), true);
+  assert.equal(hasMetingAudio(structured), true);
+  assert.equal(hasMetingAudio(compatibleUrl), true);
+  assert.equal(hasMetingAudio(`\`\`\`md\n${structured}\n\`\`\``), false);
+  assert.match(structuredHtml, /<meting-js server="netease" type="song" id="28226058"/);
+  assert.match(structuredHtml, /autoplay="false"[\s\S]*?preload="none"/);
+  assert.doesNotMatch(structuredHtml, /lrc-type=/);
+  assert.match(structuredHtml, /class="audio-meting-status" role="status"/);
+  assert.doesNotMatch(structuredHtml, /audio-caption|audio-source-link|打开音乐来源/);
+  assert.match(compatibleHtml, /<meting-js server="netease" type="playlist" id="60198"/);
+  assert.doesNotMatch(compatibleHtml, /audio-caption|audio-source-link|打开音乐来源/);
+  assert.match(metingPage, /src="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.js"[\s\S]*?src="\/vendor\/meting\/2\.0\.2\/Meting\.min\.js"[\s\S]*?src="\/audio-player\.js"/);
+  assert.doesNotMatch(directPage, /Meting\.min\.js/);
+  assert.match(metingScript.toString("utf8"), /MetingJS v2\.0\.2/);
+  assert.match(metingScript.toString("utf8"), /lrcType:\w+\.meta\.lrcType\|\|3/);
+  assert.equal(createHash("sha256").update(metingScript).digest("hex"), "eb9e8f9f495fcdb8c583313a39db04905b1ac65d327b81d93b357c7c7f3f9d70");
+  assert.match(metingLicense, /Copyright \(c\) 2019 metowolf/);
+  assert.match(playerScript, /MutationObserver/);
+  assert.match(playerScript, /status\.textContent = "播放器暂时无法加载。"/);
+  assert.match(siteCss, /\.audio-embed\.is-enhanced \.audio-caption-title,[\s\S]*?display: none;/);
+  assert.match(siteCss, /\.audio-embed\.is-enhanced \.audio-caption:not\(\.has-source-link\)[\s\S]*?display: none;/);
 });
 
 test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题", async () => {

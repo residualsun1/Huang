@@ -16,6 +16,42 @@ function safeUrl(value, { image = false } = {}) {
   return "";
 }
 
+function safeMediaUrl(value) {
+  const url = String(value || "").trim();
+  if (/^(?:https:\/\/|\/(?!\/))/i.test(url)) return escapeAttribute(url);
+  return "";
+}
+
+function parseShortcodeAttributes(value) {
+  const attributes = {};
+  const pattern = /([a-z][\w-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+  let match;
+  while ((match = pattern.exec(value))) {
+    attributes[match[1].toLocaleLowerCase()] = match[2] ?? match[3] ?? "";
+  }
+  return attributes;
+}
+
+const metingTypes = new Set(["song", "playlist", "album", "artist"]);
+
+function metingConfigFromAttributes(attributes) {
+  const server = String(attributes.server || "").trim().toLocaleLowerCase();
+  const type = String(attributes.type || "").trim().toLocaleLowerCase();
+  const id = String(attributes.id || "").trim();
+  if (server === "netease" && metingTypes.has(type) && /^\d{1,20}$/.test(id)) {
+    return { server, type, id };
+  }
+
+  const pageUrl = String(attributes.url || "").trim();
+  const pageMatch = pageUrl.match(/^https:\/\/(?:music\.)?163\.com\/(?:#\/)?(song|playlist|album|artist)\?id=(\d{1,20})(?:[&#].*)?$/i);
+  if (!pageMatch) return null;
+  return {
+    server: "netease",
+    type: pageMatch[1].toLocaleLowerCase(),
+    id: pageMatch[2],
+  };
+}
+
 function splitTableRow(line) {
   const trimmed = line.trim().replace(/^\|/, "").replace(/\|$/, "");
   const cells = [];
@@ -481,6 +517,7 @@ function renderList(lines, inlineMarkdown, context) {
 
 function renderShortcodes(markdown, context) {
   const blocks = [];
+  const literalAudioShortcodes = [];
   const store = (html) => {
     const token = `@@HUGO_BLOCK_${blocks.length}@@`;
     blocks.push(html);
@@ -505,10 +542,54 @@ function renderShortcodes(markdown, context) {
     return store(`<div class="image-loop" role="region" aria-label="图片集">${items.join("")}</div>`);
   });
 
+  source = source.replace(/\{\{<\s*audio\b([^}\n]*)>\}\}/gi, (shortcode, rawAttributes, offset, fullSource) => {
+    const beforeMatch = fullSource.slice(0, offset);
+    const insideFence = ((beforeMatch.match(/^\s*```/gm) || []).length % 2) === 1;
+    const currentLine = beforeMatch.slice(beforeMatch.lastIndexOf("\n") + 1);
+    const insideInlineCode = ((currentLine.match(/(?<!\\)`/g) || []).length % 2) === 1;
+    if (insideFence || insideInlineCode) {
+      const token = `@@LITERAL_AUDIO_SHORTCODE_${literalAudioShortcodes.length}@@`;
+      literalAudioShortcodes.push(shortcode);
+      return token;
+    }
+
+    const attributes = parseShortcodeAttributes(rawAttributes);
+    const meting = metingConfigFromAttributes(attributes);
+    if (meting) {
+      return store(`<figure class="audio-embed audio-embed-meting" data-meting-audio>
+        <meting-js server="${meting.server}" type="${meting.type}" id="${meting.id}" autoplay="false" preload="none" loop="none" order="list" mutex="true" list-folded="true"></meting-js>
+        <p class="audio-meting-status" role="status">正在从网易云音乐加载…</p>
+      </figure>`);
+    }
+
+    const url = safeMediaUrl(attributes.url);
+    if (!url) {
+      context.warnings?.push("audio 短代码缺少安全的音频地址；请使用 HTTPS 或以 / 开头的站内地址。");
+      return store('<aside class="unsupported-format"><strong>音频不可用</strong><code>请使用 HTTPS 或站内音频地址</code></aside>');
+    }
+
+    const title = escapeHtml(attributes.title || "音频");
+    const artist = escapeHtml(attributes.artist || "");
+    const cover = safeMediaUrl(attributes.cover);
+    const link = safeMediaUrl(attributes.link);
+    const coverData = cover ? ` data-audio-cover="${cover}"` : "";
+    const artistCaption = artist ? `<span class="audio-caption-artist">${artist}</span>` : "";
+    const sourceLink = link ? `<a class="audio-source-link" href="${link}" target="_blank" rel="noreferrer">打开音频来源</a>` : "";
+    const captionClass = sourceLink ? "audio-caption has-source-link" : "audio-caption";
+
+    return store(`<figure class="audio-embed" data-audio-player data-audio-title="${title}" data-audio-artist="${artist}" data-audio-url="${url}"${coverData}>
+      <div class="audio-player-mount" aria-label="音乐播放器：${title}"></div>
+      <audio class="audio-native-fallback" controls preload="none" aria-label="播放：${title}"><source src="${url}">你的浏览器不支持音频播放。</audio>
+      <figcaption class="${captionClass}"><span class="audio-caption-title">${title}</span>${artistCaption}${sourceLink}</figcaption>
+    </figure>`);
+  });
+
   source = source.replace(/\{\{[<%][\s\S]*?[>%]\}\}/g, (shortcode) => {
     context.warnings?.push(`尚未兼容的 Hugo 短代码：${shortcode.replace(/\s+/g, " ")}`);
     return store(`<aside class="unsupported-format"><strong>未兼容格式</strong><code>${escapeHtml(shortcode)}</code></aside>`);
   });
+
+  source = source.replace(/@@LITERAL_AUDIO_SHORTCODE_(\d+)@@/g, (_, index) => literalAudioShortcodes[Number(index)]);
 
   return { source, blocks };
 }
@@ -727,4 +808,24 @@ export function hasMath(markdown) {
     .replace(/```[\s\S]*?```/g, "")
     .replace(/`[^`]*`/g, "");
   return /\$\$[\s\S]+?\$\$|\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]|\$(?!\s)[^$\n]+?(?<!\s)\$/.test(source);
+}
+
+export function hasAudio(markdown) {
+  const source = String(markdown)
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`[^`\n]*`/g, "")
+    .replace(/<!--[\s\S]*?-->/g, "");
+  return /\{\{<\s*audio\b[^}\n]*>\}\}/i.test(source);
+}
+
+export function hasMetingAudio(markdown) {
+  const source = String(markdown)
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`[^`\n]*`/g, "")
+    .replace(/<!--[\s\S]*?-->/g, "");
+  const shortcodes = source.matchAll(/\{\{<\s*audio\b([^}\n]*)>\}\}/gi);
+  for (const shortcode of shortcodes) {
+    if (metingConfigFromAttributes(parseShortcodeAttributes(shortcode[1]))) return true;
+  }
+  return false;
 }

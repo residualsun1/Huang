@@ -14,9 +14,10 @@
 | 5 | Hugo `imgloop` 短代码 | 转为无 JavaScript 的横向滚动图片集 | 已支持 |
 | 6 | 安全的文章内 HTML | 支持 `details`、`summary`、`kbd`、`mark`、`br`；`center` 转为 CSS 类 | 已支持 |
 | 7 | 数学公式 | 检测到公式时按需加载 KaTeX 0.18.1 与官方 auto-render 扩展 | 已支持 |
-| 8 | 未知 Hugo 短代码 | 页面显示兼容提示，构建终端输出文件和格式告警 | 可追踪 |
-| 9 | 多级无序/有序列表 | 根据两个以上空格或 Tab 缩进生成嵌套 `ul` / `ol` | 已支持 |
-| 10 | 列表项内引用 | 在列表项下缩进两个以上空格后使用 `>`，生成属于当前条目的引用 | 已支持 |
+| 8 | 文章内音频 | `audio` 短代码按需加载本地 APlayer；网易云模式额外按需加载本地 MetingJS | 已支持 |
+| 9 | 未知 Hugo 短代码 | 页面显示兼容提示，构建终端输出文件和格式告警 | 可追踪 |
+| 10 | 多级无序/有序列表 | 根据两个以上空格或 Tab 缩进生成嵌套 `ul` / `ol` | 已支持 |
+| 11 | 列表项内引用 | 在列表项下缩进两个以上空格后使用 `>`，生成属于当前条目的引用 | 已支持 |
 
 ## 推荐的文章头部
 
@@ -240,6 +241,83 @@ print("Hello")
 
 新站不再加载旧主题中的 Swiper 3.4.2。图片集使用 CSS `scroll-snap`，减少脚本、
 版本和安全维护成本。
+
+### 音频
+
+音频短代码应写在文章的 Markdown 正文里，也就是 `content/` 下某篇 `.md` 文件
+头部第二个 `---` 之后。四个栏目都可以使用：
+
+```text
+content/projects/年份/文章.md
+content/prompts/年份/文章.md
+content/writings/年份/文章.md
+content/readings/年份/文章.md
+```
+
+不要把短代码写进 YAML 头部，也不要写进 `public/` 或生成后的 `dist/`。
+
+#### 1. HTTPS 音频直链
+
+适用于可以直接返回音频内容的 MP3、M4A/AAC、Ogg 等地址：
+
+```md
+{{< audio title="歌曲名称" artist="艺术家" url="https://example.com/audio/song.mp3" cover="https://example.com/audio/cover.jpg" link="https://example.com/song" >}}
+```
+
+远程服务器需要允许浏览器跨域读取，并正确支持音频文件请求。音乐平台的歌曲
+网页不是音频直链，不应当按这种方式使用。
+
+#### 2. 站内音频文件
+
+先把有权公开的音频文件放入 `public/audio/`，正文使用以 `/audio/` 开头的地址：
+
+```md
+{{< audio title="歌曲名称" artist="艺术家" url="/audio/song.mp3" cover="/audio/cover.jpg" >}}
+```
+
+#### 3. 网易云音乐 ID（推荐）
+
+单曲使用 `type="song"`：
+
+```md
+{{< audio server="netease" type="song" id="28226058" >}}
+```
+
+网易云模式还支持 `playlist`、`album`、`artist`，例如歌单：
+
+```md
+{{< audio server="netease" type="playlist" id="60198" >}}
+```
+
+为了兼容已经写好的内容，本站也会自动识别网易云页面 URL：
+
+```md
+{{< audio url="https://music.163.com/#/song?id=28226058" >}}
+```
+
+新内容优先使用明确的 `server + type + id` 写法，便于检查和长期维护。
+
+#### 字段说明
+
+- 直链或站内模式必须填写 `url`。
+- 网易云模式必须填写 `server="netease"`、`type` 和数字 `id`。
+- 网易云模式会从平台获取曲名、艺术家、封面和歌词；正文只需提供 `server`、`type` 和 `id`。
+- 直链模式的 `title`、`artist`、`cover`、`link` 均可选；`link` 只负责提供原始页面入口。
+- 网易云模式不显示额外的来源入口，也不读取 `title`、`artist`、`cover` 或 `link`。
+- `cover` 和直链 `url` 只接受 HTTPS 或以 `/` 开头的站内地址。
+- 不支持 `http://`、电脑本地磁盘路径或 `javascript:` 等地址。
+
+播放器不会自动播放。只有包含该短代码的详情页才会加载本地固定版本的
+APlayer 1.10.1。只有使用网易云模式时，页面才会额外加载本地固定版本的
+MetingJS 2.0.2。直链模式在 JavaScript 失败时保留浏览器原生 `audio` 控件；
+网易云解析失败时显示简短错误提示，不影响文章其他内容。平台歌曲仍可能因为
+版权、地区、会员限制或解析服务变化而无法播放。
+
+播放器成功加载后，曲名与艺术家由 APlayer 自身展示。网易云模式不会生成额外
+图注或来源链接，播放器之后的正文会按正常文章间距继续排列。
+
+网易云模式会异步读取并显示平台歌词。对于网易云标记为纯音乐的曲目，歌词区
+会显示平台返回的“纯音乐，请欣赏”。直链与站内文件模式目前不解析歌词文件。
 
 ### 脚注
 

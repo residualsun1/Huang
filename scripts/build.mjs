@@ -2,7 +2,7 @@ import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { hasMath, renderMarkdown } from "./markdown.mjs";
+import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "./markdown.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const contentRoot = path.join(root, "content");
@@ -167,6 +167,8 @@ function layout({
   description,
   content,
   bodyClass = "",
+  audio = false,
+  metingAudio = false,
   math = false,
   pathname = "/",
   index = true,
@@ -183,6 +185,12 @@ function layout({
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.js" integrity="sha384-ycJ6GAwiS15LoUPipwJOrWTvkUHl/YqELValBwI5I4awP1EeEQJYarj+w85ntcz7" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"></script>
   <script defer src="/math.js"></script>` : "";
+  const audioStyles = audio ? `
+  <link rel="stylesheet" href="/vendor/aplayer/1.10.1/APlayer.min.css">` : "";
+  const audioScripts = audio ? `
+  <script defer src="/vendor/aplayer/1.10.1/APlayer.min.js"></script>
+  ${metingAudio ? '<script defer src="/vendor/meting/2.0.2/Meting.min.js"></script>' : ""}
+  <script defer src="/audio-player.js"></script>` : "";
   return `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -202,10 +210,10 @@ function layout({
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Homemade+Apple&amp;family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
-  <link rel="stylesheet" href="/styles.css?v=${stylesVersion}">${mathAssets}
+  <link rel="stylesheet" href="/styles.css?v=${stylesVersion}">${mathAssets}${audioStyles}
 </head>
 <body class="${escapeHtml(bodyClass)}">
-${content}
+${content}${audioScripts}
 </body>
 </html>`;
 }
@@ -451,6 +459,8 @@ export function detailPage(entry, previousEntry, nextEntry) {
     description: entry.description,
     pathname: entry.href,
     bodyClass: `detail detail-${entry.group.key} detail-editorial`,
+    audio: hasAudio(entry.body),
+    metingAudio: hasMetingAudio(entry.body),
     math: hasMath(entry.body),
     content: `${siteHeader()}
     <main class="article-shell">

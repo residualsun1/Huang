@@ -1561,6 +1561,136 @@ a { color: inherit; }
   background: var(--background-200);
 }
 
+/* 文章级音频：APlayer 负责渐进增强，原生 audio 在脚本不可用时保底。 */
+.audio-embed {
+  max-width: 100%;
+  margin: 2.25em 0;
+}
+
+.audio-player-mount:empty { display: none; }
+
+.audio-embed meting-js { display: block; }
+
+.audio-native-fallback {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+}
+
+.audio-native-fallback[hidden] { display: none; }
+
+.prose .audio-meting-status {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--gray-alpha-400);
+  border-radius: var(--radius-md);
+  background: var(--paper-surface), var(--surface-raised);
+  color: var(--gray-800);
+  font-family: var(--body-reading);
+  font-size: 13px;
+  line-height: 22px;
+}
+
+.audio-meting-status[hidden] { display: none; }
+
+.audio-embed-meting.has-audio-error .audio-meting-status {
+  border-style: dashed;
+  color: var(--gray-900);
+}
+
+.audio-embed .aplayer {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--gray-alpha-400);
+  border-radius: var(--radius-md);
+  background: var(--paper-surface), var(--surface-raised);
+  box-shadow: 0 8px 24px rgba(64, 49, 34, 0.06);
+  color: var(--gray-1000);
+  font-family: var(--body-reading);
+}
+
+.audio-embed .aplayer .aplayer-pic {
+  background-color: #ded5c8;
+}
+
+.audio-embed .aplayer .aplayer-info .aplayer-music .aplayer-title {
+  color: var(--gray-1000);
+  font-family: var(--source-han-serif);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.audio-embed .aplayer .aplayer-info .aplayer-music .aplayer-author,
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-time {
+  color: var(--gray-800);
+}
+
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar {
+  background: var(--gray-alpha-400);
+}
+
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded {
+  background: var(--gray-alpha-500);
+}
+
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played,
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb,
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap .aplayer-volume-bar .aplayer-volume {
+  background: var(--accent-700) !important;
+}
+
+.audio-embed .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-icon path {
+  fill: var(--gray-900);
+}
+
+.audio-embed .aplayer .aplayer-lrc::before,
+.audio-embed .aplayer .aplayer-lrc::after {
+  display: none;
+}
+
+.audio-embed .aplayer .aplayer-lrc p {
+  color: var(--gray-800);
+  font-family: var(--body-reading);
+}
+
+.audio-embed .aplayer .aplayer-lrc p.aplayer-lrc-current {
+  color: var(--gray-1000);
+  font-weight: 600;
+}
+
+.audio-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+  margin-top: 9px;
+  color: var(--gray-700);
+  font-family: var(--body-reading);
+  font-size: 12.5px;
+  line-height: 19px;
+}
+
+.audio-caption-title {
+  color: var(--gray-900);
+  font-weight: 600;
+}
+
+.audio-source-link { margin-left: auto; }
+
+/* 播放器成功后由 APlayer 展示曲名和艺术家，图注只保留外部来源入口。 */
+.audio-embed.is-enhanced .audio-caption-title,
+.audio-embed.is-enhanced .audio-caption-artist {
+  display: none;
+}
+
+.audio-embed.is-enhanced .audio-caption:not(.has-source-link) {
+  display: none;
+}
+
+.audio-embed.is-enhanced .audio-caption.has-source-link {
+  justify-content: flex-end;
+}
+
 /* 未识别的旧 Hugo 格式：用红色虚线框提醒开发者继续处理。 */
 .unsupported-format {
   display: grid;
@@ -1813,6 +1943,9 @@ a.article-pagination-item:hover {
   .prose blockquote { margin-inline: -8px; }
   .notice-box { margin-inline: 0; }
   .image-loop { grid-auto-columns: 92%; }
+  .audio-embed { margin-block: 2em; }
+  .audio-caption { gap: 3px 8px; }
+  .audio-source-link { margin-left: 0; }
 
   /* 手机端上下篇导航改为单列。 */
   .article-pagination { grid-template-columns: 1fr; }
@@ -1844,6 +1977,7 @@ a.article-pagination-item:hover {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }
+  .audio-embed .aplayer-loading-icon svg { animation: none !important; }
 }
 
 /* 高对比度偏好下强化项目图标边界和正文。 */
