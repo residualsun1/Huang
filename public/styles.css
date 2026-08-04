@@ -663,12 +663,15 @@ a { color: inherit; }
 /* 标题和摘要组成的两行文字区域。 */
 .writing-copy {
   display: grid;
+  min-width: 0;
   gap: 8px;
 }
 
 .writing-copy strong {
   display: flex;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   gap: 8px;
   align-items: center;
   color: var(--gray-1000);
@@ -679,6 +682,7 @@ a { color: inherit; }
 }
 
 .writing-title-text {
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -706,7 +710,7 @@ a { color: inherit; }
 .home .writing-row:hover { background: transparent; }
 
 .home .writing-copy strong {
-  width: auto;
+  width: 100%;
   justify-self: start;
   color: rgb(139, 69, 19);
   font-family: var(--title-serif);
