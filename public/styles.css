@@ -950,6 +950,15 @@ a { color: inherit; }
   content: "·";
 }
 
+.article-history {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.article-history-separator { color: var(--gray-alpha-500); }
+
 /* 文章标签位于右侧；使用无序列表保留正确的语义结构。 */
 .article-tags {
   display: flex;

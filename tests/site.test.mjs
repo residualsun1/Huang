@@ -371,11 +371,30 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   assert.match(css, /\.hero-intro \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   for (const { key } of groupDefinitions) {
     assert.match(detailPages[key], new RegExp(`<body class="detail detail-${key} detail-editorial">`));
+    assert.match(detailPages[key], /class="article-history">[\s\S]*?发布于：2026\.01\.02[\s\S]*?修改于：2026\.01\.02[\s\S]*?已修改 0 次/);
     assert.doesNotMatch(detailPages[key], /class="article-description"/);
     assert.match(detailPages[key], /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
     assert.doesNotMatch(detailPages[key], /class="eyebrow"/);
   }
   assert.doesNotMatch(detailPages.prompts, /<body class="detail detail-writings">/);
+});
+
+test("详情页根据完整 Git 历史显示最后修改日期与修改次数", async () => {
+  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
+  const css = await readFile(new URL("styles.css", root), "utf8");
+
+  assert.match(buildSource, /gitOutput\(\["log", "--follow", "--format=%cs", "--", relativePath\]\)/);
+  assert.match(buildSource, /modificationCount: Math\.max\(0, dates\.length - 1\)/);
+  assert.match(buildSource, /gitOutput\(\["fetch", "--unshallow", "--quiet", "origin"\]\)/);
+  assert.match(css, /\.article-history \{[\s\S]*?display: inline-flex;[\s\S]*?flex-wrap: wrap;/);
+
+  for (const { key } of groupDefinitions) {
+    const directories = await groupDirectoryNames(key);
+    for (const slug of directories) {
+      const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
+      assert.match(page, /class="article-history">[\s\S]*?发布于：\d{4}\.\d{2}\.\d{2}[\s\S]*?修改于：\d{4}\.\d{2}\.\d{2}[\s\S]*?已修改 \d+ 次/);
+    }
+  }
 });
 
 test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面", async () => {

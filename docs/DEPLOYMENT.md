@@ -77,6 +77,8 @@ git push -u origin main
 
 `npm test` 会先生成站点，再运行全部自动测试；任何测试失败都会阻止错误版本上线。
 
+站点会使用完整 Git 历史计算每篇内容的最后修改日期与修改次数。GitHub Actions 使用 `fetch-depth: 0`；构建器在 Cloudflare Pages 等浅克隆环境中会自动补全历史。如果无法取得完整历史，构建会明确失败，避免发布错误的修改次数。
+
 首次构建时 Cloudflare 会提供 `*.pages.dev` 地址，并自动注入 `CF_PAGES_URL`。生成器会用它创建 canonical、Open Graph 图片绝对地址、`robots.txt` 和 `sitemap.xml`。
 
 绑定正式域名后，在 Pages 的生产环境变量中增加：
