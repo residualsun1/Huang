@@ -6,7 +6,6 @@ author: 黄国政
 tags:
   - AI
 description: "因为哲学家 Amanda Askell 和 Havery Lederman 而开始好奇大模型的对齐；机缘巧合之下，与一位来自中南民族大学的计算机老师交谈，得知 Vibe Coding 本质上也可以被视为一种编程语言……"
-pinned: true
 ---
 
 <!--more-->

@@ -5,7 +5,6 @@ author: "黄国政"
 slug: "GPT-Live-Samantha"
 description: "每一次对话，既是我在了解大模型，也是大模型在了解我，还有——我在了解自身。"
 tags:
-  - Prompt
   - GPT-Live
 ---
 
