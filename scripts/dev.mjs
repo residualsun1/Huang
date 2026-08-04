@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSite } from "./build.mjs";
+import { createBuildQueue } from "./build-queue.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const clientRoot = path.join(root, "dist", "client");
@@ -40,15 +41,14 @@ const server = createServer((request, response) => {
 });
 
 let timer;
+const runQueuedBuild = createBuildQueue(buildSite, {
+  onSuccess: () => console.log("内容已更新"),
+  onError: (error) => console.error(error),
+});
 const rebuild = () => {
   clearTimeout(timer);
-  timer = setTimeout(async () => {
-    try {
-      await buildSite();
-      console.log("内容已更新");
-    } catch (error) {
-      console.error(error);
-    }
+  timer = setTimeout(() => {
+    void runQueuedBuild();
   }, 120);
 };
 

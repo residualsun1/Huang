@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 import { detailPage, projectCard } from "../scripts/build.mjs";
+import { createBuildQueue } from "../scripts/build-queue.mjs";
 import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
@@ -753,6 +754,40 @@ test("正文目录可独立滚动并随当前章节自动高亮", async () => {
   assert.match(tocScript, /setAttribute\("aria-current", "location"\)/);
   assert.match(tocScript, /getBoundingClientRect\(\)\.top <= readingLine/);
   assert.match(tocScript, /window\.requestAnimationFrame\(updateActiveHeading\)/);
+  assert.match(tocScript, /decodeURIComponent\(link\.hash\.slice\(1\)\)/);
+  assert.match(tocScript, /event\.stopPropagation\(\)/);
+  assert.match(tocScript, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
+  assert.match(tocScript, /heading\.scrollIntoView\(\{ behavior, block: "start" \}\)/);
+  assert.match(tocScript, /\{ capture: true \}/);
+});
+
+test("本地预览将连续文件变化合并为串行构建", async () => {
+  let activeBuilds = 0;
+  let maximumActiveBuilds = 0;
+  let buildCount = 0;
+  const releases = [];
+  const build = async () => {
+    buildCount += 1;
+    activeBuilds += 1;
+    maximumActiveBuilds = Math.max(maximumActiveBuilds, activeBuilds);
+    await new Promise((resolve) => releases.push(resolve));
+    activeBuilds -= 1;
+  };
+  const enqueueBuild = createBuildQueue(build);
+
+  const first = enqueueBuild();
+  await new Promise((resolve) => setImmediate(resolve));
+  const second = enqueueBuild();
+  const third = enqueueBuild();
+  assert.equal(buildCount, 1);
+  releases.shift()();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(buildCount, 2);
+  releases.shift()();
+  await Promise.all([first, second, third]);
+
+  assert.equal(maximumActiveBuilds, 1);
+  assert.equal(buildCount, 2);
 });
 
 test("正文与引用中的西文使用 Times New Roman，引用中文使用网页楷体", async () => {

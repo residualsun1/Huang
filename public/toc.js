@@ -13,6 +13,30 @@ if (toc) {
   let activeLink = null;
   let framePending = false;
 
+  // APlayer 自带的平滑滚动会接管全页锚点，但无法正确解析中文 hash。
+  // 在捕获阶段由本站目录先完成跳转，避免音乐页面的目录链接失效。
+  toc.addEventListener("click", (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = event.target instanceof Element ? event.target.closest('a[href^="#"]') : null;
+    if (!link || !toc.contains(link)) return;
+
+    let id;
+    try {
+      id = decodeURIComponent(link.hash.slice(1));
+    } catch {
+      return;
+    }
+    const heading = document.getElementById(id);
+    if (!heading) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    heading.scrollIntoView({ behavior, block: "start" });
+    if (window.location.hash !== link.hash) window.history.pushState(null, "", link.hash);
+    scheduleUpdate();
+  }, { capture: true });
+
   function keepActiveLinkVisible(link) {
     const linkTop = link.offsetTop;
     const linkBottom = linkTop + link.offsetHeight;
