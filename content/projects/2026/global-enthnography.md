@@ -12,7 +12,7 @@ tags:
   - AI 协作
 ---
 
-本项目目前已成功部署上线，可点击链接查看 [Demo 网站](https://global-ethnography.pages.dev/)，也可以前往 GitHub 仓库查看[源代码](https://github.com/residualsun1/Global-Ethnography)。
+本项目目前已成功部署上线，可点击链接查看 [Demo 网站](https://ethnoarchive.com/)，也可以前往 GitHub 仓库查看[源代码](https://github.com/residualsun1/Global-Ethnography)。
 
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/07/07-10-1.png)
 
