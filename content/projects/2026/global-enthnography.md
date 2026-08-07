@@ -6,7 +6,7 @@ slug: "global-enthnography"
 description: "一个民族志档案知识库项目 Demo"
 icon: "/images/projects/global-ethnography.png"
 repository: "https://github.com/residualsun1/Global-Ethnography"
-website: "https://global-ethnography.pages.dev/"
+website: "https://ethnoarchive.com/"
 tags:
   - 知识库
   - AI 协作
