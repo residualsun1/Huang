@@ -6,7 +6,7 @@ slug: "her"
 description: "一个以粒子图像作为记忆的产品 Demo"
 icon: "/images/projects/her.png"
 repository: "https://github.com/residualsun1/Her"
-website: "https://her.sonder53231323.workers.dev"
+website: "https://memoryhere.live"
 tags:
   - AI 产品
   - 多模态
@@ -14,7 +14,7 @@ tags:
 pinned: true
 ---
 
-本项目目前已完成 Demo 开发并已部署上线，可以点击链接体验 [Demo](https://her.sonder53231323.workers.dev)，也可前往 GitHub 仓库查看[源代码](https://github.com/residualsun1/Her)。
+本项目目前已完成 Demo 开发并已部署上线，可以点击链接体验 [Demo](https://memoryhere.live)，也可前往 GitHub 仓库查看[源代码](https://github.com/residualsun1/Her)。
 
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/07/07-14-1.png)
 
