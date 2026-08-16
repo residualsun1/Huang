@@ -138,8 +138,6 @@
   --body-kai: "Times New Roman", "FandolKai", "FandolKai TC", "Kaiti SC", "Kaiti TC", STKaiti, KaiTi, BiauKai, "DFKai-SB", "楷体", serif;
   /* Prompt / React 接近 Codex 界面的 UI 字体；系统没有 OpenAI Sans 时自动回退。 */
   --codex-ui-font: "OpenAI Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
-  /* 导航 Huang 字标独享的自然手写字体；不影响站内其他标题和正文。 */
-  --brand-script: "Homemade Apple", cursive;
 
   /* 布局宽度：首页最大 1040px，文章正文最大 740px。 */
   --page-width: 1040px;
@@ -223,14 +221,14 @@ a { color: inherit; }
   margin-inline: auto;
 }
 
-/* 页眉只保留 Huang 字标；栏目导航已移动到首页右侧目录。 */
+/* 页眉只保留品牌图标；栏目导航已移动到首页右侧目录。 */
 .site-header-inner {
   display: flex;
   min-height: 64px;
   align-items: center;
 }
 
-/* 左上角品牌入口与 Huang 文字字标。 */
+/* 左上角品牌入口与有机年轮图标。 */
 .site-brand {
   display: inline-flex;
   align-items: center;
@@ -238,19 +236,16 @@ a { color: inherit; }
 }
 
 .brand-mark {
-  color: var(--gray-1000);
-  font-family: var(--brand-script);
-  font-size: 30px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0;
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 /*
- * 仅为短标题和字标启用更精细的字距渲染。
+ * 仅为短标题启用更精细的字距渲染。
  * 这里没有重复声明字体、字号、字重、行高或字距，因此不会覆盖各组件原有视觉设置。
  */
-.brand-mark,
 .article-header h1,
 .section-kicker,
 .prose h1,
@@ -1699,9 +1694,9 @@ a.article-pagination-item:hover {
     width: min(calc(100% - 32px), 760px);
   }
 
-  /* 手机端顶部导航与 Huang 字标。 */
+  /* 手机端顶部导航与品牌图标。 */
   .site-header-inner { min-height: 56px; }
-  .brand-mark { font-size: 26px; }
+  .brand-mark { width: 36px; height: 36px; }
 
   /* 手机端首页简介：继续保持短行距和紧凑留白。 */
   .hero {

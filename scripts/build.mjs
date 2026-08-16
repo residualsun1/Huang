@@ -244,11 +244,11 @@ function layout({
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta name="twitter:card" content="summary_large_image">
   ${canonicalAssets}
-  <link rel="icon" href="/favicon.svg?v=${stylesVersion}" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png?v=${stylesVersion}" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Homemade+Apple&amp;family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="/styles.css?v=${stylesVersion}">${mathAssets}${audioStyles}
 </head>
 <body class="${escapeHtml(bodyClass)}">
@@ -261,7 +261,7 @@ function siteHeader() {
   return `<header class="site-header">
     <div class="site-header-inner">
       <a class="site-brand" href="/" aria-label="首页">
-        <span class="brand-mark" aria-hidden="true">Huang</span>
+        <img class="brand-mark" src="/brand-mark.png?v=${stylesVersion}" alt="" width="384" height="384">
       </a>
     </div>
   </header>`;

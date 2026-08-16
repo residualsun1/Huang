@@ -41,21 +41,19 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   const notFound = await readFile(new URL("404.html", root), "utf8");
   const robots = await readFile(new URL("robots.txt", root), "utf8");
   const headers = await readFile(new URL("_headers", root), "utf8");
-  const favicon = await readFile(new URL("favicon.svg", root), "utf8");
+  const favicon = await readFile(new URL("favicon.png", root));
+  const brandMark = await readFile(new URL("brand-mark.png", root));
   const version = JSON.parse(await readFile(new URL("version.json", root), "utf8"));
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
 
   assert.doesNotMatch(html, /chatgpt\.site/);
   assert.match(
     html,
-    new RegExp(`<link rel="icon" href="/favicon\\.svg\\?v=${version.assetVersion}" type="image/svg\\+xml">`),
+    new RegExp(`<link rel="icon" href="/favicon\\.png\\?v=${version.assetVersion}" type="image/png">`),
   );
-  assert.match(favicon, /viewBox="0 0 64 64"/);
-  assert.match(favicon, /<title id="title">Huang<\/title>/);
-  assert.match(favicon, /fill="#f2ede3"/);
-  assert.match(favicon, /fill="#1d1b1b"/);
-  assert.doesNotMatch(favicon, /<text\b/);
-  assert.doesNotMatch(favicon, /#68C4FF|#0C79D8|#2E9EFF/i);
+  assert.ok(favicon.length > 1_000);
+  assert.ok(brandMark.length > 1_000);
+  assert.ok(brandMark.length < 100_000);
   assert.match(html, /<meta name="robots" content="index, follow">/);
   assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
   assert.match(notFound, /页面不存在/);
@@ -76,17 +74,17 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   const css = await readFile(new URL("styles.css", root), "utf8");
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
   assert.match(html, /class="site-header"/);
-  assert.match(html, /class="brand-mark" aria-hidden="true">Huang/);
-  assert.match(html, /family=Homemade\+Apple/);
+  assert.match(html, /<img class="brand-mark" src="\/brand-mark\.png\?v=[0-9a-f]{12}" alt="" width="384" height="384">/);
+  assert.doesNotMatch(html, /family=Homemade\+Apple/);
   assert.doesNotMatch(html, /class="site-nav"/);
   assert.doesNotMatch(html, /class="home-toc"/);
   assert.doesNotMatch(html, /class="portrait-space"/);
   assert.doesNotMatch(html, /blog-static\/about\/gz\.jpg/);
-  assert.match(css, /--brand-script: "Homemade Apple", cursive;/);
-  assert.match(css, /\.brand-mark \{[\s\S]*?font-family: var\(--brand-script\);[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: 0;/);
+  assert.doesNotMatch(css, /--brand-script/);
+  assert.match(css, /\.brand-mark \{[\s\S]*?width: 40px;[\s\S]*?height: 40px;[\s\S]*?object-fit: contain;/);
   assert.match(css, /html \{[\s\S]*?-webkit-text-size-adjust: 100%;[\s\S]*?text-size-adjust: 100%;/);
   assert.match(css, /body \{[\s\S]*?-webkit-font-smoothing: antialiased;[\s\S]*?text-rendering: auto;/);
-  assert.match(css, /\.brand-mark,[\s\S]*?\.prose h4 \{[\s\S]*?font-kerning: normal;[\s\S]*?text-rendering: optimizeLegibility;/);
+  assert.match(css, /\.article-header h1,[\s\S]*?\.prose h4 \{[\s\S]*?font-kerning: normal;[\s\S]*?text-rendering: optimizeLegibility;/);
   assert.match(html, /01 \/ 项目/);
   assert.match(html, /02 \/ Prompt/);
   assert.match(html, /03 \/ 写作/);
