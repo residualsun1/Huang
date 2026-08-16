@@ -296,20 +296,6 @@ function socialNavigation() {
   </nav>`;
 }
 
-const projectIcons = {
-  github: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.014-1.699-2.782.604-3.369-1.341-3.369-1.341-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.004.071 1.532 1.031 1.532 1.031.892 1.529 2.341 1.087 2.91.831.091-.646.349-1.087.635-1.337-2.221-.253-4.555-1.111-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.845a9.56 9.56 0 0 1 2.504.337c1.909-1.294 2.748-1.025 2.748-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.591 1.028 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.679.92.679 1.855 0 1.338-.012 2.419-.012 2.748 0 .268.18.579.688.481A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10z"></path></svg>`,
-  // Link 图标取自 SVG Repo 的 CC0 资源：https://www.svgrepo.com/svg/525988/link
-  link: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.7285 3.88396C17.1629 2.44407 19.2609 2.41383 20.4224 3.57981C21.586 4.74798 21.5547 6.85922 20.1194 8.30009L17.6956 10.7333C17.4033 11.0268 17.4042 11.5017 17.6976 11.794C17.9911 12.0863 18.466 12.0854 18.7583 11.7919L21.1821 9.35869C23.0934 7.43998 23.3334 4.37665 21.4851 2.5212C19.6346 0.663551 16.5781 0.905664 14.6658 2.82536L9.81817 7.69182C7.90688 9.61053 7.66692 12.6739 9.51519 14.5293C9.80751 14.8228 10.2824 14.8237 10.5758 14.5314C10.8693 14.2391 10.8702 13.7642 10.5779 13.4707C9.41425 12.3026 9.44559 10.1913 10.8809 8.75042L15.7285 3.88396Z"></path><path d="M14.4851 9.47074C14.1928 9.17728 13.7179 9.17636 13.4244 9.46868C13.131 9.76101 13.1301 10.2359 13.4224 10.5293C14.586 11.6975 14.5547 13.8087 13.1194 15.2496L8.27178 20.1161C6.83745 21.556 4.73937 21.5863 3.57791 20.4203C2.41424 19.2521 2.44559 17.1408 3.88089 15.6999L6.30473 13.2667C6.59706 12.9732 6.59614 12.4984 6.30268 12.206C6.00922 11.9137 5.53434 11.9146 5.24202 12.2081L2.81818 14.6413C0.906876 16.5601 0.666916 19.6234 2.51519 21.4789C4.36567 23.3365 7.42221 23.0944 9.33449 21.1747L14.1821 16.3082C16.0934 14.3895 16.3334 11.3262 14.4851 9.47074Z"></path></svg>`,
-};
-
-function projectAction({ href, label, icon, field }) {
-  const content = `${icon}<span>${label}</span>`;
-  if (!String(href || "").trim()) {
-    return `<span class="project-action is-disabled" aria-disabled="true" title="在项目 Markdown 中填写 ${field}">${content}</span>`;
-  }
-  return `<a class="project-action" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${content}</a>`;
-}
-
 export function selectHomeEntries(entries, minimum = 3) {
   const pinned = entries.filter((entry) => entry.pinned);
   const unpinned = entries.filter((entry) => !entry.pinned);
@@ -334,27 +320,17 @@ export function listRow(entry, { summary = entry.description, showPinned = false
 }
 
 export function projectCard(entry, { showPinned = false } = {}) {
-  const icon = String(entry.icon || "").trim();
   const isPinned = showPinned && entry.pinned;
   const pinBadge = isPinned ? `<span class="pin-badge">置顶</span>` : "";
-  const iconClass = String(entry.slug || "project").replace(/[^a-z0-9_-]/gi, "-");
-  const iconContent = icon
-    ? `<img src="${escapeHtml(icon)}" alt="" width="192" height="192" loading="lazy" decoding="async">`
-    : `<span class="project-icon-fallback" aria-hidden="true">${escapeHtml(String(entry.title || "?").trim().slice(0, 1))}</span>`;
 
   return `
     <article class="project-row">
       <a class="project-row-main" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}">
-        <span class="project-icon project-icon--${escapeHtml(iconClass)}">${iconContent}</span>
         <span class="project-row-copy">
           <h3><span class="project-title-text">${escapeHtml(entry.title)}</span>${pinBadge}</h3>
           <span class="project-description">${escapeHtml(entry.description)}</span>
         </span>
       </a>
-      <div class="project-row-actions" aria-label="${escapeHtml(entry.title)}的外部链接">
-        ${projectAction({ href: entry.repository, label: "项目仓库", icon: projectIcons.github, field: "repository" })}
-        ${projectAction({ href: entry.website, label: "项目地址", icon: projectIcons.link, field: "website" })}
-      </div>
     </article>`;
 }
 

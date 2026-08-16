@@ -407,7 +407,7 @@ a { color: inherit; }
   content: "";
 }
 
-/* 项目使用紧凑的编辑式列表；图标负责识别，文字和外部入口保持清晰层级。 */
+/* 项目使用纯文字的编辑式列表，避免额外视觉元素抢占内容层级。 */
 .project-list {
   display: grid;
   width: min(100%, 880px);
@@ -415,13 +415,10 @@ a { color: inherit; }
 }
 
 .project-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: block;
   width: 100%;
-  min-height: 96px;
-  padding: 12px 4px;
+  padding: 18px 4px;
   min-width: 0;
-  align-items: center;
   border-radius: var(--radius-sm);
   transition:
     background-color 180ms ease,
@@ -433,11 +430,8 @@ a { color: inherit; }
 }
 
 .project-row-main {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+  display: block;
   min-width: 0;
-  gap: 18px;
-  align-items: center;
   color: inherit;
   text-decoration: none;
 }
@@ -457,40 +451,6 @@ a { color: inherit; }
   .project-row:hover {
     background: rgba(139, 69, 19, 0.035);
   }
-
-  .project-row:hover .project-icon {
-    border-color: rgba(139, 69, 19, 0.3);
-  }
-}
-
-.project-icon {
-  display: grid;
-  width: 72px;
-  height: 72px;
-  overflow: hidden;
-  place-items: center;
-  border: 1px solid rgba(71, 65, 58, 0.16);
-  border-radius: 12px;
-  background: #eae3d7;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
-  transition: border-color 180ms ease;
-}
-
-.project-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(var(--project-icon-scale, 1));
-}
-
-.project-icon--global-enthnography { --project-icon-scale: 1.04; }
-.project-icon--her { --project-icon-scale: 1.12; }
-.project-icon--time-gambler { --project-icon-scale: 1.03; }
-
-.project-icon-fallback {
-  color: var(--accent-700);
-  font-family: var(--title-serif);
-  font-size: 24px;
 }
 
 .project-row-copy {
@@ -549,55 +509,10 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
-/* 右侧入口沿用首页社交链接的克制下划线，不与项目主入口争夺视觉焦点。 */
-.project-row-actions {
-  display: flex;
-  min-width: 0;
-  gap: 20px;
-  align-items: center;
-  justify-content: flex-end;
-  padding-left: 28px;
-  color: rgb(79, 77, 74);
-  font-family: var(--title-serif);
-  font-size: 12px;
-  line-height: 18px;
-}
-
-.project-action {
-  display: inline-flex;
-  min-width: 0;
-  max-width: 100%;
-  gap: 6px;
-  align-items: center;
-  color: inherit;
-  text-decoration: none;
-  transition: color 200ms ease, opacity 200ms ease;
-}
-
-.project-action svg { flex: 0 0 auto; }
-
-.project-action span {
-  min-width: 0;
-  overflow: hidden;
-  border-bottom: 1px solid rgb(197, 193, 187);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: border-color 200ms ease;
-}
-
-.project-action:not(.is-disabled):hover { color: rgb(29, 27, 27); }
-.project-action:not(.is-disabled):hover span { border-bottom-color: rgb(29, 27, 27); }
-
 .row-arrow {
   color: var(--gray-700);
   font-family: var(--mono);
   transition: color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
-}
-
-/* 尚未填写链接时仍保留入口位置，但用较低透明度表明当前不可点击。 */
-.project-action.is-disabled {
-  cursor: default;
-  opacity: 0.48;
 }
 
 /* 写作、Prompt 与阅读共用的分隔式列表。 */
@@ -1896,21 +1811,7 @@ a.article-pagination-item:hover {
   .section-heading .section-kicker { gap: 10px; }
 
   .project-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    min-height: 0;
-    gap: 10px;
-    padding: 14px 0;
-  }
-
-  .project-row-main {
-    grid-template-columns: 52px minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .project-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
+    padding: 16px 0;
   }
 
   .project-row h3 {
@@ -1936,29 +1837,6 @@ a.article-pagination-item:hover {
   .project-description {
     font-size: 12.5px;
     line-height: 19px;
-  }
-
-  .project-row-actions {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-end;
-    justify-content: center;
-    flex-wrap: nowrap;
-    margin-left: 0;
-    padding-left: 0;
-    font-size: 11.5px;
-    line-height: 18px;
-  }
-
-  .project-action {
-    width: auto;
-    min-height: 24px;
-    gap: 5px;
-  }
-
-  .project-action svg {
-    width: 12px;
-    height: 12px;
   }
 
   .writing-row {
@@ -2044,8 +1922,7 @@ a.article-pagination-item:hover {
   .audio-embed .aplayer-loading-icon svg { animation: none !important; }
 }
 
-/* 高对比度偏好下强化项目图标边界和正文。 */
+/* 高对比度偏好下强化项目简介正文。 */
 @media (prefers-contrast: more) {
-  .project-icon { border-color: rgba(29, 27, 27, 0.46); }
   .project-description { color: var(--gray-1000); }
 }

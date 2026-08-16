@@ -4,7 +4,6 @@ date: "2026-07-14"
 author: "黄国政"
 slug: "her"
 description: "一个以粒子图像作为记忆的产品 Demo"
-icon: "/images/projects/her.png"
 repository: "https://github.com/residualsun1/Her"
 website: "https://memoryhere.live"
 tags:

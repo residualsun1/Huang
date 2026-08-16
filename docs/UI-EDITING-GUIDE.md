@@ -25,19 +25,18 @@
 2. 修改全站最大宽度：搜索 `--page-width`。
 3. 修改文章正文宽度：搜索 `--article-width`。
 4. 修改首页简介：搜索 `.hero-intro`。
-5. 修改项目列表外观：在 `public/styles.css` 搜索 `.project-list`、`.project-row`、`.project-icon` 和 `.project-row-actions`；桌面端图标、文字与外部入口横排，手机端两个外部入口在简介右侧上下排列。
-6. 修改项目卡片结构或字段：在 `scripts/build.mjs` 搜索 `projectAction` 和 `const projects`。
-7. 设置项目链接：打开对应的 `content/projects/年份/项目名.md`，填写 `repository` 和 `website`。
-8. 修改首页栏目标题或右侧延伸分隔线：搜索 `.section-heading` 和 `.section-kicker__rail`。
-9. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
-10. 修改文章正文：搜索 `.prose`。
-11. 修改项目、写作、Prompt 与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
-12. 修改引用：搜索 `.prose blockquote`。
-13. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
-14. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
-15. 修改四个内容栏目的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
-16. 修改目录当前章节颜色：搜索 `.article-toc a[aria-current="location"]`；修改滚动定位逻辑则编辑 `public/toc.js`。
-17. 修改手机样式：搜索 `@media (max-width: 600px)`。
+5. 修改项目列表外观：在 `public/styles.css` 搜索 `.project-list`、`.project-row` 和 `.project-row-main`。
+6. 修改项目列表结构：在 `scripts/build.mjs` 搜索 `projectCard`。
+7. 修改首页栏目标题或右侧延伸分隔线：搜索 `.section-heading` 和 `.section-kicker__rail`。
+8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
+9. 修改文章正文：搜索 `.prose`。
+10. 修改项目、写作、Prompt 与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
+11. 修改引用：搜索 `.prose blockquote`。
+12. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
+13. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
+14. 修改四个内容栏目的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
+15. 修改目录当前章节颜色：搜索 `.article-toc a[aria-current="location"]`；修改滚动定位逻辑则编辑 `public/toc.js`。
+16. 修改手机样式：搜索 `@media (max-width: 600px)`。
 
 ## 修改后的预览方法
 

@@ -63,7 +63,6 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /X-Content-Type-Options: nosniff/);
   assert.match(headers, /\/version\.json[\s\S]*?Cache-Control: no-store/);
-  assert.match(headers, /\/images\/projects\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
   assert.match(headers, /\/vendor\/aplayer\/1\.10\.1\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
   assert.match(headers, /\/vendor\/meting\/2\.0\.2\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
@@ -193,7 +192,7 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   }
 });
 
-test("项目使用紧凑图标列表并展示详情入口与可选外部链接", async () => {
+test("项目使用纯文字列表并保留详情入口", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -202,58 +201,26 @@ test("项目使用紧凑图标列表并展示详情入口与可选外部链接",
 
   assert.match(projectSection, /class="project-list"/);
   assert.match(projectSection, /class="project-row-main" href="\/projects\/[^"]+\/"/);
-  assert.match(projectSection, /class="project-icon project-icon--[^"]+"><img src="\/images\/projects\/[^"]+\.png" alt="" width="192" height="192" loading="lazy" decoding="async">/);
   assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
-  assert.match(projectSection, />项目仓库<\/span>/);
-  assert.match(projectSection, />项目地址<\/span>/);
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(projectSection, /project-card|card-arrow/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
   assert.match(css, /\.project-list \{[\s\S]*?display: grid;[\s\S]*?width: min\(100%, 880px\);[\s\S]*?margin-inline: auto;/);
-  assert.match(projectRowRule, /grid-template-columns: minmax\(0, 1fr\) auto;[\s\S]*?min-height: 96px;[\s\S]*?padding: 12px 4px;[\s\S]*?border-radius: var\(--radius-sm\);/);
+  assert.match(projectRowRule, /display: block;[\s\S]*?padding: 18px 4px;[\s\S]*?border-radius: var\(--radius-sm\);/);
   assert.doesNotMatch(projectRowRule, /var\(--paper-surface\)|gradient\(|backdrop-filter|transform:/);
   assert.match(css, /\.project-row \+ \.project-row \{[\s\S]*?border-top: 1px solid var\(--gray-alpha-400\);/);
-  assert.match(css, /\.project-row-main \{[\s\S]*?grid-template-columns: 72px minmax\(0, 1fr\);[\s\S]*?gap: 18px;/);
-  assert.match(css, /\.project-icon \{[\s\S]*?width: 72px;[\s\S]*?height: 72px;[\s\S]*?border-radius: 12px;/);
-  assert.match(css, /\.project-icon--her \{ --project-icon-scale: 1\.12; \}/);
+  assert.match(css, /\.project-row-main \{[\s\S]*?display: block;/);
   assert.match(css, /\.project-row h3 \{[\s\S]*?display: flex;[\s\S]*?font-size: 17px;[\s\S]*?line-height: 25px;/);
   assert.match(css, /\.project-title-text \{[\s\S]*?text-overflow: ellipsis;[\s\S]*?white-space: nowrap;/);
   assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid var\(--red-800\);[\s\S]*?border-radius: 999px;[\s\S]*?background: var\(--red-800\);[\s\S]*?color: #fff;[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
   assert.doesNotMatch(css, /\.pin-badge::before/);
   assert.doesNotMatch(css, /\.home \.is-pinned|box-shadow: inset 2px 0 0 rgba\(139, 69, 19, 0\.68\)/);
   assert.match(css, /\.project-description \{[\s\S]*?color: #74685d;[\s\S]*?font-size: 13\.5px;[\s\S]*?line-height: 22px;[\s\S]*?white-space: nowrap;/);
-  assert.match(css, /\.project-row-actions \{[\s\S]*?gap: 20px;[\s\S]*?justify-content: flex-end;[\s\S]*?padding-left: 28px;/);
   assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-row:hover \{[\s\S]*?background: rgba\(139, 69, 19, 0\.035\);/);
   assert.doesNotMatch(projectHoverRule, /transform:/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) auto;[\s\S]*?gap: 10px;[\s\S]*?padding: 14px 0;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row-main \{[\s\S]*?grid-template-columns: 52px minmax\(0, 1fr\);[\s\S]*?gap: 12px;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-icon \{[\s\S]*?width: 52px;[\s\S]*?height: 52px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row \{[\s\S]*?padding: 16px 0;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row h3 \{[\s\S]*?font-size: 15px;[\s\S]*?line-height: 22px;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-description \{[\s\S]*?font-size: 12\.5px;[\s\S]*?line-height: 19px;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row-actions \{[\s\S]*?flex-direction: column;[\s\S]*?gap: 12px;[\s\S]*?align-items: flex-end;[\s\S]*?flex-wrap: nowrap;[\s\S]*?margin-left: 0;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-action \{[\s\S]*?min-height: 24px;/);
-});
-
-test("项目外部链接的可用与缺失状态由固定夹具覆盖", () => {
-  const group = groupDefinitions.find(({ key }) => key === "projects");
-  const linkedCard = projectCard(fixtureEntry(group, {
-    icon: "/images/projects/fixture.png",
-    repository: "https://github.com/example/project",
-    website: "https://example.com/project",
-  }));
-  const unlinkedCard = projectCard(fixtureEntry(group, {
-    repository: "",
-    website: "",
-  }));
-
-  assert.match(linkedCard, /href="https:\/\/github\.com\/example\/project"/);
-  assert.match(linkedCard, /href="https:\/\/example\.com\/project"/);
-  assert.match(linkedCard, /src="\/images\/projects\/fixture\.png"/);
-  assert.doesNotMatch(linkedCard, /aria-disabled="true"/);
-  assert.equal((unlinkedCard.match(/aria-disabled="true"/g) ?? []).length, 2);
-  assert.match(unlinkedCard, /class="project-icon-fallback" aria-hidden="true">固<\/span>/);
-  assert.match(unlinkedCard, /title="在项目 Markdown 中填写 repository"/);
-  assert.match(unlinkedCard, /title="在项目 Markdown 中填写 website"/);
 });
 
 test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
