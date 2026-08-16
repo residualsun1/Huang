@@ -15,7 +15,6 @@ const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "")
   .replace(/\/+$/, "");
 const buildCommit = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "").trim();
 let stylesVersion = "development";
-let sectionPetVersions = {};
 
 function gitOutput(args) {
   return execFileSync("git", args, {
@@ -359,24 +358,6 @@ export function projectCard(entry, { showPinned = false } = {}) {
     </article>`;
 }
 
-const sectionPetAssets = {
-  projects: { name: "typing", width: 115, height: 157 },
-  prompts: { name: "thinking", width: 127, height: 142 },
-  writings: { name: "notification", width: 147, height: 157 },
-  readings: { name: "idle", width: 127, height: 142 },
-};
-
-function sectionPet(key) {
-  const asset = sectionPetAssets[key];
-  const source = `/images/clawd/clawd-${asset.name}`;
-  const version = sectionPetVersions[asset.name] || "development";
-
-  return `<picture class="section-pet" aria-hidden="true">
-      <source media="(prefers-reduced-motion: reduce)" srcset="${source}-still.png?v=${version}">
-      <img src="${source}.gif?v=${version}" alt="" width="${asset.width}" height="${asset.height}" decoding="async">
-    </picture>`;
-}
-
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
   const projects = selectHomeEntries(byKey.projects.entries)
@@ -395,7 +376,7 @@ function homePage(collections) {
   const sectionHeader = (group) => `<header class="section-heading">
     <p class="section-kicker" id="${group.key}-title">
       <span class="section-kicker__label">${group.number} / ${group.label}</span>
-      <span class="section-kicker__rail" aria-hidden="true">${sectionPet(group.key)}</span>
+      <span class="section-kicker__rail" aria-hidden="true"></span>
     </p>
   </header>`;
 
@@ -612,16 +593,6 @@ export async function buildSite() {
   await cp(publicRoot, clientRoot, { recursive: true });
   const styles = await readFile(path.join(publicRoot, "styles.css"));
   stylesVersion = createHash("sha256").update(styles).digest("hex").slice(0, 12);
-  sectionPetVersions = {};
-  for (const name of new Set(Object.values(sectionPetAssets).map((asset) => asset.name))) {
-    const still = await readFile(path.join(publicRoot, "images", "clawd", `clawd-${name}-still.png`));
-    const animation = await readFile(path.join(publicRoot, "images", "clawd", `clawd-${name}.gif`));
-    sectionPetVersions[name] = createHash("sha256")
-      .update(still)
-      .update(animation)
-      .digest("hex")
-      .slice(0, 12);
-  }
 
   const collections = [];
   for (const group of groups) {

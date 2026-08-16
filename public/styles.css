@@ -367,7 +367,7 @@ a { color: inherit; }
 
 .home-layout > #projects { padding-top: 15px; }
 
-/* 桌面端后续栏目为右侧 Clawd 留出垂直呼吸空间；项目与自我介绍的距离保持不变。 */
+/* 桌面端后续栏目保持充足的纵向呼吸空间；项目与自我介绍的距离保持不变。 */
 @media (min-width: 601px) {
   .home-layout > .content-section + .content-section { padding-top: 48px; }
 }
@@ -378,7 +378,6 @@ a { color: inherit; }
   padding-top: 48px;
 }
 
-/* 栏目名称与横线各自占一列，宠物坐在横线上且不挤压标题。 */
 .section-heading .section-kicker {
   display: flex;
   width: 100%;
@@ -406,27 +405,6 @@ a { color: inherit; }
   height: 1px;
   background: var(--gray-alpha-400);
   content: "";
-}
-
-/* 四种 Clawd 状态共用同一套图片规则，底部始终落在栏目横线上。 */
-.section-pet {
-  position: absolute;
-  z-index: 1;
-  right: 4px;
-  bottom: calc(50% - 1px);
-  display: block;
-  width: auto;
-  height: 72px;
-  pointer-events: none;
-}
-
-.section-pet img {
-  display: block;
-  width: auto;
-  height: 100%;
-  filter: drop-shadow(0 2px 0 rgba(43, 26, 19, 0.1));
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
 }
 
 /* 项目使用紧凑的编辑式列表；图标负责识别，文字和外部入口保持清晰层级。 */
@@ -1916,10 +1894,6 @@ a.article-pagination-item:hover {
   }
 
   .section-heading .section-kicker { gap: 10px; }
-
-  .section-pet {
-    height: 56px;
-  }
 
   .project-row {
     grid-template-columns: minmax(0, 1fr) auto;

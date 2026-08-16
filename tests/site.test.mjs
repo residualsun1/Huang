@@ -63,7 +63,6 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /X-Content-Type-Options: nosniff/);
   assert.match(headers, /\/version\.json[\s\S]*?Cache-Control: no-store/);
-  assert.match(headers, /\/images\/clawd\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
   assert.match(headers, /\/images\/projects\/\*[\s\S]*?Cache-Control: public, max-age=604800, stale-while-revalidate=86400/);
   assert.match(headers, /\/vendor\/aplayer\/1\.10\.1\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
   assert.match(headers, /\/vendor\/meting\/2\.0\.2\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
@@ -418,59 +417,20 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
 });
 
-test("首页四个栏目在水平分隔线上展示对应状态的 Clawd", async () => {
+test("首页四个栏目使用标题右侧延伸分隔线", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const pets = html.match(/<picture class="section-pet"/g) ?? [];
-  const assetNames = ["typing", "thinking", "notification", "idle"];
-  const assetDimensions = {
-    typing: [115, 157],
-    thinking: [127, 142],
-    notification: [147, 157],
-    idle: [127, 142],
-  };
-  const section = (key) => (
-    html.match(new RegExp(`<section class="content-section" id="${key}"[\\s\\S]*?<\\/section>`))?.[0] ?? ""
-  );
+  const headings = html.match(/<header class="section-heading">/g) ?? [];
+  const rails = html.match(/<span class="section-kicker__rail" aria-hidden="true"><\/span>/g) ?? [];
 
-  assert.equal(pets.length, 4);
-  for (const name of assetNames) {
-    const animation = await readFile(new URL(`images/clawd/clawd-${name}.gif`, root));
-    const still = await readFile(new URL(`images/clawd/clawd-${name}-still.png`, root));
-    const expectedVersion = createHash("sha256")
-      .update(still)
-      .update(animation)
-      .digest("hex")
-      .slice(0, 12);
-    const versionedReferences = html.match(
-      new RegExp(`clawd-${name}-still\\.png\\?v=([0-9a-f]{12})[\\s\\S]*?clawd-${name}\\.gif\\?v=\\1`),
-    );
-    const [width, height] = assetDimensions[name];
-    assert.equal(animation.subarray(0, 6).toString("ascii"), "GIF89a");
-    assert.deepEqual([...still.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
-    assert.equal(animation.readUInt16LE(6), width);
-    assert.equal(animation.readUInt16LE(8), height);
-    assert.equal(still.readUInt32BE(16), width);
-    assert.equal(still.readUInt32BE(20), height);
-    assert.equal(versionedReferences?.[1], expectedVersion);
-  }
-  assert.match(section("projects"), /clawd-typing-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-typing\.gif\?v=\1"[^>]*width="115" height="157"/);
-  assert.match(section("prompts"), /clawd-thinking-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-thinking\.gif\?v=\1"[^>]*width="127" height="142"/);
-  assert.match(section("writings"), /clawd-notification-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-notification\.gif\?v=\1"[^>]*width="147" height="157"/);
-  assert.match(section("readings"), /clawd-idle-still\.png\?v=([0-9a-f]{12})[\s\S]*?clawd-idle\.gif\?v=\1"[^>]*width="127" height="142"/);
-  assert.match(html, /<picture class="section-pet" aria-hidden="true">/);
-  assert.match(html, /media="\(prefers-reduced-motion: reduce\)"/);
-  assert.doesNotMatch(html, /clawd-[^"]+\.gif\?v=[^"]+"[^>]*loading="lazy"/);
-  assert.match(html, /clawd-[^"]+\.gif\?v=[^"]+"[^>]*decoding="async"/);
-  assert.match(css, /\.section-kicker__rail::before \{/);
-  assert.match(css, /background: var\(--gray-alpha-400\)/);
+  assert.equal(headings.length, 4);
+  assert.equal(rails.length, 4);
+  assert.match(css, /\.section-kicker__rail::before \{[\s\S]*?height: 1px;[\s\S]*?background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
-  assert.match(css, /\.section-pet \{[\s\S]*?right: 4px;[\s\S]*?height: 72px;/);
-  assert.match(css, /\.section-pet img \{[\s\S]*?image-rendering: pixelated;/);
   assert.match(css, /@media \(min-width: 601px\) \{[\s\S]*?\.home-layout > \.content-section \+ \.content-section \{ padding-top: 48px; \}/);
   assert.match(css, /\.home-layout > #projects \{ padding-top: 15px; \}/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-pet \{[\s\S]*?height: 56px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-heading \.section-kicker \{ gap: 10px; \}/);
 });
 
 test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
