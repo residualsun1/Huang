@@ -319,25 +319,10 @@ export function listRow(entry, { summary = entry.description, showPinned = false
   </a>`;
 }
 
-export function projectCard(entry, { showPinned = false } = {}) {
-  const isPinned = showPinned && entry.pinned;
-  const pinBadge = isPinned ? `<span class="pin-badge">置顶</span>` : "";
-
-  return `
-    <article class="project-row">
-      <a class="project-row-main" href="${entry.href}" aria-label="查看项目：${escapeHtml(entry.title)}">
-        <span class="project-row-copy">
-          <h3><span class="project-title-text">${escapeHtml(entry.title)}</span>${pinBadge}</h3>
-          <span class="project-description">${escapeHtml(entry.description)}</span>
-        </span>
-      </a>
-    </article>`;
-}
-
 function homePage(collections) {
   const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
   const projects = selectHomeEntries(byKey.projects.entries)
-    .map((entry) => projectCard(entry, { showPinned: true }))
+    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
     .join("");
   const prompts = selectHomeEntries(byKey.prompts.entries)
     .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
@@ -377,7 +362,7 @@ function homePage(collections) {
 
       <section class="content-section" id="projects" aria-labelledby="projects-title">
         ${sectionHeader(byKey.projects.group)}
-        <div class="project-list">${projects}</div>
+        <div class="writing-list">${projects}</div>
         <div class="section-more"><a href="/projects/">所有项目<span aria-hidden="true">→</span></a></div>
       </section>
 
@@ -405,9 +390,7 @@ function homePage(collections) {
 
 function collectionPage(collection) {
   const { group, entries } = collection;
-  const archive = group.key === "projects"
-    ? `<div class="project-list">${entries.map(projectCard).join("")}</div>`
-    : `<div class="writing-list">${entries.map((entry) => listRow(entry, { summary: "" })).join("")}</div>`;
+  const archive = `<div class="writing-list">${entries.map((entry) => listRow(entry, { summary: "" })).join("")}</div>`;
 
   return layout({
     title: `${group.label} — Huang`,

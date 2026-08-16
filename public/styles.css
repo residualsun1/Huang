@@ -407,79 +407,6 @@ a { color: inherit; }
   content: "";
 }
 
-/* 项目使用纯文字的编辑式列表，避免额外视觉元素抢占内容层级。 */
-.project-list {
-  display: grid;
-  width: min(100%, 880px);
-  margin-inline: auto;
-}
-
-.project-row {
-  display: block;
-  width: 100%;
-  padding: 18px 4px;
-  min-width: 0;
-  border-radius: var(--radius-sm);
-  transition:
-    background-color 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.project-row + .project-row {
-  border-top: 1px solid var(--gray-alpha-400);
-}
-
-.project-row-main {
-  display: block;
-  min-width: 0;
-  color: inherit;
-  text-decoration: none;
-}
-
-.project-row-main:focus-visible {
-  outline: 2px solid var(--accent-700);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
-}
-
-.project-row:focus-within {
-  background: rgba(139, 69, 19, 0.045);
-  box-shadow: 0 0 0 1px rgba(139, 69, 19, 0.1);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .project-row:hover {
-    background: rgba(139, 69, 19, 0.035);
-  }
-}
-
-.project-row-copy {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
-.project-row h3 {
-  display: flex;
-  overflow: hidden;
-  margin: 0;
-  gap: 7px;
-  align-items: center;
-  color: rgb(139, 69, 19);
-  font-size: 17px;
-  font-optical-sizing: auto;
-  font-weight: 600;
-  line-height: 25px;
-  letter-spacing: 0.015em;
-}
-
-.project-title-text {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .pin-badge {
   display: inline-flex;
   flex: 0 0 auto;
@@ -500,22 +427,13 @@ a { color: inherit; }
 
 .pin-badge--writing-meta { display: none; }
 
-.project-description {
-  overflow: hidden;
-  color: #74685d;
-  font-size: 13.5px;
-  line-height: 22px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .row-arrow {
   color: var(--gray-700);
   font-family: var(--mono);
   transition: color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
-/* 写作、Prompt 与阅读共用的分隔式列表。 */
+/* 项目、Prompt、写作与阅读共用的分隔式列表。 */
 .writing-list {
   border-top: 1px solid var(--gray-alpha-400);
 }
@@ -665,7 +583,7 @@ a { color: inherit; }
   margin-top: 18px;
 }
 
-/* 项目列表没有厚卡片阴影，入口与正文保持同一紧凑节奏。 */
+/* 项目列表与其他栏目保持同一紧凑节奏。 */
 .home #projects .section-more {
   margin-top: 18px;
 }
@@ -685,17 +603,13 @@ a { color: inherit; }
 .section-more a span { transition: transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1); }
 .section-more a:hover span { transform: translateX(3px); }
 
-/* 归档页采用更集中的阅读宽度；项目归档保留三列卡片需要的展示空间。 */
+/* 归档页统一采用更集中的阅读宽度。 */
 .collection-shell {
   padding-bottom: 96px;
 }
 
-.listing:not(.listing-projects) .collection-shell {
+.listing .collection-shell {
   width: min(calc(100% - 48px), 760px);
-}
-
-.listing-projects .collection-shell {
-  width: min(calc(100% - 48px), 900px);
 }
 
 /* 归档页标题区域。 */
@@ -719,21 +633,21 @@ a { color: inherit; }
  * 文字归档只保留日期、标题和箭头：
  * 无摘要、无上下分隔线，以紧凑留白组织阅读顺序。
  */
-.listing:not(.listing-projects) .writing-list {
+.listing .writing-list {
   border-top: 0;
 }
 
-.listing:not(.listing-projects) .writing-row {
+.listing .writing-row {
   padding: 16px 4px;
   border-bottom: 0;
 }
 
-.listing:not(.listing-projects) .writing-copy {
+.listing .writing-copy {
   gap: 0;
 }
 
 /* 归档条目标题使用正常字重和更松的字距，避免窄版面形成粗黑色块。 */
-.listing:not(.listing-projects) .writing-copy strong {
+.listing .writing-copy strong {
   color: #34312f;
   font-size: 17px;
   font-weight: 400;
@@ -741,7 +655,7 @@ a { color: inherit; }
   letter-spacing: -0.01em;
 }
 
-.listing:not(.listing-projects) .writing-row:hover {
+.listing .writing-row:hover {
   background: transparent;
 }
 
@@ -1770,7 +1684,7 @@ a.article-pagination-item:hover {
   .article-toc { display: none; }
 }
 
-/* 手机适配（≤ 600px）：项目保持图标、文字、双入口三列，充分利用横向空间。 */
+/* 手机适配（≤ 600px）：四个栏目共用紧凑的日期、文字与箭头三列。 */
 @media (max-width: 600px) {
   /* 手机端全站左右边距由 48px 总留白缩小为 32px。 */
   .site-header-inner,
@@ -1781,12 +1695,8 @@ a.article-pagination-item:hover {
     width: min(calc(100% - 32px), var(--page-width));
   }
 
-  .listing:not(.listing-projects) .collection-shell {
+  .listing .collection-shell {
     width: min(calc(100% - 32px), 760px);
-  }
-
-  .listing-projects .collection-shell {
-    width: min(calc(100% - 32px), 900px);
   }
 
   /* 手机端顶部导航与 Huang 字标。 */
@@ -1800,7 +1710,7 @@ a.article-pagination-item:hover {
 
   .hero-intro { gap: 10px; font-size: 14px; line-height: 1.8; }
 
-  /* 手机端首页栏目、项目卡片和文章列表。 */
+  /* 手机端首页栏目与内容列表。 */
   .content-section { padding-top: 48px; }
 
   .section-heading {
@@ -1809,16 +1719,6 @@ a.article-pagination-item:hover {
   }
 
   .section-heading .section-kicker { gap: 10px; }
-
-  .project-row {
-    padding: 16px 0;
-  }
-
-  .project-row h3 {
-    font-size: 15px;
-    line-height: 22px;
-    letter-spacing: 0.015em;
-  }
 
   .pin-badge { height: 17px; padding-inline: 6px; font-size: 9.5px; }
 
@@ -1832,11 +1732,6 @@ a.article-pagination-item:hover {
   .home .pin-badge--writing-meta {
     display: inline-flex;
     margin-top: 3px;
-  }
-
-  .project-description {
-    font-size: 12.5px;
-    line-height: 19px;
   }
 
   .writing-row {
@@ -1920,9 +1815,4 @@ a.article-pagination-item:hover {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }
   .audio-embed .aplayer-loading-icon svg { animation: none !important; }
-}
-
-/* 高对比度偏好下强化项目简介正文。 */
-@media (prefers-contrast: more) {
-  .project-description { color: var(--gray-1000); }
 }

@@ -25,8 +25,8 @@
 2. 修改全站最大宽度：搜索 `--page-width`。
 3. 修改文章正文宽度：搜索 `--article-width`。
 4. 修改首页简介：搜索 `.hero-intro`。
-5. 修改项目列表外观：在 `public/styles.css` 搜索 `.project-list`、`.project-row` 和 `.project-row-main`。
-6. 修改项目列表结构：在 `scripts/build.mjs` 搜索 `projectCard`。
+5. 修改四个栏目的列表外观：在 `public/styles.css` 搜索 `.writing-list`、`.writing-row`、`.writing-meta` 和 `.writing-copy`。
+6. 修改列表结构：在 `scripts/build.mjs` 搜索 `listRow`。
 7. 修改首页栏目标题或右侧延伸分隔线：搜索 `.section-heading` 和 `.section-kicker__rail`。
 8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
 9. 修改文章正文：搜索 `.prose`。

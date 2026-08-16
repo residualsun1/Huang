@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { detailPage, listRow, projectCard, selectHomeEntries } from "../scripts/build.mjs";
+import { detailPage, listRow, selectHomeEntries } from "../scripts/build.mjs";
 import { createBuildQueue } from "../scripts/build-queue.mjs";
 import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "../scripts/markdown.mjs";
 
@@ -92,7 +92,6 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(html, /03 \/ 写作/);
   assert.match(html, /04 \/ 阅读/);
   assert.doesNotMatch(html, /<h2 id="(?:projects|prompts|writings|readings)-title">/);
-  assert.match(html, /class="project-row"/);
   assert.match(html, /class="writing-row"/);
   assert.doesNotMatch(html, /class="prompt-card"/);
   assert.doesNotMatch(html, /class="hero-scene"/);
@@ -122,12 +121,8 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     writings: await readFile(new URL("writings/index.html", root), "utf8"),
     readings: await readFile(new URL("readings/index.html", root), "utf8"),
   };
-  const archiveCount = (group) => (
-    archivePages[group].match(group === "projects" ? /class="project-row(?: [^"]+)?"/g : /class="writing-row(?: [^"]+)?"/g) ?? []
-  ).length;
-  const homeCount = (section, group) => (
-    section.match(group === "projects" ? /class="project-row(?: [^"]+)?"/g : /class="writing-row(?: [^"]+)?"/g) ?? []
-  ).length;
+  const archiveCount = (group) => (archivePages[group].match(/class="writing-row(?: [^"]+)?"/g) ?? []).length;
+  const homeCount = (section) => (section.match(/class="writing-row(?: [^"]+)?"/g) ?? []).length;
   assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
   assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
@@ -137,16 +132,17 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     [writingSection, "writings"],
     [readingSection, "readings"],
   ]) {
-    assert.ok(homeCount(section, group) >= Math.min(archiveCount(group), 3));
-    assert.ok(homeCount(section, group) <= archiveCount(group));
+    assert.ok(homeCount(section) >= Math.min(archiveCount(group), 3));
+    assert.ok(homeCount(section) <= archiveCount(group));
   }
   assert.match(buildSource, /selectHomeEntries\(byKey\.projects\.entries\)/);
   assert.match(buildSource, /selectHomeEntries\(byKey\.prompts\.entries\)/);
   assert.match(buildSource, /selectHomeEntries\(byKey\.writings\.entries\)/);
   assert.match(buildSource, /selectHomeEntries\(byKey\.readings\.entries\)/);
-  assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(promptSection, "prompts"));
-  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection, "writings"));
-  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection, "readings"));
+  assert.equal((projectSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(projectSection));
+  assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(promptSection));
+  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection));
+  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection));
   assert.match(projectSection, /href="\/projects\/">所有项目/);
   assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 18px;/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
@@ -163,7 +159,8 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
 
   assert.match(projects, /<body class="listing listing-projects">/);
   assert.match(projects, /<h1>项目<\/h1>/);
-  assert.ok((projects.match(/class="project-row"/g) ?? []).length >= 1);
+  assert.ok((projects.match(/class="writing-row"/g) ?? []).length >= 1);
+  assert.doesNotMatch(projects, /<\/strong>\s*<span>/);
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<body class="listing listing-writings">/);
   assert.match(writings, /<h1>写作<\/h1>/);
@@ -173,10 +170,10 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
   assert.doesNotMatch(prompts, /<\/strong>\s*<span>/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
-  assert.match(css, /\.listing:not\(\.listing-projects\) \.collection-shell \{[\s\S]*?760px/);
+  assert.match(css, /\.listing \.collection-shell \{[\s\S]*?760px/);
   assert.match(css, /\.collection-header h1 \{[\s\S]*?color: #34312f;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.02em;/);
-  assert.match(css, /\.listing:not\(\.listing-projects\) \.writing-row \{[\s\S]*?padding: 16px 4px;[\s\S]*?border-bottom: 0;/);
-  assert.match(css, /\.listing:not\(\.listing-projects\) \.writing-copy strong \{[\s\S]*?color: #34312f;[\s\S]*?font-size: 17px;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.01em;/);
+  assert.match(css, /\.listing \.writing-row \{[\s\S]*?padding: 16px 4px;[\s\S]*?border-bottom: 0;/);
+  assert.match(css, /\.listing \.writing-copy strong \{[\s\S]*?color: #34312f;[\s\S]*?font-size: 17px;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.01em;/);
 });
 
 test("固定夹具保留参考资料标题，不依赖正式文章", async () => {
@@ -192,35 +189,26 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   }
 });
 
-test("项目使用纯文字列表并保留详情入口", async () => {
+test("项目复用其他栏目的日期、标题、摘要与箭头布局", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const projectRowRule = css.match(/\.project-row \{[\s\S]*?\n\}/)?.[0] ?? "";
-  const projectHoverRule = css.match(/\.project-row:hover \{[\s\S]*?\n\s*\}/)?.[0] ?? "";
 
-  assert.match(projectSection, /class="project-list"/);
-  assert.match(projectSection, /class="project-row-main" href="\/projects\/[^"]+\/"/);
+  assert.match(projectSection, /class="writing-list"/);
+  assert.match(projectSection, /class="writing-row(?: is-pinned)?" href="\/projects\/[^"]+\/"/);
+  assert.match(projectSection, /class="writing-meta">[\s\S]*?<time datetime="2026-07-14">2026\.07\.14<\/time>/);
+  assert.match(projectSection, /class="writing-copy">[\s\S]*?<strong>[\s\S]*?<span>一个以粒子图像作为记忆的产品 Demo<\/span>/);
+  assert.match(projectSection, /class="row-arrow" aria-hidden="true">→<\/span>/);
   assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
   assert.doesNotMatch(projectSection, /更新于/);
-  assert.doesNotMatch(projectSection, /project-card|card-arrow/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
-  assert.match(css, /\.project-list \{[\s\S]*?display: grid;[\s\S]*?width: min\(100%, 880px\);[\s\S]*?margin-inline: auto;/);
-  assert.match(projectRowRule, /display: block;[\s\S]*?padding: 18px 4px;[\s\S]*?border-radius: var\(--radius-sm\);/);
-  assert.doesNotMatch(projectRowRule, /var\(--paper-surface\)|gradient\(|backdrop-filter|transform:/);
-  assert.match(css, /\.project-row \+ \.project-row \{[\s\S]*?border-top: 1px solid var\(--gray-alpha-400\);/);
-  assert.match(css, /\.project-row-main \{[\s\S]*?display: block;/);
-  assert.match(css, /\.project-row h3 \{[\s\S]*?display: flex;[\s\S]*?font-size: 17px;[\s\S]*?line-height: 25px;/);
-  assert.match(css, /\.project-title-text \{[\s\S]*?text-overflow: ellipsis;[\s\S]*?white-space: nowrap;/);
+  assert.doesNotMatch(css, /\.project-(?:list|row|description|title)/);
+  assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: 112px minmax\(0, 1fr\) 32px;/);
+  assert.match(css, /\.writing-row time \{[\s\S]*?color: var\(--gray-700\);[\s\S]*?font-family: var\(--mono\);[\s\S]*?font-variant-numeric: tabular-nums;/);
   assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid var\(--red-800\);[\s\S]*?border-radius: 999px;[\s\S]*?background: var\(--red-800\);[\s\S]*?color: #fff;[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
   assert.doesNotMatch(css, /\.pin-badge::before/);
   assert.doesNotMatch(css, /\.home \.is-pinned|box-shadow: inset 2px 0 0 rgba\(139, 69, 19, 0\.68\)/);
-  assert.match(css, /\.project-description \{[\s\S]*?color: #74685d;[\s\S]*?font-size: 13\.5px;[\s\S]*?line-height: 22px;[\s\S]*?white-space: nowrap;/);
-  assert.match(css, /@media \(hover: hover\) and \(pointer: fine\) \{[\s\S]*?\.project-row:hover \{[\s\S]*?background: rgba\(139, 69, 19, 0\.035\);/);
-  assert.doesNotMatch(projectHoverRule, /transform:/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row \{[\s\S]*?padding: 16px 0;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-row h3 \{[\s\S]*?font-size: 15px;[\s\S]*?line-height: 22px;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.project-description \{[\s\S]*?font-size: 12\.5px;[\s\S]*?line-height: 19px;/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.writing-row \{[\s\S]*?grid-template-columns: 82px minmax\(0, 1fr\) 20px;/);
 });
 
 test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
@@ -248,11 +236,6 @@ test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
   assert.doesNotMatch(ordinaryHomeRow, /class="writing-row is-pinned"|class="pin-badge"/);
   assert.doesNotMatch(archiveRow, /class="pin-badge"/);
 
-  const projectGroup = groupDefinitions.find(({ key }) => key === "projects");
-  const pinnedProject = fixtureEntry(projectGroup, { title: "置顶项目", pinned: true });
-  assert.match(projectCard(pinnedProject, { showPinned: true }), /<h3><span class="project-title-text">置顶项目<\/span><span class="pin-badge">置顶<\/span><\/h3>/);
-  assert.doesNotMatch(projectCard(pinnedProject, { showPinned: true }), /class="project-row is-pinned"|class="pin-label"|class="pin-marker"/);
-  assert.doesNotMatch(projectCard(pinnedProject), /class="pin-badge"/);
 });
 
 test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
