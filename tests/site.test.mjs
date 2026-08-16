@@ -381,11 +381,11 @@ test("首页四个栏目使用标题右侧延伸分隔线", async () => {
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-heading \.section-kicker \{ gap: 10px; \}/);
 });
 
-test("首页使用 880px 中等宽度与无照片的单列简介", async () => {
+test("首页使用 1020px 宽幅展示区与无照片的单列简介", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const heroRule = css.match(/\.hero \{([^}]*)\}/)?.[1] ?? "";
   assert.match(css, /\.home-layout \{[\s\S]*?padding-bottom: 112px/);
-  assert.match(css, /\.home-layout \{[\s\S]*?width: min\(calc\(100% - 48px\), 880px\)/);
+  assert.match(css, /\.home-layout \{[\s\S]*?width: min\(calc\(100% - 48px\), 1020px\)/);
   assert.doesNotMatch(css, /\.portrait-space/);
   assert.doesNotMatch(heroRule, /grid-template-columns/);
   assert.match(css, /\.hero-copy \{ width: 100%; \}/);
@@ -662,11 +662,16 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?text-align: left/);
 });
 
-test("首页三段简介统一使用首段的字号颜色与字重", async () => {
+test("首页复刻参考站的视口级个人展示与滚动节奏", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.match(css, /\.hero-intro \{[\s\S]*?color: var\(--gray-1000\);[\s\S]*?font-size: 15px;[\s\S]*?font-weight: 400/);
+  assert.match(css, /\.home \.site-header-inner \{[\s\S]*?min-height: 172px;[\s\S]*?padding-top: 82px;/);
+  assert.match(css, /\.home \.brand-mark \{[\s\S]*?width: 90px;[\s\S]*?height: 90px;/);
+  assert.match(css, /\.hero \{[\s\S]*?display: flex;[\s\S]*?min-height: max\(620px, calc\(100svh - 317px\)\);[\s\S]*?padding: 0 0 44px;[\s\S]*?align-items: flex-end;/);
+  assert.match(css, /\.hero-intro \{[\s\S]*?max-width: 760px;[\s\S]*?color: var\(--gray-1000\);[\s\S]*?font-size: 30px;[\s\S]*?font-weight: 400;[\s\S]*?line-height: 1\.3;/);
   assert.match(css, /\.hero-intro p \{ margin: 0; color: inherit; font-size: inherit; font-weight: inherit; \}/);
   assert.doesNotMatch(css, /\.hero-intro p:first-child/);
+  assert.match(css, /\.hero-intro__topic \{ white-space: nowrap; \}/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.site-header-inner \{ min-height: 114px; padding-top: 24px; \}[\s\S]*?\.home \.brand-mark \{ width: 90px; height: 90px; \}[\s\S]*?\.hero \{[\s\S]*?min-height: max\(580px, calc\(100svh - 109px\)\);[\s\S]*?padding: 0 0 20px;[\s\S]*?\.hero-intro \{ gap: 24px; font-size: 30px; line-height: 1\.3; \}/);
 });
 
 test("社交入口使用指定的默认与悬浮颜色", async () => {

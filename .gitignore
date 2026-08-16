@@ -2,6 +2,7 @@
 /node_modules/
 /dist/
 /coverage/
+/output/
 
 # Local environment and platform state
 .env

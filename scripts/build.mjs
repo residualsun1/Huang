@@ -354,7 +354,7 @@ function homePage(collections) {
           <div class="hero-intro">
             <p>你好，我是 Huang。</p>
             <p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。</p>
-            <p>目前，本站主要包括「项目」、「Prompt」、「写作」和「阅读」四个版块。</p>
+            <p>目前，本站主要包括<span class="hero-intro__topic">「项目」</span>、<span class="hero-intro__topic">「Prompt」</span>、<span class="hero-intro__topic">「写作」</span>和<span class="hero-intro__topic">「阅读」</span>四个版块。</p>
           </div>
           ${socialNavigation()}
         </div>

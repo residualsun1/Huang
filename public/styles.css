@@ -256,20 +256,43 @@ a { color: inherit; }
   text-rendering: optimizeLegibility;
 }
 
-/* 首页保持 880px 的中等宽度：比初版聚焦，又不会像分栏版本一样局促。 */
+/* 首页使用与参考站接近的宽幅单列，让首屏更像完整的个人展示。 */
 .home .site-header-inner,
 .home .site-footer-inner,
 .home-layout {
-  width: min(calc(100% - 48px), 880px);
+  width: min(calc(100% - 48px), 1020px);
+}
+
+/*
+ * 首页品牌区改为随页面自然滚动的大号视觉锚点。
+ * 仅首页取消粘性页眉，避免放大后的图标在滚动时长期占据内容空间。
+ */
+.home .site-header { position: static; }
+
+.home .site-header-inner {
+  min-height: 172px;
+  padding-top: 82px;
+}
+
+.home .brand-mark {
+  width: 90px;
+  height: 90px;
 }
 
 .home-layout {
   padding-bottom: 112px;
 }
 
-/* 首页首屏：删除照片后使用完整内容宽度，让自我介绍自然横向延展。 */
+/*
+ * 首页首屏复刻参考站的展示节奏：介绍落在视口中后段，
+ * 首个栏目标题在桌面首屏底部自然露出，引导继续滚动。
+ */
 .hero {
-  padding: 52px 0 16px;
+  display: flex;
+  min-height: max(620px, calc(100vh - 317px));
+  min-height: max(620px, calc(100svh - 317px));
+  padding: 0 0 44px;
+  align-items: flex-end;
 }
 
 .hero-copy { width: 100%; }
@@ -310,25 +333,28 @@ a { color: inherit; }
 /* 首页三段个人简介：统一使用首段的字号、颜色和字重。 */
 .hero-intro {
   display: grid;
-  gap: 11px;
+  max-width: 760px;
+  gap: 24px;
   margin: 0;
   padding: 0;
   color: var(--gray-1000);
   font-family: var(--source-han-serif);
-  font-size: 15px;
+  font-size: 30px;
   font-weight: 400;
-  line-height: 1.82;
-  letter-spacing: 0.01em;
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
 .hero-intro p { margin: 0; color: inherit; font-size: inherit; font-weight: inherit; }
+
+.hero-intro__topic { white-space: nowrap; }
 
 /* 自我介绍下方的社交入口：小型单色图标、克制的文字下划线与圆点分隔。 */
 .social-links {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 18px;
+  margin-top: 24px;
   color: rgb(79, 77, 74);
   font-family: var(--title-serif);
   font-size: 13px;
@@ -337,6 +363,7 @@ a { color: inherit; }
 
 .social-links a {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 7px;
   color: inherit;
@@ -1694,16 +1721,26 @@ a.article-pagination-item:hover {
     width: min(calc(100% - 32px), 760px);
   }
 
-  /* 手机端顶部导航与品牌图标。 */
+  /* 手机端首页品牌标记保持 90px，并与参考站一样贴近页面左上区域。 */
   .site-header-inner { min-height: 56px; }
   .brand-mark { width: 36px; height: 36px; }
+  .home .site-header-inner { min-height: 114px; padding-top: 24px; }
+  .home .brand-mark { width: 90px; height: 90px; }
 
-  /* 手机端首页简介：继续保持短行距和紧凑留白。 */
-  .hero {
-    padding: 40px 0 12px;
+  .home-layout {
+    width: min(calc(100% - 40px), 1020px);
   }
 
-  .hero-intro { gap: 10px; font-size: 14px; line-height: 1.8; }
+  /* 手机端由完整首屏承载个人介绍，栏目在下一次滚动时自然进入。 */
+  .hero {
+    min-height: max(580px, calc(100vh - 109px));
+    min-height: max(580px, calc(100svh - 109px));
+    padding: 0 0 20px;
+  }
+
+  .hero-intro { gap: 24px; font-size: 30px; line-height: 1.3; }
+
+  .social-links { margin-top: 24px; }
 
   /* 手机端首页栏目与内容列表。 */
   .content-section { padding-top: 48px; }
