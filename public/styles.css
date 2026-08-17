@@ -316,7 +316,7 @@ a { color: inherit; }
   letter-spacing: -0.06em;
 }
 
-/* 项目、写作、Prompt 与阅读详情页的标题统一使用思源宋体体系。 */
+/* 项目、写作与阅读详情页的标题统一使用思源宋体体系。 */
 .detail-editorial .article-header {
   border-bottom-color: var(--gray-alpha-400);
 }
@@ -453,7 +453,7 @@ a { color: inherit; }
   transition: color 150ms ease, transform 150ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
-/* 项目、Prompt、写作与阅读共用的分隔式列表。 */
+/* 项目、写作与阅读共用的分隔式列表。 */
 .writing-list {
   border-top: 1px solid var(--gray-alpha-400);
 }
@@ -955,7 +955,7 @@ a { color: inherit; }
 
 .prose blockquote > :last-child { margin-bottom: 0; }
 
-/* 项目、写作、Prompt 与阅读共用的正文排版；margin-top 控制正文与上方分隔线的距离。 */
+/* 项目、写作与阅读共用的正文排版；margin-top 控制正文与上方分隔线的距离。 */
 .detail-editorial .prose {
   margin-top: 40px;
   margin-bottom: 50px;
@@ -1704,7 +1704,7 @@ a.article-pagination-item:hover {
   .article-toc { display: none; }
 }
 
-/* 手机适配（≤ 600px）：四个栏目共用紧凑的日期、文字与箭头三列。 */
+/* 手机适配（≤ 600px）：三个栏目共用紧凑的日期、文字与箭头三列。 */
 @media (max-width: 600px) {
   /* 手机端全站左右边距由 48px 总留白缩小为 32px。 */
   .site-header-inner,

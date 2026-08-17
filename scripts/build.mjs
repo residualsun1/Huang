@@ -53,9 +53,8 @@ function contentHistory(relativePath, publishedDate) {
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
-  { key: "prompts", number: "02", label: "Prompt", eyebrow: "Prompt" },
-  { key: "writings", number: "03", label: "写作", eyebrow: "WRITING" },
-  { key: "readings", number: "04", label: "阅读", eyebrow: "READING" },
+  { key: "writings", number: "02", label: "写作", eyebrow: "WRITING" },
+  { key: "readings", number: "03", label: "阅读", eyebrow: "READING" },
 ];
 
 // 社交平台链接集中维护：将下面两个地址替换为你的个人主页即可。
@@ -324,9 +323,6 @@ function homePage(collections) {
   const projects = selectHomeEntries(byKey.projects.entries)
     .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
     .join("");
-  const prompts = selectHomeEntries(byKey.prompts.entries)
-    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
-    .join("");
   const writings = selectHomeEntries(byKey.writings.entries)
     .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
     .join("");
@@ -364,12 +360,6 @@ function homePage(collections) {
         ${sectionHeader(byKey.projects.group)}
         <div class="writing-list">${projects}</div>
         <div class="section-more"><a href="/projects/">所有项目<span aria-hidden="true">→</span></a></div>
-      </section>
-
-      <section class="content-section" id="prompts" aria-labelledby="prompts-title">
-        ${sectionHeader(byKey.prompts.group)}
-        <div class="writing-list">${prompts}</div>
-        <div class="section-more"><a href="/prompts/">所有文章<span aria-hidden="true">→</span></a></div>
       </section>
 
       <section class="content-section" id="writings" aria-labelledby="writings-title">

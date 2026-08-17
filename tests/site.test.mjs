@@ -10,7 +10,6 @@ const root = new URL("../dist/client/", import.meta.url);
 const fixtureRoot = new URL("./fixtures/", import.meta.url);
 const groupDefinitions = [
   { key: "projects", label: "项目" },
-  { key: "prompts", label: "Prompt" },
   { key: "writings", label: "写作" },
   { key: "readings", label: "阅读" },
 ];
@@ -69,7 +68,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.equal(version.commit, process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "local");
 });
 
-test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async () => {
+test("首页按项目、写作、阅读顺序展示三个栏目", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
@@ -86,10 +85,10 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
   assert.match(css, /body \{[\s\S]*?-webkit-font-smoothing: antialiased;[\s\S]*?text-rendering: auto;/);
   assert.match(css, /\.article-header h1,[\s\S]*?\.prose h4 \{[\s\S]*?font-kerning: normal;[\s\S]*?text-rendering: optimizeLegibility;/);
   assert.match(html, /01 \/ 项目/);
-  assert.match(html, /02 \/ Prompt/);
-  assert.match(html, /03 \/ 写作/);
-  assert.match(html, /04 \/ 阅读/);
-  assert.doesNotMatch(html, /<h2 id="(?:projects|prompts|writings|readings)-title">/);
+  assert.match(html, /02 \/ 写作/);
+  assert.match(html, /03 \/ 阅读/);
+  assert.doesNotMatch(html, /id="prompts"|\/prompts\/|02 \/ Prompt/);
+  assert.doesNotMatch(html, /<h2 id="(?:projects|writings|readings)-title">/);
   assert.match(html, /class="writing-row"/);
   assert.doesNotMatch(html, /class="prompt-card"/);
   assert.doesNotMatch(html, /class="hero-scene"/);
@@ -112,22 +111,18 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
 
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
   const writingSection = html.match(/<section class="content-section" id="writings"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const promptSection = html.match(/<section class="content-section" id="prompts"[\s\S]*?<\/section>/)?.[0] ?? "";
   const readingSection = html.match(/<section class="content-section" id="readings"[\s\S]*?<\/section>/)?.[0] ?? "";
   const archivePages = {
     projects: await readFile(new URL("projects/index.html", root), "utf8"),
-    prompts: await readFile(new URL("prompts/index.html", root), "utf8"),
     writings: await readFile(new URL("writings/index.html", root), "utf8"),
     readings: await readFile(new URL("readings/index.html", root), "utf8"),
   };
   const archiveCount = (group) => (archivePages[group].match(/class="writing-row(?: [^"]+)?"/g) ?? []).length;
   const homeCount = (section) => (section.match(/class="writing-row(?: [^"]+)?"/g) ?? []).length;
-  assert.ok(html.indexOf('id="projects"') < html.indexOf('id="prompts"'));
-  assert.ok(html.indexOf('id="prompts"') < html.indexOf('id="writings"'));
+  assert.ok(html.indexOf('id="projects"') < html.indexOf('id="writings"'));
   assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
   for (const [section, group] of [
     [projectSection, "projects"],
-    [promptSection, "prompts"],
     [writingSection, "writings"],
     [readingSection, "readings"],
   ]) {
@@ -135,24 +130,21 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     assert.ok(homeCount(section) <= archiveCount(group));
   }
   assert.match(buildSource, /selectHomeEntries\(byKey\.projects\.entries\)/);
-  assert.match(buildSource, /selectHomeEntries\(byKey\.prompts\.entries\)/);
   assert.match(buildSource, /selectHomeEntries\(byKey\.writings\.entries\)/);
   assert.match(buildSource, /selectHomeEntries\(byKey\.readings\.entries\)/);
   assert.equal((projectSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(projectSection));
-  assert.equal((promptSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(promptSection));
   assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection));
   assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection));
   assert.match(projectSection, /href="\/projects\/">所有项目/);
   assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 18px;/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
-  assert.match(promptSection, /href="\/prompts\/">所有文章/);
+  assert.match(writingSection, /href="\/writings\/codex-prompts\/"/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
 });
 
-test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布局", async () => {
+test("项目、写作和阅读归档页采用聚焦且无摘要的布局", async () => {
   const projects = await readFile(new URL("projects/index.html", root), "utf8");
   const writings = await readFile(new URL("writings/index.html", root), "utf8");
-  const prompts = await readFile(new URL("prompts/index.html", root), "utf8");
   const readings = await readFile(new URL("readings/index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
 
@@ -163,10 +155,8 @@ test("项目、写作、Prompt 和阅读归档页采用聚焦且无摘要的布�
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<body class="listing listing-writings">/);
   assert.match(writings, /<h1>写作<\/h1>/);
+  assert.match(writings, /href="\/writings\/codex-prompts\/"/);
   assert.doesNotMatch(writings, /<\/strong>\s*<span>/);
-  assert.match(prompts, /02 \/ Prompt/);
-  assert.match(prompts, /<h1>Prompt<\/h1>/);
-  assert.doesNotMatch(prompts, /<\/strong>\s*<span>/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
   assert.match(css, /\.listing \.collection-shell \{[\s\S]*?760px/);
@@ -327,7 +317,6 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
     assert.match(detailPages[key], /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
     assert.doesNotMatch(detailPages[key], /class="eyebrow"/);
   }
-  assert.doesNotMatch(detailPages.prompts, /<body class="detail detail-writings">/);
 });
 
 test("详情页根据完整 Git 历史显示最后修改日期与修改次数", async () => {
@@ -366,14 +355,14 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
 });
 
-test("首页四个栏目使用标题右侧延伸分隔线", async () => {
+test("首页三个栏目使用标题右侧延伸分隔线", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const headings = html.match(/<header class="section-heading">/g) ?? [];
   const rails = html.match(/<span class="section-kicker__rail" aria-hidden="true"><\/span>/g) ?? [];
 
-  assert.equal(headings.length, 4);
-  assert.equal(rails.length, 4);
+  assert.equal(headings.length, 3);
+  assert.equal(rails.length, 3);
   assert.match(css, /\.section-kicker__rail::before \{[\s\S]*?height: 1px;[\s\S]*?background: var\(--gray-alpha-400\)/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
   assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
