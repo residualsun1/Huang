@@ -105,8 +105,9 @@ test("首页按项目、Prompt、写作、阅读顺序展示四个栏目", async
     html.indexOf('aria-label="GitHub 个人主页"') < html.indexOf('aria-label="X 个人主页"'),
     "GitHub 应显示在 X 之前",
   );
-  assert.match(html, /<p>你好，我是 Huang。<\/p>/);
-  assert.match(html, /<p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。<\/p>/);
+  assert.match(html, /<p>Hello, I’m Huang\.<\/p>/);
+  assert.match(html, /<p>I explore the possibilities where AI meets the humanities, hoping to create some thoughtful things\.<\/p>/);
+  assert.match(html, /<p>This site is home to my projects, writings and readings\.<\/p>/);
   assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
 
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
@@ -664,14 +665,18 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
 
 test("首页复刻参考站的视口级个人展示与滚动节奏", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
+  const html = await readFile(new URL("index.html", root), "utf8");
   assert.match(css, /\.home \.site-header-inner \{[\s\S]*?min-height: 172px;[\s\S]*?padding-top: 82px;/);
   assert.match(css, /\.home \.brand-mark \{[\s\S]*?width: 90px;[\s\S]*?height: 90px;/);
-  assert.match(css, /\.hero \{[\s\S]*?display: flex;[\s\S]*?min-height: max\(620px, calc\(100svh - 317px\)\);[\s\S]*?padding: 0 0 44px;[\s\S]*?align-items: flex-end;/);
-  assert.match(css, /\.hero-intro \{[\s\S]*?max-width: 760px;[\s\S]*?color: var\(--gray-1000\);[\s\S]*?font-size: 30px;[\s\S]*?font-weight: 400;[\s\S]*?line-height: 1\.3;/);
+  assert.match(css, /\.hero \{[\s\S]*?display: flex;[\s\S]*?min-height: max\(620px, calc\(100svh - 317px\)\);[\s\S]*?padding: 0 0 76px;[\s\S]*?align-items: flex-end;/);
+  assert.match(css, /\.hero-intro \{[\s\S]*?max-width: 760px;[\s\S]*?color: var\(--gray-1000\);[\s\S]*?font-family: "Times New Roman", Times, serif;[\s\S]*?font-size: 30px;[\s\S]*?font-weight: 400;[\s\S]*?line-height: 1\.3;/);
   assert.match(css, /\.hero-intro p \{ margin: 0; color: inherit; font-size: inherit; font-weight: inherit; \}/);
   assert.doesNotMatch(css, /\.hero-intro p:first-child/);
-  assert.match(css, /\.hero-intro__topic \{ white-space: nowrap; \}/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.site-header-inner \{ min-height: 114px; padding-top: 24px; \}[\s\S]*?\.home \.brand-mark \{ width: 90px; height: 90px; \}[\s\S]*?\.hero \{[\s\S]*?min-height: max\(580px, calc\(100svh - 109px\)\);[\s\S]*?padding: 0 0 20px;[\s\S]*?\.hero-intro \{ gap: 24px; font-size: 30px; line-height: 1\.3; \}/);
+  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.site-header-inner \{ min-height: 114px; padding-top: 24px; \}[\s\S]*?\.home \.brand-mark \{ width: 90px; height: 90px; \}[\s\S]*?\.hero \{[\s\S]*?min-height: max\(580px, calc\(100svh - 109px\)\);[\s\S]*?padding: 0 0 36px;[\s\S]*?\.hero-intro \{ gap: 24px; font-size: 30px; line-height: 1\.3; \}/);
+  assert.match(html, /Hello, I’m Huang\./);
+  assert.match(html, /where AI meets the humanities/);
+  assert.match(html, /home to my projects, writings and readings/);
+  assert.doesNotMatch(html, /family=Nunito\+Sans/);
 });
 
 test("社交入口使用指定的默认与悬浮颜色", async () => {

@@ -352,9 +352,9 @@ function homePage(collections) {
         <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
         <div class="hero-copy">
           <div class="hero-intro">
-            <p>你好，我是 Huang。</p>
-            <p>我在探索 AI 与人文结合的可能性，希望能做出一些有意思的产品。</p>
-            <p>目前，本站主要包括<span class="hero-intro__topic">「项目」</span>、<span class="hero-intro__topic">「Prompt」</span>、<span class="hero-intro__topic">「写作」</span>和<span class="hero-intro__topic">「阅读」</span>四个版块。</p>
+            <p>Hello, I’m Huang.</p>
+            <p>I explore the possibilities where AI meets the humanities, hoping to create some thoughtful things.</p>
+            <p>This site is home to my projects, writings and readings.</p>
           </div>
           ${socialNavigation()}
         </div>
