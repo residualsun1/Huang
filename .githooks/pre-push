@@ -3,4 +3,12 @@
 set -eu
 
 printf '%s\n' 'Running site checks before push...'
-npm test
+
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    cmd.exe //d //s //c "npm.cmd test"
+    ;;
+  *)
+    npm test
+    ;;
+esac
