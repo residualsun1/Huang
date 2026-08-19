@@ -6,7 +6,6 @@ slug: "codex-prompts"
 description: "持续更新……"
 tags:
   - Prompt
-pinned: true
 ---
 
 自 6 月底开始使用 Codex，到现在已经有一个多月了，我越来越注重与 Codex 交流的 Prompts。在目前的学习阶段中，我知晓自己仍然不算一个真正的开发者或产品设计师，但在与 Codex 的一次次协作和日常浏览 X 的过程里，我也在不断学习进步。

@@ -3,7 +3,7 @@ title: "Time Gambler"
 date: "2026-02-01"
 author: "黄国政"
 slug: "time-gambler"
-description: "我的第一个黑客松团队合作项目"
+description: "我的第一个黑客松项目"
 repository: "https://github.com/0x-IHRR/ADHD_BlockChain"
 website: "https://adhd-block-chain.vercel.app/"
 tags:
