@@ -10,6 +10,7 @@
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
     "start": "node scripts/dev.mjs",
-    "test": "npm run build && node --test tests/site.test.mjs"
+    "test": "npm run build && node --test tests/site.test.mjs",
+    "hooks:install": "node scripts/install-git-hooks.mjs"
   }
 }

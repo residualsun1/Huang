@@ -138,7 +138,7 @@ test("首页按项目、写作、阅读顺序展示三个栏目", async () => {
   assert.match(projectSection, /href="\/projects\/">所有项目/);
   assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 18px;/);
   assert.match(writingSection, /href="\/writings\/">所有文章/);
-  assert.match(writingSection, /href="\/writings\/codex-prompts\/"/);
+  assert.match(writingSection, /class="writing-row(?: is-pinned)?" href="\/writings\/[^"/]+\/"/);
   assert.match(readingSection, /href="\/readings\/">所有文章/);
 });
 
@@ -155,7 +155,7 @@ test("项目、写作和阅读归档页采用聚焦且无摘要的布局", async
   assert.match(writings, /class="collection-shell"/);
   assert.match(writings, /<body class="listing listing-writings">/);
   assert.match(writings, /<h1>写作<\/h1>/);
-  assert.match(writings, /href="\/writings\/codex-prompts\/"/);
+  assert.match(writings, /class="writing-row" href="\/writings\/[^"/]+\/"/);
   assert.doesNotMatch(writings, /<\/strong>\s*<span>/);
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
@@ -182,12 +182,26 @@ test("项目复用其他栏目的日期、标题、摘要与箭头布局", async
   const html = await readFile(new URL("index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
   const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
+  const projectGroup = groupDefinitions.find(({ key }) => key === "projects");
+  const fixtureRow = listRow(fixtureEntry(projectGroup, {
+    title: "固定项目标题",
+    description: "固定项目摘要",
+    date: "2026-01-02",
+    href: "/projects/fixture-current/",
+  }));
+  const projectRows = projectSection.match(/<a class="writing-row(?: is-pinned)?" href="\/projects\/[^"/]+\/">[\s\S]*?<\/a>/g) ?? [];
 
   assert.match(projectSection, /class="writing-list"/);
-  assert.match(projectSection, /class="writing-row(?: is-pinned)?" href="\/projects\/[^"]+\/"/);
-  assert.match(projectSection, /class="writing-meta">[\s\S]*?<time datetime="2026-07-14">2026\.07\.14<\/time>/);
-  assert.match(projectSection, /class="writing-copy">[\s\S]*?<strong>[\s\S]*?<span>一个以粒子图像作为记忆的产品 Demo<\/span>/);
-  assert.match(projectSection, /class="row-arrow" aria-hidden="true">→<\/span>/);
+  assert.ok(projectRows.length >= 1);
+  for (const row of projectRows) {
+    assert.match(row, /class="writing-meta">[\s\S]*?<time datetime="\d{4}-\d{2}-\d{2}">\d{4}\.\d{2}\.\d{2}<\/time>/);
+    assert.match(row, /class="writing-copy">[\s\S]*?<strong>[\s\S]*?<\/strong>\s*<span>[^<]+<\/span>/);
+    assert.match(row, /class="row-arrow" aria-hidden="true">→<\/span>/);
+  }
+  assert.match(fixtureRow, /class="writing-row" href="\/projects\/fixture-current\/"/);
+  assert.match(fixtureRow, /<time datetime="2026-01-02">2026\.01\.02<\/time>/);
+  assert.match(fixtureRow, /<strong><span class="writing-title-text">固定项目标题<\/span><\/strong>\s*<span>固定项目摘要<\/span>/);
+  assert.match(fixtureRow, /class="row-arrow" aria-hidden="true">→<\/span>/);
   assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
   assert.doesNotMatch(projectSection, /更新于/);
   assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);

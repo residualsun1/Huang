@@ -25,12 +25,12 @@
 2. 修改全站最大宽度：搜索 `--page-width`。
 3. 修改文章正文宽度：搜索 `--article-width`。
 4. 修改首页简介：搜索 `.hero-intro`。
-5. 修改四个栏目的列表外观：在 `public/styles.css` 搜索 `.writing-list`、`.writing-row`、`.writing-meta` 和 `.writing-copy`。
+5. 修改三个栏目的列表外观：在 `public/styles.css` 搜索 `.writing-list`、`.writing-row`、`.writing-meta` 和 `.writing-copy`。
 6. 修改列表结构：在 `scripts/build.mjs` 搜索 `listRow`。
 7. 修改首页栏目标题或右侧延伸分隔线：搜索 `.section-heading` 和 `.section-kicker__rail`。
 8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
 9. 修改文章正文：搜索 `.prose`。
-10. 修改项目、写作、Prompt 与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
+10. 修改项目、写作与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
 11. 修改引用：搜索 `.prose blockquote`。
 12. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
 13. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。

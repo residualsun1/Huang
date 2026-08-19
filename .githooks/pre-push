@@ -1,0 +1,6 @@
+#!/bin/sh
+# Managed by npm run hooks:install.
+set -eu
+
+printf '%s\n' 'Running site checks before push...'
+npm test

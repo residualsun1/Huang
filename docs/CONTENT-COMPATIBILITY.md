@@ -44,11 +44,10 @@ tags:
 
 ## 按年份管理文件
 
-四个栏目目录都会递归读取 `.md` 文件，因此可以按年份继续分层：
+三个栏目目录都会递归读取 `.md` 文件，因此可以按年份继续分层：
 
 ```text
 content/writings/2026/example.md
-content/prompts/2026/example.md
 content/readings/2026/example.md
 content/projects/2026/example.md
 ```
@@ -232,11 +231,10 @@ print("Hello")
 ### 音频
 
 音频短代码应写在文章的 Markdown 正文里，也就是 `content/` 下某篇 `.md` 文件
-头部第二个 `---` 之后。四个栏目都可以使用：
+头部第二个 `---` 之后。三个栏目都可以使用：
 
 ```text
 content/projects/年份/文章.md
-content/prompts/年份/文章.md
 content/writings/年份/文章.md
 content/readings/年份/文章.md
 ```

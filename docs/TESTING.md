@@ -36,6 +36,16 @@
 
 这样即使正式文章以后被删除，渲染功能仍有稳定的回归测试。
 
+## 推送前自动检查
+
+在每个本地克隆中运行一次：
+
+```powershell
+npm run hooks:install
+```
+
+安装后的 `pre-push` hook 会在每次 `git push` 前执行 `npm test`。检查失败时推送会停止，修复后重新推送即可。GitHub Actions 仍会在远端重新执行相同检查，避免本地环境差异绕过验证。
+
 ## 换行符的分工
 
 - `.editorconfig` 提醒编辑器以 LF 保存文本；

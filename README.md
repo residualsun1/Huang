@@ -8,10 +8,11 @@
 
 ```powershell
 npm ci
+npm run hooks:install
 npm run dev
 ```
 
-浏览器访问终端显示的本地地址。提交前运行完整检查：
+`npm run hooks:install` 只需在每个本地克隆中运行一次；它会让普通的 `git push` 在上传前自动执行完整检查。浏览器访问终端显示的本地地址。也可以随时手动检查：
 
 ```powershell
 npm test
@@ -25,7 +26,6 @@ npm test
 
 - `content/projects/`
 - `content/writings/`
-- `content/prompts/`
 - `content/readings/`
 
 栏目目录支持按年份继续分层，例如：
@@ -51,7 +51,7 @@ date: 2026-07-14
 
 文件名默认成为网址的一部分。无论文章位于 `content/writings/example.md` 还是 `content/writings/2026/example.md`，都会生成 `/writings/example/`；也可以通过 Front Matter 的 `slug` 自定义网址。
 
-首页按照“项目 → Prompt → 写作 → 阅读”排列，每个栏目展示最新三项。社交链接集中定义在 `scripts/build.mjs` 顶部的 `socialLinks`。
+首页按照“项目 → 写作 → 阅读”排列，每个栏目展示最新三项。社交链接集中定义在 `scripts/build.mjs` 顶部的 `socialLinks`。
 
 ## 项目结构
 
