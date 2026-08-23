@@ -53,6 +53,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.ok(favicon.length > 1_000);
   assert.ok(brandMark.length > 1_000);
   assert.ok(brandMark.length < 100_000);
+  assert.match(html, /<meta name="theme-color" content="#fcf5e4">/);
   assert.match(html, /<meta name="robots" content="index, follow">/);
   assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
   assert.match(notFound, /页面不存在/);
@@ -365,7 +366,7 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(css, /\.notice-info \{[\s\S]*?--notice-surface: #e2e9e5;[\s\S]*?--notice-accent: #3f6664;/);
   assert.match(css, /\.notice-body \{[\s\S]*?min-width: 0;/);
   assert.match(css, /\.article-pagination-item \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\);/);
-  assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #eee8de;/);
+  assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #f7f0de;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
 });
 
@@ -403,8 +404,11 @@ test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
     "",
   );
 
-  assert.match(css, /--background-100: #f2ede3;/);
-  assert.match(css, /--surface-raised: rgba\(250, 247, 241, 0\.8\);/);
+  assert.match(css, /--background-100: #fcf5e4;/);
+  assert.match(css, /--surface-raised: rgba\(255, 252, 244, 0\.82\);/);
+  assert.match(css, /--surface-code-toolbar: #e4dcc8;/);
+  assert.match(css, /--accent-100: rgba\(139, 69, 19, 0\.08\);/);
+  assert.match(css, /--accent-200: rgba\(139, 69, 19, 0\.14\);/);
   assert.match(
     css,
     /--paper-surface:[\s\S]*?rgba\(93, 75, 57, 0\.05\) 0 0\.45px,[\s\S]*?\) 0 0 \/ 4px 4px,[\s\S]*?rgba\(255, 255, 255, 0\.34\) 0 0\.4px,[\s\S]*?\) 2px 1px \/ 6px 6px/,
@@ -449,7 +453,8 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   const asciiLabel = renderMarkdown("```ASCII 图\nA -> B\n```").html;
   assert.match(css, /\.prose pre \{[\s\S]*?overflow: auto/);
   assert.match(css, /--code-font:/);
-  assert.match(css, /--surface-code: #efe9df;/);
+  assert.match(css, /--surface-code: #f4ecda;/);
+  assert.match(css, /\.code-toolbar \{[\s\S]*?color: #595959;/);
   assert.match(css, /\.prose pre \{[\s\S]*?background: var\(--surface-code\)/);
   assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
   assert.match(css, /\.prose pre code \{[\s\S]*?font-family: inherit/);
@@ -514,9 +519,9 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
   assert.match(css, /--surface-prompt: var\(--surface-code\);/);
   assert.match(css, /--surface-prompt-toolbar: var\(--surface-code-toolbar\);/);
-  assert.match(css, /--surface-react: #ffffff;/);
+  assert.match(css, /--surface-react: #fffaf0;/);
   assert.match(css, /--border-prompt: var\(--border-code\);/);
-  assert.match(css, /--border-react: #dcd6cd;/);
+  assert.match(css, /--border-react: #e4dcc8;/);
   assert.match(css, /\.prompt-block \{[\s\S]*?background: var\(--surface-prompt\)/);
   assert.match(css, /\.react-block \{[\s\S]*?border: 0;[\s\S]*?background: var\(--surface-react\)[\s\S]*?box-shadow: 0 2px 8px rgba\(0, 0, 0, 0\.04\)/);
   assert.match(css, /\.react-block \.prompt-toolbar \{[\s\S]*?border-bottom-color: var\(--border-react\)/);

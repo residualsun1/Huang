@@ -56,20 +56,21 @@
 
   /*
    * 页面背景与半透明表面：
-   * #f2ede3 是全站轻暖羊皮纸基色，其他表面都围绕它增加明暗层次。
+   * #fcf5e4 对应 Typewriter 的主内容纸面，#e4dcc8 对应其较深界面层。
+   * Huang 没有侧栏，因此较深颜色只用于原本就存在的次级组件表面。
    */
-  --background-100: #f2ede3;
+  --background-100: #fcf5e4;
   --background-200: rgba(29, 27, 27, 0.035);
-  --surface-raised: rgba(250, 247, 241, 0.8);
-  --surface-code: #efe9df;
-  --surface-code-toolbar: #e8e1d7;
+  --surface-raised: rgba(255, 252, 244, 0.82);
+  --surface-code: #f4ecda;
+  --surface-code-toolbar: #e4dcc8;
   --surface-prompt: var(--surface-code);
   --surface-prompt-toolbar: var(--surface-code-toolbar);
-  --surface-react: #ffffff;
-  --surface-hover: rgba(250, 247, 241, 0.94);
-  --border-code: #dad1c4;
+  --surface-react: #fffaf0;
+  --surface-hover: rgba(255, 252, 244, 0.94);
+  --border-code: #d5cdbb;
   --border-prompt: var(--border-code);
-  --border-react: #dcd6cd;
+  --border-react: #e4dcc8;
   /*
    * 全站共用的纸张表面：
    * 不再使用大范围明暗光晕，三层微纹理均匀平铺，避免页面产生白黄渐变。
@@ -103,9 +104,9 @@
   --gray-alpha-500: rgba(29, 27, 27, 0.21);
   --gray-alpha-700: rgba(29, 27, 27, 0.46);
 
-  /* 青绿色品牌色：用于链接、焦点、标签和交互状态。 */
-  --accent-100: rgba(36, 93, 98, 0.08);
-  --accent-200: rgba(36, 93, 98, 0.14);
+  /* 棕色品牌色：用于链接、焦点、标签和交互状态。 */
+  --accent-100: rgba(139, 69, 19, 0.08);
+  --accent-200: rgba(139, 69, 19, 0.14);
   --accent-700: #8b4513;
   --accent-800: #8b4513;
 
@@ -1025,7 +1026,7 @@ a { color: inherit; }
 /* 标签与代码正文共享技术型无衬线栈；中文不会回退到正文的宋体。 */
 .toolbar-label {
   overflow: hidden;
-  color: #69645e;
+  color: #595959;
   font-family: var(--code-font);
   font-size: 13px;
   font-weight: 500;
@@ -1062,7 +1063,7 @@ a { color: inherit; }
   border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
-  color: #69645e;
+  color: #595959;
   cursor: pointer;
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
 }
@@ -1660,7 +1661,7 @@ a { color: inherit; }
 
 a.article-pagination-item:hover {
   border-color: var(--gray-alpha-500);
-  background: var(--paper-surface), #eee8de;
+  background: var(--paper-surface), #f7f0de;
   transform: translateY(-2px);
 }
 

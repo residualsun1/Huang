@@ -21,22 +21,23 @@
 
 ## CSS 中最常调整的位置
 
-1. 修改全站背景色：搜索 `--background-100`；修改正文与页眉共用的纸张光晕和斜纹时搜索 `--paper-surface`。
-2. 修改全站最大宽度：搜索 `--page-width`。
-3. 修改文章正文宽度：搜索 `--article-width`。
-4. 修改首页简介：搜索 `.hero-intro`。
-5. 修改三个栏目的列表外观：在 `public/styles.css` 搜索 `.writing-list`、`.writing-row`、`.writing-meta` 和 `.writing-copy`。
-6. 修改列表结构：在 `scripts/build.mjs` 搜索 `listRow`。
-7. 修改首页栏目标题或右侧延伸分隔线：搜索 `.section-heading` 和 `.section-kicker__rail`。
-8. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
-9. 修改文章正文：搜索 `.prose`。
-10. 修改项目、写作与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
-11. 修改引用：搜索 `.prose blockquote`。
-12. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
-13. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
-14. 修改四个内容栏目的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
-15. 修改目录当前章节颜色：搜索 `.article-toc a[aria-current="location"]`；修改滚动定位逻辑则编辑 `public/toc.js`。
-16. 修改手机样式：搜索 `@media (max-width: 600px)`。
+1. 修改全站主背景色：搜索 `--background-100`；修改次级界面色：搜索 `--surface-code-toolbar`。
+2. 修改正文与页眉共用的纸张纹理：搜索 `--paper-surface`；其中第一层 `radial-gradient` 是深色噪点，第二层是浅色噪点，`linear-gradient` 是斜纹。
+3. 修改全站最大宽度：搜索 `--page-width`。
+4. 修改文章正文宽度：搜索 `--article-width`。
+5. 修改首页简介：搜索 `.hero-intro`。
+6. 修改三个栏目的列表外观：在 `public/styles.css` 搜索 `.writing-list`、`.writing-row`、`.writing-meta` 和 `.writing-copy`。
+7. 修改列表结构：在 `scripts/build.mjs` 搜索 `listRow`。
+8. 修改首页栏目标题或右侧延伸分隔线：搜索 `.section-heading` 和 `.section-kicker__rail`。
+9. 修改首页同一栏目内的文章间距：搜索 `.home .writing-row`，调整 `padding-block`。
+10. 修改文章正文：搜索 `.prose`。
+11. 修改项目、写作与阅读的统一正文排版：搜索 `.detail-editorial .prose`；其中 `margin-top` 控制正文与标题区底部分隔线的距离。
+12. 修改引用：搜索 `.prose blockquote`。
+13. 修改代码块：搜索 `.code-block`、`.prose pre` 和 `.token-`。
+14. 修改文章作者和标签：搜索 `.article-byline` 和 `.article-tags`。
+15. 修改四个内容栏目的上一篇/下一篇卡片：搜索 `.detail-editorial .article-pagination` 和 `.article-pagination-item`。
+16. 修改目录当前章节颜色：搜索 `.article-toc a[aria-current="location"]`；修改滚动定位逻辑则编辑 `public/toc.js`。
+17. 修改手机样式：搜索 `@media (max-width: 600px)`。
 
 ## 修改后的预览方法
 
