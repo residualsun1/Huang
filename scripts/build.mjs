@@ -236,7 +236,7 @@ function layout({
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
-  <meta name="theme-color" content="#fcf5e4">
+  <meta name="theme-color" content="#ffffff">
   <meta name="robots" content="${index ? "index, follow" : "noindex, follow"}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${escapeHtml(title)}">

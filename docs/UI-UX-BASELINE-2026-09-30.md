@@ -1,3 +1,413 @@
+# Huang UI / UX 参数基线与色彩恢复记录
+
+## 1. 记录范围与版本
+
+这份文档记录 2026-09-30（Asia/Shanghai）修改色彩前的本地源码状态，供后续对照和复原。记录时工作区无未提交修改，Git 基准为 e6eefc62239e6980593ddf86c4a998857a4ea88f。参数来自当前 CSS、页面生成器与交互脚本；未进行浏览器截图或各设备实测，不将源码参数当作已经测得的屏幕坐标。
+
+| 项目 | 基准 |
+| --- | --- |
+| 主要视觉源文件 | public/styles.css，47,896 bytes |
+| CSS SHA-256 | 88c2cec3146e2df84651cb1bf37f855b71fc84e6dafc35811e5a0d690787df9e |
+| 主题 | 浅色；暖米白底、棕色链接、暖灰正文 |
+| 背景纹理 | 当前有效值为 --paper-surface: none；旧渐变在注释中，不生效 |
+| 首页结构 | 年轮图标 → 三段英文简介 → GitHub / X → 项目 → 写作 → 阅读 → 页脚 |
+| 归档页 | 日期、标题、箭头；无摘要 |
+| 详情页 | 面包屑、标题、作者与历史、标签、正文、条件显示目录、上下篇、回到首页 |
+| 页面生成器 | scripts/build.mjs |
+| Markdown 组件结构 | scripts/markdown.mjs |
+| 生成目录 | dist/client/；构建时重建，不能作为长期修改源 |
+
+旧版 [视觉备份](VISUAL-APPEARANCE-BACKUP.md) 记录的是 2026-07-24，保留作为历史档案。本次恢复以本文件、基准提交和当前源码快照为准。下文记录最终生效的覆盖关系；附录保留完整 CSS，包括基础规则、响应式覆盖及注释。
+
+## 2. 配色总览
+
+### 2.1 页面与组件表面
+
+| 参数 | 基准值 | 作用 |
+| --- | --- | --- |
+| --background-100 | #fcf5e4 | 全页、页眉、翻页卡片、焦点环隔离层 |
+| --background-200 | rgba(29, 27, 27, 0.035) | 表头、画廊图片底色 |
+| --surface-raised | rgba(255, 252, 244, 0.82) | 表格、details、kbd、音频播放器与状态框 |
+| --surface-code | #f4ecda | 普通代码正文；Prompt 通过变量别名复用 |
+| --surface-code-toolbar | #e4dcc8 | 普通代码与 Prompt 工具栏 |
+| --surface-react | #fffaf0 | AI 回复纸面、复制按钮 Hover 底色 |
+| --surface-hover | rgba(255, 252, 244, 0.94) | 已声明，但当前 CSS 没有使用此变量 |
+| --border-code | #d5cdbb | 普通代码外框、顶栏分隔线；Prompt 同步复用 |
+| --border-react | #e4dcc8 | AI 回复顶栏分隔线 |
+| --paper-surface | none | 当前为纯色纸面；不启用颗粒或斜纹 |
+| HTML theme-color | #fcf5e4 | scripts/build.mjs 中浏览器主题色，独立于 CSS |
+
+--surface-prompt = var(--surface-code)，--surface-prompt-toolbar = var(--surface-code-toolbar)，--border-prompt = var(--border-code)。改代码块变量会同时改变 Prompt 组件。
+
+### 2.2 文字、边界与品牌色
+
+| 参数 | 基准值 | 主要角色 |
+| --- | --- | --- |
+| --gray-1000 | #1d1b1b | 简介、强调、标题、目录当前项及 Hover |
+| --gray-900 | #56534f | 作者、引用、次级文字、返回入口 |
+| --gray-800 | #6f6b66 | 音频作者、时间、加载状态 |
+| --gray-700 | #8a8680 | 日期、目录默认项、图注、脚注相关弱化信息 |
+| --gray-alpha-100 | rgba(29, 27, 27, 0.04) | 行内代码、标签底色、通用列表 Hover |
+| --gray-alpha-200 | rgba(29, 27, 27, 0.07) | 行内代码边界 |
+| --gray-alpha-400 | rgba(29, 27, 27, 0.12) | 栏目线、文章线、表格、目录边界、卡片 |
+| --gray-alpha-500 | rgba(29, 27, 27, 0.21) | 元信息分隔点、kbd、卡片 Hover 边界 |
+| --gray-alpha-700 | rgba(29, 27, 27, 0.46) | 已声明，当前没有 var() 引用 |
+| --accent-100 | rgba(139, 69, 19, 0.08) | 通用引用底色；当前详情引用覆盖为透明 |
+| --accent-200 | rgba(139, 69, 19, 0.14) | 选中文字底色 |
+| --accent-700 / --accent-800 | #8b4513 / #8b4513 | 栏目标签、正文链接、引用左线、焦点环、播放器进度 |
+
+### 2.3 不受主色变量控制的直接色值
+
+只修改 :root 不会自动改变下表全部位置。附录保存了每条完整选择器及声明。
+
+| 位置 / 选择器 | 常态 | Hover / 特殊状态 |
+| --- | --- | --- |
+| .home .writing-copy strong | rgb(139, 69, 19) | 标题文字色不变 |
+| .home .writing-title-text | 下划线色 rgb(190, 155, 128)；常态未声明下划线线型 | Hover 才出现 underline，色 rgb(139, 69, 19)，厚 1.5px |
+| .home .writing-copy > span | #74685d | 继承常态 |
+| .collection-header h1、.listing .writing-copy strong、.prose、.react-block .prompt-content | #34312f | 按各组件规则 |
+| .social-links、.footer-email | rgb(79, 77, 74)；文字下边框 rgb(197, 193, 187) | 文字与下边框均 rgb(29, 27, 27) |
+| .toolbar-label、.inline-prompt-copy-btn | #595959 | 复制按钮 Hover 使用 --gray-1000 |
+| .prose pre | #403c37 | — |
+| .prompt-content | #302d29 | AI 回复覆盖 #34312f |
+| .token-comment | #716b64，italic | — |
+| .token-keyword、.token-tag | #98482f，600 | — |
+| .token-string | #3f7156 | — |
+| .token-property | #6b528c | — |
+| .token-number、.token-constant | #a04f42 | — |
+| .prose a 下划线 | rgb(190, 155, 128) | --accent-700 |
+| .prose mark | #e8dca7 | 文字继承 |
+| .audio-embed .aplayer-pic | #ded5c8 | 封面图片可以遮盖背景 |
+| a.article-pagination-item:hover | 底色 #f7f0de | 边框 --gray-alpha-500 |
+| .pin-badge | 背景/边框 --red-800；文字 #fff | — |
+
+### 2.4 提示框实际语义色
+
+notice 组件使用局部变量，不能根据 :root 中 --blue-*、--green-* 等名字推断实际配色。
+
+| 变体 | --notice-surface | --notice-border | --notice-accent |
+| --- | --- | --- | --- |
+| 默认 / .notice-content | #ebe4d9 | rgba(106, 85, 65, 0.26) | #79583f |
+| .notice-warning | #f0e5cf | rgba(144, 94, 34, 0.3) | #8a571c |
+| .notice-info | #e2e9e5 | rgba(62, 99, 96, 0.28) | #3f6664 |
+| .notice-success | #e4e9dc | rgba(81, 107, 72, 0.28) | #536f49 |
+| .notice-danger | #eee0db | rgba(135, 70, 58, 0.28) | #884a3e |
+
+根变量还保留 --red-100 #f9e8e5、--red-800 #833b37、--amber-100 #f4ead2、--amber-800 #8a5710、--green-100 #e4ede3、--green-800 #8b4513、--blue-100 #e3ebef、--blue-800 #365f80。--green-800 当前也是棕色；保持记录原值。全部根变量及未引用标记见附录 A。
+
+## 3. 字体与文字比例
+
+| 区域 | 字体 / 颜色 | 桌面有效参数 | ≤600px |
+| --- | --- | --- | --- |
+| 首页简介 .hero-intro | Times New Roman, Times, serif / --gray-1000 | 最大 760px；30px / 1.3；400；字距 0；段间 24px | 同字号、行高、间距 |
+| 社交入口 | --title-serif / rgb(79, 77, 74) | 13px / 20px | 同桌面 |
+| 栏目标题 | --title-serif / --accent-700 | 14px / 20px；600；字距 0.08em | 字号不变 |
+| 首页条目标题 | --title-serif / rgb(139, 69, 19) | 16px / 24px；700；继承字距 -0.025em | .home 高特异性规则仍为 16px / 24px |
+| 首页摘要 | --body-reading / #74685d | 13.8px / 23.5px；最多两行；左对齐；hyphens: auto | 同桌面 |
+| 日期 | --mono / --gray-700 | 12px / 20px；顶部 3px；tabular-nums | 同桌面 |
+| 归档标题 h1 | --serif / #34312f | clamp(32px, 5vw, 44px) / 1.08；400；字距 -0.02em | 继续使用 clamp |
+| 归档条目 | 继承 --editorial / #34312f | 17px / 25px；400；字距 -0.01em | 高特异性规则保持 17px / 25px |
+| 文章页标题 | --source-han-serif / --gray-1000 | clamp(38px, 5vw, 52px) / 1.18；600；最大 820px；字距 -0.035em | 字号 36px；详情规则的行高 1.18、字距 -0.035em 仍生效 |
+| 文章元信息 | --title-serif / --gray-700 | 12px / 16px；作者 --gray-900 | 同桌面，布局变为纵向 |
+| 正文 .detail-editorial .prose | --body-reading / #34312f | 15.5px / 1.75；字距 0.01em | 16px / 1.76；字距 0.005em |
+| 正文引用 | --body-kai / --gray-900 | 17px / 1.88；正常字体样式 | 16px / 1.88 |
+| 目录标题 / 条目 | --body-reading | 14.5px / 22px，600 / 13.5px / 20px | ≤960px 隐藏 |
+| 代码 | --code-font / #403c37 | 14px / 1.7；tab-size: 2 | 13px / 1.7 |
+| Prompt / AI 回复正文 | --codex-ui-font | 15.5px / 1.8；pre-wrap | 15px / 1.8 |
+| 脚注 | --body-reading / --gray-900 | 14px / 24px；编号 Times New Roman | 同桌面 |
+| 页脚邮箱 / 年份 | --title-serif | 14px / 继承16px；年份12px / 16px | 同桌面 |
+
+字体变量全栈见附录 A。名称 --sans 和 --mono 当前都优先 Libre Baskerville，不能按变量名理解成无衬线或等宽字体。真正代码栈使用 Geist Mono 与中文无衬线回退；正文英数优先 Times New Roman，中文回退 Noto Serif SC / Source Han Serif SC / Songti SC / SimSun。
+
+| 字体资源 | 来源 / 配置 |
+| --- | --- |
+| Libre Baskerville | Google Fonts，400 / 700，display=swap |
+| Noto Serif SC | Google Fonts，400 / 500 / 600 / 700，display=swap |
+| Geist Mono | jsDelivr geist@1.7.2，变量字重100–900，font-display: swap |
+| FandolKai | 优先本机楷体系列；回退 jsDelivr / residualsun1/infont/AR-PL-KaitiM-GB-from-yihui.woff2，400 |
+| FandolKai TC | 优先 Kaiti TC / BiauKai / DFKai-SB / AR PL KaitiM Big5；回退站内 /fonts/AR-PL-KaitiM-Big5.woff2，400 |
+| OpenAI Sans | 仅字体栈声明；无专门下载，缺失时走系统无衬线 |
+
+正文内部标题均字重600、颜色 --gray-1000、字距 -0.035em，使用 --source-han-serif；h1–h4 开启 optimizeLegibility 与 kerning。h1–h6 锚点 scroll-margin-top 均96px。
+
+| 正文层级 | 桌面字号 / 行高 | 上、下 margin | ≤600px 字号 / 行高 |
+| --- | --- | --- | --- |
+| h1 | 36px / 44px | 2.4em / 0.9em | 30px / 38px |
+| h2 | 28px / 36px | 2.5em / 0.9em | 26px / 34px |
+| h3 | 22px / 30px | 2.25em / 0.75em | 21px / 29px |
+| h4 | 18px / 28px | 2em / 0.7em | 18px / 27px |
+| h5 / h6 | 16px / 24px | 1.8em / 0.6em | 同桌面 |
+
+## 4. 页面尺寸与留白
+
+### 4.1 通用框架与首页
+
+| 参数 / 选择器 | >600px | ≤600px |
+| --- | --- | --- |
+| 通用容器 | min(100% - 48px, 1040px)，居中 | min(100% - 32px, 1040px)，居中 |
+| 首页页眉 / 页脚 | min(100% - 48px, 1020px) | 通用规则覆盖，总留白32px，最大1040px |
+| .home-layout | min(100% - 48px, 1020px)；底部112px | min(100% - 40px, 1020px)；底部112px |
+| 首页页眉 | static；min-height 172px；padding-top 82px | min-height 114px；padding-top 24px |
+| 首页图标 | 90×90px，object-fit: contain | 90×90px |
+| 其他页面页眉 | sticky；top 0；z-index 20；min-height 64px | min-height 56px |
+| 其他页面图标 | 40×40px | 36×36px |
+| .hero | max(620px, 100svh - 317px)；底部padding 76px | max(580px, 100svh - 109px)；底部padding 36px |
+| 简介在 hero 内的位置 | flex-end，介绍与社交整体靠底 | 同桌面 |
+| 社交区 | margin-top 24px；gap 14px；链接内gap 7px | 同桌面 |
+| .content-section | 顶padding15px；锚点scroll-margin64px | 通用顶padding48px |
+| 第一个 #projects | 顶padding15px | 高特异性规则仍为15px |
+| 后续相邻栏目 | min-width601px规则：顶padding48px | 顶padding48px |
+| .section-heading | 顶padding48px；底margin20px | 顶padding16px；底margin16px |
+| 栏目文字与横线 | gap12px；轨道height20px，横线1px，垂直居中 | gap10px |
+| .writing-row 三列 | 112px / minmax(0,1fr) / 32px；gap24px | 82px / minmax(0,1fr) / 20px；gap10px |
+| 首页条目padding | 上下17px，左右12px | 上下20px，左右8px |
+| 标题与摘要 | grid，gap8px；摘要最大780px | 同桌面 |
+| 所有文章 / 所有项目 | 右对齐；margin-top18px；内部gap7px | 同桌面 |
+
+hero 先声明 vh 版本，再声明 svh 版本；不支持 svh 的浏览器保留前者。这里是最小高度而非固定高度，文字换行和屏幕高度都会改变首屏分布。不要将“某个栏目在所有设备首屏之外”当作这些参数保证的结果。
+
+首页列表无上下边框、无 Hover 底色；首页标题可换行、overflow-wrap:anywhere。基础列表标题是单行省略，首页规则会覆盖该行为。首页摘要为空时不生成摘要元素；有摘要时最多两行。
+
+### 4.2 归档、详情与页脚
+
+| 区域 | 当前参数 | 响应式覆盖 |
+| --- | --- | --- |
+| 归档容器 | 最大760px；总侧留白48px；底padding96px | ≤600px 总侧留白32px |
+| 归档标题区 | padding64px 0 26px；h1顶margin10px | padding52px 0 24px |
+| 归档条目 | padding16px 4px；无分隔线、无 Hover 底色；无摘要 | .listing 特异性更高，仍为16px 4px |
+| 归档返回首页 | margin-top28px；返回对应首页栏目锚点 | 不变 |
+| 面包屑 | 顶padding40px；gap8px | 顶padding24px |
+| 文章标题区 | 最大920px；padding64px 0；底线1px | padding48px 0 |
+| 文章元信息 | 标题下24px；flex-wrap；gap14px 24px | 纵向，左对齐 |
+| 作者 / 历史 | inline-flex，wrap，gap8px；中点分隔 | 按可用宽度换行 |
+| 文章标签 | gap6px；最小高24px；padding4px 8px；胶囊9999px | 左对齐 |
+| .article-layout | minmax(0,740px) + 220px；gap80px；居中 | ≤960px 单列，最大740px |
+| 正文 | 上margin40px，下margin50px | 上margin48px，下margin仍50px |
+| 段落 | margin-bottom1.45em | 直属 .prose > p 底margin2em |
+| 目录 | sticky top96px；max-height:100vh-120px；顶margin64px；padding0 8px 8px 16px；左线1px | ≤960px 隐藏 |
+| 上下篇容器 | 两列等宽；gap12px；详情页无顶线和顶padding | ≤600px 单列 |
+| 上下篇卡片 | min-height112px；padding18px；内部gap18px；圆角6px；边框1px | min-height104px |
+| 返回首页 | 与正文主列左边缘对齐；margin24px 0 96px | 底margin72px |
+| 全站页脚 | min-height96px；flex row；space-between；gap24px；无边线 | min-height88px；仍为row；顶对齐；gap8px |
+
+桌面文章两列总理想宽度为1040px（740+80+220）。容器较窄且仍大于960px断点时，minmax() 中的正文列可以收缩，因此740px是上限。页面没有目录时仍保留当前模板/CSS的规则，不补写新的布局方案。
+
+## 5. Markdown 与扩展组件
+
+| 组件 | 基准尺寸与行为 |
+| --- | --- |
+| 普通列表 | margin-bottom1.5em；左padding1.5em；li margin0.45em 0、左padding0.15em；标记 --gray-700 |
+| 多级列表 | margin0.45em 0 0.3em；左padding1.55em；二层circle、三层square |
+| 详情引用 | margin2.5em 1.25em；padding0.2em 0 0.2em 1.35em；左线1px棕色；透明底；≤600px 横margin0、左padding1.1em |
+| 列表内引用 | margin0.85em 0 0.65em |
+| 行内代码 | padding0.15em 0.38em；边框1px；圆角4px；字号0.84em |
+| 代码外壳 | margin2em 0；边框1px；圆角12px；阴影见下表；≤600px 横margin-8px、圆角10px |
+| 代码工具栏 | min-height40px；padding3px 10px 3px 14px；gap20px；≤600px min-height38px，padding2px 8px 2px 12px |
+| 代码正文 | padding22px；max-height:min(70vh,720px)；overflow:auto；≤600px padding18px 16px |
+| 复制按钮 | 34×34px；圆角6px；透明底和透明1px边框；15×15px SVG、stroke-width2 |
+| Prompt 外壳 | margin1.7em 0；圆角12px；边框1px；单层轻阴影 |
+| Prompt 工具栏 | min-height44px；padding5px 12px 5px 16px；gap20px；≤600px min-height42px、padding4px 10px 4px 14px |
+| Prompt 标题 | 无衬线UI栈；14px；650；字距0.055em；图标与文字gap12px |
+| Prompt 正文 | padding13px 20px 16px；white-space:pre-wrap；overflow-wrap:anywhere；≤600px padding12px 16px 14px |
+| AI 回复块 | 无外框；--surface-react 底色；顶栏透明、底线 --border-react；沿用Prompt尺寸 |
+| 模型图标 | GPT / Claude / Gemini：17×17px；外部SVG；通用代码形图标14×14px |
+| Markdown 分隔线 | 高1px；margin64px 0；--gray-alpha-400 |
+| 单图 | max-width100%；height:auto；圆角6px；figure margin2.5em 0；图片居中 |
+| 图注 | 顶margin10px；12px / 16px；居中；--gray-700 |
+| 横向画廊 | grid-auto-columns:min(84%,640px)；gap16px；横向滚动；x mandatory snap；底padding12px；图片16:10、contain；≤600px 列宽92% |
+| 表格 | 包装器margin2em 0、圆角6px、边框1px、横向滚动；表格min-width560px；14px / 20px；单元padding12px 14px；表头13px/600 |
+| notice | margin2em 0；1px边框、3px语义左线；圆角10px；legend左margin18px、右padding7px、15px/21px/700/字距0.04em；body padding16px 20px 5px |
+| details / summary | margin2em 0；padding16px 18px；边框1px、圆角6px；summary14px/20px/600；展开时summary底margin16px |
+| kbd | 最小宽1.75em；padding1px 6px；边框1px、底边2px；圆角4px；字号0.75em、行高1.45 |
+| mark | padding0.04em 0.2em；背景 #e8dca7 |
+| 任务列表 | 无项目符号；checkbox右margin8px，accent-color棕色 |
+| 脚注编号 | 左margin2px；字号0.72em；方括号；返回符号↩使用文本样式 |
+| 脚注列表 | 顶margin64px；分隔线下margin24px；gap8px；每条左padding34px；编号绝对定位left0 |
+| 长公式 | .katex-display 横向滚动、纵向隐藏；上下padding0.2em |
+| 音频嵌入 | margin2.25em 0；≤600px 为2em 0；原生audio宽100%、最小高54px |
+| APlayer | 外框1px；圆角12px；标题14px/600；进度、滑块和音量色 --accent-700（!important） |
+| 音频图注 | 顶margin9px；gap4px 10px；12.5px / 19px；可wrap；≤600px gap3px 8px |
+| 音频加载状态 | padding14px 16px；边框1px；圆角12px；13px / 22px；错误时虚线边框 |
+| 未识别旧格式 | grid gap8px；margin2em 0；padding16px；红色虚线1px、圆角6px；代码字体12px |
+
+| 阴影使用位置 | 完整值 |
+| --- | --- |
+| 普通代码块 | 0 14px 34px rgba(64,54,42,0.055), 0 2px 7px rgba(64,54,42,0.035) |
+| Prompt | 0 4px 14px rgba(75,58,40,0.045) |
+| AI 回复 | 0 2px 8px rgba(0,0,0,0.04) |
+| 音频播放器 | 0 8px 24px rgba(64,49,34,0.06) |
+| 通用键盘焦点 | 0 0 0 2px var(--background-100), 0 0 0 4px var(--accent-700) |
+
+## 6. 交互与阅读行为
+
+| 功能 | 当前行为 / 参数 | 源文件 |
+| --- | --- | --- |
+| 首页内容选择 | 每栏目全部置顶优先，再用最新普通内容补足3项；置顶超过3项全部展示；栏目内按日期降序 | scripts/build.mjs / selectHomeEntries |
+| 首页摘要 | 仅取显式description；缺失时无摘要；归档不显示摘要 | scripts/build.mjs / loadContent、homePage、collectionPage |
+| 首页条目点击 | 整行a链接进入详情；无独立项目图标/仓库/项目地址入口 | scripts/build.mjs / listRow |
+| 置顶徽标 | 桌面标题旁：高18px、padding0 7px、10px/700；手机日期下：高17px、左右6px、9.5px、顶margin3px | public/styles.css |
+| 社交链接 | GitHub在前、X在后，中点分隔；新标签 target=_blank，rel=noreferrer；SVG14px | scripts/build.mjs / socialNavigation |
+| 返回导航 | 品牌到首页；归档回对应栏目；文章面包屑到首页/归档；正文底部回首页 | scripts/build.mjs |
+| 页脚 | mailto:Residualsun@proton.me；邮箱SVG14px；固定文案©2026 Huang | scripts/build.mjs / siteFooter |
+| 上下篇 | 同栏目相邻日期；上一篇较早，下一篇较新；缺项渲染非链接span，opacity0.46 | scripts/build.mjs / articlePagination |
+| 目录生成 | 从正文h2–h4生成；少于2个标题不显示目录；目录tabindex=0 | scripts/build.mjs / createTableOfContents |
+| 目录当前项 | 标题top≤132px时视为已读到，选最后一个满足条件的项；设置aria-current=location | public/toc.js |
+| 目录内部保持可见 | 可见上留白36px，下留白12px；自动调整自身scrollTop；requestAnimationFrame合并更新 | public/toc.js |
+| 锚点滚动 | html scroll-padding-top88px；正文标题margin-top预留96px；目录点击处理中文hash、更新URL | public/styles.css、public/toc.js |
+| 复制 | secureContext优先Clipboard API；否则隐藏textarea；成功置is-copied；失败显示Copy failed；1600ms后恢复 | public/code-blocks.js |
+| 复制图标反馈 | 成功后path透明度0并translate(-3px,3px) scale(0.82)，rect保留 | public/styles.css |
+| 音频增强 | APlayer1.10.1；autoplay false，preload none，loop none，order list，volume0.7，mutex true，listFolded true，lrcType0 | public/audio-player.js |
+| 音频降级 | 直接音频播放器初始化失败保留原生audio；Meting2.0.2观察DOM，10,000ms未就绪显示错误 | public/audio-player.js |
+| 音频成功态 | 隐藏重复曲名和艺术家图注；有来源入口时仅保留来源，右对齐 | public/styles.css |
+| 数学 | KaTeX0.18.1，按内容加载；throwOnError:false；支持$$、反斜线方括号、反斜线圆括号、单$ | scripts/build.mjs、public/math.js |
+| 标签与历史 | 标签是文字胶囊，无过滤功能；修改日期/次数取Git历史，不取本地未提交保存 | scripts/build.mjs |
+
+| 动效 / 状态 | 基准 |
+| --- | --- |
+| 行背景 / 行箭头颜色 | 150ms ease；首页与归档行背景透明 |
+| 行箭头、所有文章箭头 | 向右3px，150ms cubic-bezier(0.175,0.885,0.32,1.1) |
+| 首页标题下划线 | 颜色与厚度200ms ease |
+| 社交 / 邮箱 | 颜色、下边框200ms ease |
+| 正文链接下划线 | 颜色150ms ease；offset4px |
+| 目录 | 颜色160ms ease；常态弱灰，Hover/当前项暖黑 |
+| 复制按钮 | 边界、文字、背景150ms ease；图标opacity/transform180ms ease |
+| 翻页卡片 | 边界、transform150ms ease；Hover向上2px；背景另按Hover规则变色 |
+| 键盘焦点 | :focus-visible，outline0，双层2px/4px色环；目录额外1px轮廓、offset4px |
+| 减少动态 | prefers-reduced-motion:reduce：scroll-behavior:auto；所有过渡none !important；播放器loading SVG动画none |
+
+页面viewport为width=device-width, initial-scale=1；html文本自动调整100%。图标用currentColor的SVG跟随文字颜色，年轮PNG、favicon、分享PNG及模型外部SVG本身不会被主色变量自动染色。屏幕阅读器隐藏标题使用.sr-only；社交、面包屑、目录、音频按钮和翻页保留aria标签。
+
+## 7. 断点、级联与现有实现细节
+
+| 条件 | 影响 |
+| --- | --- |
+| min-width:601px | 后续相邻首页栏目顶padding48px |
+| max-width:960px | 文章改为单列、目录隐藏 |
+| max-width:600px | 手机容器、页眉、hero、列表、文章元信息、组件padding与上下篇单列 |
+| prefers-reduced-motion:reduce | 锚点和过渡的动态效果 |
+
+CSS值要结合选择器特异性与顺序恢复。首页标题16px并未被通用手机17px覆盖；归档条目保留16px 4px内边距及25px行高；手机详情标题仍使用.detail-editorial的1.18行高和-0.035em字距。手机页脚源码虽然注释写“纵向”，实际flex-direction为row，本记录按实际声明。
+
+当前 --gray-alpha-300 未定义，但复制按钮Hover边框引用了它；该声明无法解析，没有稳定的新边框色。本文保留这一现状，没有趁记录参数更改它。旧纹理CSS在注释中；现有部分测试使用源码正则并会匹配注释，因此测试通过不等于纹理启用。
+
+## 8. 改色与复原方法
+
+### 8.1 改色前后的最小操作范围
+
+1. 先保存或提交本文件，保留下面的完整快照和Git基准。
+2. 主要改 public/styles.css 的 :root 色值，随后检查2.3与2.4节的直接色值与notice局部变量。
+3. 页面主底色改变时，同步 scripts/build.mjs 的 meta theme-color，原值 #fcf5e4。
+4. 只改色时保留字号、宽度、间距、断点、图标及交互脚本。PNG与外部图标如需换色单独处理。
+5. 改色后检查首页、归档、长文章及代码/Prompt/notice/音频，覆盖常态、Hover、键盘焦点、选中文字与减少动态状态。
+6. 运行 npm test。当前 tests/site.test.mjs 有指定底色、组件色和theme-color的样式断言；设计有意改色时应同步对应预期，并保留结构和链接检查，不删除整组测试。
+
+这次文档记录不会修改测试或任何视觉源文件；未来改色测试的预期调整由具体新设计决定。
+
+### 8.2 仅恢复CSS
+
+运行前确认 public/styles.css 中没有需要保留的新修改。此命令会把指定文件工作区内容替换成基准版本，不改变Git历史，也不恢复content中的文章。
+
+~~~powershell
+git diff -- public/styles.css
+git restore --source=e6eefc62239e6980593ddf86c4a998857a4ea88f --worktree -- public/styles.css
+npm test
+~~~
+
+若新CSS仍需留存，先复制另存或提交后再恢复。恢复后Get-FileHash结果应与附录B一致；不同换行符环境可按LF规范化后比较。
+
+### 8.3 同时恢复浏览器主题色
+
+浏览器主题色原值是 #fcf5e4。如果只改过该行，按本文件改回即可。scripts/build.mjs还承担文章列表和模板生成，若之后修改过其他功能，不要为了一行颜色整文件回滚。
+
+完整组件结构/交互也要回到基线时，再对照基准提交中的scripts/build.mjs、scripts/markdown.mjs、public/toc.js、public/code-blocks.js、public/audio-player.js和public/math.js，逐文件检查差异。资源图标与字体校验见附录B。无需添加新的图片备份副本。
+
+### 8.4 从文档快照恢复
+
+附录C的CSS代码块是 public/styles.css 的完整内容，保留注释和规则顺序，可在Git基准不可用时复制代码块内部内容回源文件（不复制围栏）。保存为UTF-8、LF后按SHA-256检查。它是日期快照，不随以后设计自动更新。
+
+不要直接修改 dist/client/styles.css。运行 npm test / npm run build 会重新复制CSS并按其SHA-256的前12位生成资源版本参数；此基线的assetVersion为88c2cec3146e。
+
+## 附录 A：全部根变量
+
+下表自动摘录有效 :root 声明，剔除注释。引用栏仅说明当前CSS是否出现var()引用，不代表每条引用一定会在当前页面显示。
+
+| 变量 | 完整基准值 | 当前 CSS 引用 |
+| --- | --- | --- |
+| --background-100 | #fcf5e4 | 有 |
+| --background-200 | rgba(29, 27, 27, 0.035) | 有 |
+| --surface-raised | rgba(255, 252, 244, 0.82) | 有 |
+| --surface-code | #f4ecda | 有 |
+| --surface-code-toolbar | #e4dcc8 | 有 |
+| --surface-prompt | var(--surface-code) | 有 |
+| --surface-prompt-toolbar | var(--surface-code-toolbar) | 有 |
+| --surface-react | #fffaf0 | 有 |
+| --surface-hover | rgba(255, 252, 244, 0.94) | 无 |
+| --border-code | #d5cdbb | 有 |
+| --border-prompt | var(--border-code) | 有 |
+| --border-react | #e4dcc8 | 有 |
+| --paper-surface | none | 有 |
+| --gray-1000 | #1d1b1b | 有 |
+| --gray-900 | #56534f | 有 |
+| --gray-800 | #6f6b66 | 有 |
+| --gray-700 | #8a8680 | 有 |
+| --gray-alpha-100 | rgba(29, 27, 27, 0.04) | 有 |
+| --gray-alpha-200 | rgba(29, 27, 27, 0.07) | 有 |
+| --gray-alpha-400 | rgba(29, 27, 27, 0.12) | 有 |
+| --gray-alpha-500 | rgba(29, 27, 27, 0.21) | 有 |
+| --gray-alpha-700 | rgba(29, 27, 27, 0.46) | 无 |
+| --accent-100 | rgba(139, 69, 19, 0.08) | 有 |
+| --accent-200 | rgba(139, 69, 19, 0.14) | 有 |
+| --accent-700 | #8b4513 | 有 |
+| --accent-800 | #8b4513 | 有 |
+| --red-100 | #f9e8e5 | 无 |
+| --red-800 | #833b37 | 有 |
+| --amber-100 | #f4ead2 | 无 |
+| --amber-800 | #8a5710 | 无 |
+| --green-100 | #e4ede3 | 无 |
+| --green-800 | #8b4513 | 无 |
+| --blue-100 | #e3ebef | 无 |
+| --blue-800 | #365f80 | 无 |
+| --radius-sm | 6px | 有 |
+| --radius-md | 12px | 有 |
+| --radius-lg | 16px | 无 |
+| --sans | "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "PingFang SC", "Microsoft YaHei", serif | 有 |
+| --mono | "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", serif | 有 |
+| --code-font | "Geist Mono", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif | 有 |
+| --title-serif | "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif | 有 |
+| --serif | "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif | 有 |
+| --source-han-serif | "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif | 有 |
+| --kai | "FandolKai", "Kaiti SC", STKaiti, KaiTi, "楷体", serif | 无 |
+| --editorial | "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif | 有 |
+| --body-reading | "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif | 有 |
+| --body-kai | "Times New Roman", "FandolKai", "FandolKai TC", "Kaiti SC", "Kaiti TC", STKaiti, KaiTi, BiauKai, "DFKai-SB", "楷体", serif | 有 |
+| --codex-ui-font | "OpenAI Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif | 有 |
+| --page-width | 1040px | 有 |
+| --article-width | 740px | 有 |
+
+## 附录 B：源文件与资源指纹
+
+以下是记录时本地文件的字节大小与SHA-256，不包含生成目录。完整页面恢复以基准Git提交为准，哈希用于验证源文件/资源是否变化。
+
+| 文件 | bytes | SHA-256 |
+| --- | --- | --- |
+| public/styles.css | 47896 | 88c2cec3146e2df84651cb1bf37f855b71fc84e6dafc35811e5a0d690787df9e |
+| scripts/build.mjs | 24810 | e131a69f24eb8284f61712b2549c3799de084f15c2ad633bced11b7b2fc55791 |
+| scripts/markdown.mjs | 33778 | b4843974faef4973318e57e213cf6fdfab7d333635842a1b052acffd378eba54 |
+| public/toc.js | 2782 | 0a6611a625718782718d8c31d5db3945376b6c547c536def11b21b4dedc4d7b7 |
+| public/code-blocks.js | 1674 | dd46b0539756698cc4425722d2ff608f1408951de315e71aefbfea813ab39c80 |
+| public/audio-player.js | 2595 | 2536456ad19c595ef1a1ee5c8c1b2ec559962ff4dc413cb600d4286e8470ce40 |
+| public/math.js | 447 | 632f5043b75c8c1851d7444dc4097b39c6f33f1fced5ebaf18bab224e2a7a236 |
+| public/brand-mark.png | 26463 | f3cc806d605d3aa9171052ebc0e23fcf89fae391d851f5f976bf8aed37e8ff95 |
+| public/favicon.png | 3227 | af89bc60924c964358003fccd62debbe86f8a95a52aa10f7de108789c10b4b62 |
+| public/og.png | 303245 | 481cd5bbae758763c7c481c0beea115a2d113f6f84e44cfde23732b79731db62 |
+| public/fonts/AR-PL-KaitiM-Big5.woff2 | 4174492 | c5d79ee7baf038a8cab47268df05b97121c81fb3fbf7a6ece78db79032710f79 |
+
+## 附录 C：完整CSS源码快照
+
+这段源码保持原顺序。源码注释可能描述旧设计意图；当前生效参数以上文解析和有效声明为准。
+
+<!-- CSS_SNAPSHOT_START -->
+~~~css
 /*
  * Huang 网站主样式表
  * --------------------------------------------------------------------------
@@ -54,38 +464,66 @@
 :root {
   color-scheme: light;
 
-  /* 白底与低对比灰阶表面，供首页、归档和文章共同使用。 */
-  --background-100: #fff;
-  --background-200: rgba(0, 0, 0, 0.035);
-  --surface-raised: rgba(248, 248, 248, 0.94);
-  --surface-code: #f6f6f6;
-  --surface-code-toolbar: #ededed;
+  /*
+   * 页面背景与半透明表面：
+   * #fcf5e4 对应 Typewriter 的主内容纸面，#e4dcc8 对应其较深界面层。
+   * Huang 没有侧栏，因此较深颜色只用于原本就存在的次级组件表面。
+   */
+  --background-100: #fcf5e4;
+  --background-200: rgba(29, 27, 27, 0.035);
+  --surface-raised: rgba(255, 252, 244, 0.82);
+  --surface-code: #f4ecda;
+  --surface-code-toolbar: #e4dcc8;
   --surface-prompt: var(--surface-code);
   --surface-prompt-toolbar: var(--surface-code-toolbar);
-  --surface-react: #fff;
-  --surface-hover: rgba(0, 0, 0, 0.04);
-  --border-code: #d6d6d6;
+  --surface-react: #fffaf0;
+  --surface-hover: rgba(255, 252, 244, 0.94);
+  --border-code: #d5cdbb;
   --border-prompt: var(--border-code);
-  --border-react: #e2e2e2;
-  /* 纯白背景不叠加纹理。 */
+  --border-react: #e4dcc8;
+  /*
+   * 全站共用的纸张表面：
+   * 不再使用大范围明暗光晕，三层微纹理均匀平铺，避免页面产生白黄渐变。
+   * 深浅颗粒模拟纸浆纤维，极淡斜纹让磨砂表面更规整。
+   */
+
   --paper-surface: none;
 
-  /* 标题接近黑色，日期和说明文字用可读的中性灰。 */
-  --gray-1000: #151515;
-  --gray-900: #404040;
-  --gray-800: #595959;
-  --gray-700: #737373;
-  --gray-alpha-100: rgba(0, 0, 0, 0.04);
-  --gray-alpha-200: rgba(0, 0, 0, 0.07);
-  --gray-alpha-400: rgba(0, 0, 0, 0.16);
-  --gray-alpha-500: rgba(0, 0, 0, 0.25);
-  --gray-alpha-700: rgba(0, 0, 0, 0.46);
+  /*
+  --paper-surface:
+    radial-gradient(
+      circle,
+      rgba(93, 75, 57, 0.05) 0 0.45px,
+      transparent 0.75px
+    ) 0 0 / 4px 4px,
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.34) 0 0.4px,
+      transparent 0.72px
+    ) 2px 1px / 6px 6px,
+    linear-gradient(
+      115deg,
+      rgba(112, 90, 66, 0.024) 25%,
+      transparent 25%
+    ) 0 0 / 8px 8px;
+  */
 
-  /* 链接、焦点和选区与黑白主色保持一致。 */
-  --accent-100: rgba(0, 0, 0, 0.04);
-  --accent-200: rgba(0, 0, 0, 0.12);
-  --accent-700: #151515;
-  --accent-800: #151515;
+  /* 从深到浅的正文、说明文字和弱化文字颜色。 */
+  --gray-1000: #1d1b1b;
+  --gray-900: #56534f;
+  --gray-800: #6f6b66;
+  --gray-700: #8a8680;
+  --gray-alpha-100: rgba(29, 27, 27, 0.04);
+  --gray-alpha-200: rgba(29, 27, 27, 0.07);
+  --gray-alpha-400: rgba(29, 27, 27, 0.12);
+  --gray-alpha-500: rgba(29, 27, 27, 0.21);
+  --gray-alpha-700: rgba(29, 27, 27, 0.46);
+
+  /* 棕色品牌色：用于链接、焦点、标签和交互状态。 */
+  --accent-100: rgba(139, 69, 19, 0.08);
+  --accent-200: rgba(139, 69, 19, 0.14);
+  --accent-700: #8b4513;
+  --accent-800: #8b4513;
 
   /* Markdown 提示框使用的错误、警告、成功和信息颜色。 */
   --red-100: #f9e8e5;
@@ -93,7 +531,7 @@
   --amber-100: #f4ead2;
   --amber-800: #8a5710;
   --green-100: #e4ede3;
-  --green-800: #536f49;
+  --green-800: #8b4513;
   --blue-100: #e3ebef;
   --blue-800: #365f80;
 
@@ -150,7 +588,11 @@ html {
 /* 全站正文基础样式；局部页面可以在后文覆盖这些值。 */
 body {
   margin: 0;
-  /* --paper-surface 为 none，当前实际呈现纯白底色。 */
+  /*
+   * 全站纸张质感背景：
+   * 两层微粒和一层 8px 斜纹均匀平铺，不再制造局部白黄光晕；
+   * 最后一层保留轻暖羊皮纸底色。
+   */
   background: var(--paper-surface), var(--background-100);
   color: var(--gray-1000);
   font-family: var(--sans);
@@ -176,7 +618,7 @@ body {
 /* 链接默认继承父元素颜色，具体样式由各组件定义。 */
 a { color: inherit; }
 
-/* 顶部导航：滚动时固定，并与正文使用同一底色。 */
+/* 顶部导航：滚动时固定，并复用全站均匀的纸张颗粒与斜纹。 */
 .site-header {
   position: sticky;
   z-index: 20;
@@ -327,7 +769,7 @@ a { color: inherit; }
   align-items: center;
   gap: 14px;
   margin-top: 24px;
-  color: #555;
+  color: rgb(79, 77, 74);
   font-family: var(--title-serif);
   font-size: 13px;
   line-height: 20px;
@@ -344,12 +786,12 @@ a { color: inherit; }
 }
 
 .social-links a span {
-  border-bottom: 1px solid #bdbdbd;
+  border-bottom: 1px solid rgb(197, 193, 187);
   transition: border-color 200ms ease;
 }
 
-.social-links a:hover { color: var(--gray-1000); }
-.social-links a:hover span { border-bottom-color: var(--gray-1000); }
+.social-links a:hover { color: rgb(29, 27, 27); }
+.social-links a:hover span { border-bottom-color: rgb(29, 27, 27); }
 .social-links svg { flex: 0 0 auto; }
 .social-separator { color: var(--gray-alpha-500); }
 
@@ -407,9 +849,9 @@ a { color: inherit; }
   height: 18px;
   padding: 0 7px;
   align-items: center;
-  border: 1px solid var(--gray-1000);
+  border: 1px solid var(--red-800);
   border-radius: 999px;
-  background: var(--gray-1000);
+  background: var(--red-800);
   color: #fff;
   font-family: var(--mono);
   font-size: 10px;
@@ -506,7 +948,7 @@ a { color: inherit; }
   -webkit-line-clamp: 2;
 }
 
-/* 首页用留白而非重复横线区分文章；加粗标题维持清晰层级。 */
+/* 首页用留白而非重复横线区分文章；加粗标题让棕色链接更稳定、醒目。 */
 .home .writing-list { border-top: 0; }
 .home .writing-row {
   /* 首页同一栏目内文章之间的距离：增减这个纵向内边距即可。 */
@@ -520,12 +962,12 @@ a { color: inherit; }
   width: 100%;
   overflow: visible;
   justify-self: start;
-  color: var(--gray-1000);
+  color: rgb(139, 69, 19);
   font-family: var(--title-serif);
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
-  /* 悬浮时显示黑色下划线，不增加其他强调色。 */
+  /* 常态使用浅棕色下划线，悬浮时自然过渡为标题的深棕色。 */
 }
 
 .home .writing-title-text {
@@ -534,7 +976,7 @@ a { color: inherit; }
   text-overflow: clip;
   white-space: normal;
   overflow-wrap: anywhere;
-  text-decoration-color: #a3a3a3;
+  text-decoration-color: rgb(190, 155, 128);
   text-decoration-style: solid;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.16em;
@@ -547,15 +989,15 @@ a { color: inherit; }
 }
 
 .home .writing-row:hover .writing-title-text {
-  text-decoration-color: var(--gray-1000);
+  text-decoration-color: rgb(139, 69, 19);
   text-decoration-line: underline;
   text-decoration-thickness: 1.5px;
 }
 
 /* 首页可选摘要来自 Markdown Front Matter 的 description；没有字段时不生成元素。 */
 .home .writing-copy > span {
-  /* 摘要使用中性灰；英文字母仍使用 Times New Roman。 */
-  color: #555;
+  /* 暖灰仍保持正文级对比度；英文字母使用 Times New Roman，中文沿用原宋体回退。 */
+  color: #74685d;
   font-family: var(--body-reading);
   font-size: 13.8px;
   hyphens: auto;
@@ -613,8 +1055,8 @@ a { color: inherit; }
 
 .collection-header h1 {
   margin: 10px 0 0;
-  /* 标题使用略浅于主文字的中性黑。 */
-  color: #1a1a1a;
+  /* 与正文共用暖深灰，避免近黑色标题在羊皮纸背景上显得生硬。 */
+  color: #34312f;
   font-family: var(--serif);
   font-size: clamp(32px, 5vw, 44px);
   /* 当前字体实际提供 400 / 700；使用真实 400 字重比模拟 300 更稳定。 */
@@ -642,7 +1084,7 @@ a { color: inherit; }
 
 /* 归档条目标题使用正常字重和更松的字距，避免窄版面形成粗黑色块。 */
 .listing .writing-copy strong {
-  color: #1a1a1a;
+  color: #34312f;
   font-size: 17px;
   font-weight: 400;
   line-height: 25px;
@@ -671,7 +1113,7 @@ a { color: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #555;
+  color: rgb(79, 77, 74);
   font-family: var(--title-serif);
   font-size: 14px;
   text-decoration: none;
@@ -679,13 +1121,13 @@ a { color: inherit; }
 }
 
 .footer-email span {
-  border-bottom: 1px solid #bdbdbd;
+  border-bottom: 1px solid rgb(197, 193, 187);
   transition: border-color 200ms ease;
 }
 
 .footer-email svg { flex: 0 0 auto; }
-.footer-email:hover { color: var(--gray-1000); }
-.footer-email:hover span { border-bottom-color: var(--gray-1000); }
+.footer-email:hover { color: rgb(29, 27, 27); }
+.footer-email:hover span { border-bottom-color: rgb(29, 27, 27); }
 
 .footer-meta {
   font-family: var(--title-serif);
@@ -861,7 +1303,7 @@ a { color: inherit; }
 .prose {
   min-width: 0;
   margin: 64px 0 80px;
-  color: #1a1a1a;
+  color: #34312f;
   font-family: var(--body-reading);
   font-size: 15px;
   line-height: 1.75;
@@ -914,7 +1356,7 @@ a { color: inherit; }
 .prose ul ul { list-style-type: circle; }
 .prose ul ul ul { list-style-type: square; }
 
-/* 默认 Markdown 引用：楷体、黑色左边线和淡灰背景。 */
+/* 默认 Markdown 引用：楷体、棕色左边线和淡色背景。 */
 .prose blockquote {
   margin: 2em 0;
   padding: 16px 20px;
@@ -933,7 +1375,7 @@ a { color: inherit; }
 .detail-editorial .prose {
   margin-top: 40px;
   margin-bottom: 50px;
-  color: #1a1a1a;
+  color: #34312f;
   font-size: 15.5px;
   line-height: 1.75;
   letter-spacing: 0.01em;
@@ -971,7 +1413,7 @@ a { color: inherit; }
   border: 1px solid var(--border-code);
   border-radius: 12px;
   background: var(--surface-code);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.045), 0 2px 7px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 14px 34px rgba(64, 54, 42, 0.055), 0 2px 7px rgba(64, 54, 42, 0.035);
 }
 
 /* 顶部工具栏：左侧为文件名或代码类型，右侧只保留复制操作。 */
@@ -1017,7 +1459,7 @@ a { color: inherit; }
   border: 0;
   border-radius: 0;
   background: var(--surface-code);
-  color: #3b3b3b;
+  color: #403c37;
   font-family: var(--code-font);
   font-size: 14px;
   line-height: 1.7;
@@ -1073,7 +1515,7 @@ a { color: inherit; }
   border: 1px solid var(--border-prompt);
   border-radius: 12px;
   background: var(--surface-prompt);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 14px rgba(75, 58, 40, 0.045);
 }
 
 /* Prompt 顶栏：左侧是内容类型，右侧是仅保留图标的复制按钮。 */
@@ -1117,7 +1559,7 @@ a { color: inherit; }
 /* Prompt / React 正文使用接近 Codex 的无衬线 UI 字体，并保留输入段落与换行。 */
 .prompt-content {
   padding: 13px 20px 16px;
-  color: #333;
+  color: #302d29;
   font-family: var(--codex-ui-font);
   font-size: 15.5px;
   line-height: 1.8;
@@ -1137,7 +1579,7 @@ a { color: inherit; }
   background: transparent;
 }
 
-.react-block .prompt-content { color: #1a1a1a; }
+.react-block .prompt-content { color: #34312f; }
 
 .prose pre code {
   padding: 0;
@@ -1156,18 +1598,18 @@ a { color: inherit; }
 }
 
 /* 构建阶段生成的语法高亮色：在暖灰纸面上增加色相区分，同时避免高饱和刺眼感。 */
-.token-comment { color: #777; font-style: italic; }
+.token-comment { color: #716b64; font-style: italic; }
 .token-keyword,
-.token-tag { color: #222; font-weight: 600; }
-.token-string { color: #555; }
-.token-property { color: #444; }
+.token-tag { color: #98482f; font-weight: 600; }
+.token-string { color: #3f7156; }
+.token-property { color: #6b528c; }
 .token-number,
-.token-constant { color: #555; }
+.token-constant { color: #a04f42; }
 
 /* 正文链接及悬浮下划线颜色。 */
 .prose a {
   color: var(--accent-800);
-  text-decoration-color: #9b9b9b;
+  text-decoration-color: rgb(190, 155, 128);
   text-underline-offset: 4px;
   transition: text-decoration-color 150ms ease;
 }
@@ -1252,11 +1694,11 @@ a { color: inherit; }
   font-weight: 600;
 }
 
-/* Hugo notice 提示框：低饱和语义色和克制的编辑式边框。 */
+/* Hugo notice 提示框：低饱和语义色、纸张纹理和克制的编辑式边框。 */
 .notice-box {
-  --notice-surface: #f5f5f5;
-  --notice-border: rgba(0, 0, 0, 0.16);
-  --notice-accent: var(--gray-900);
+  --notice-surface: #ebe4d9;
+  --notice-border: rgba(106, 85, 65, 0.26);
+  --notice-accent: #79583f;
 
   min-inline-size: 0;
   max-width: 100%;
@@ -1283,16 +1725,16 @@ a { color: inherit; }
   letter-spacing: 0.04em;
 }
 
-/* 内容留出稳定呼吸空间；底色由提示框承担。 */
+/* 内容留出稳定呼吸空间；底色由提示框承担并与纹理共同平铺。 */
 .notice-body {
   min-width: 0;
   padding: 16px 20px 5px;
 }
 
 .notice-content {
-  --notice-surface: #f5f5f5;
-  --notice-border: rgba(0, 0, 0, 0.16);
-  --notice-accent: var(--gray-900);
+  --notice-surface: #ebe4d9;
+  --notice-border: rgba(106, 85, 65, 0.26);
+  --notice-accent: #79583f;
 }
 
 .notice-warning {
@@ -1481,13 +1923,13 @@ a { color: inherit; }
   border: 1px solid var(--gray-alpha-400);
   border-radius: var(--radius-md);
   background: var(--paper-surface), var(--surface-raised);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(64, 49, 34, 0.06);
   color: var(--gray-1000);
   font-family: var(--body-reading);
 }
 
 .audio-embed .aplayer .aplayer-pic {
-  background-color: #e2e2e2;
+  background-color: #ded5c8;
 }
 
 .audio-embed .aplayer .aplayer-info .aplayer-music .aplayer-title {
@@ -1634,7 +2076,7 @@ a { color: inherit; }
 
 a.article-pagination-item:hover {
   border-color: var(--gray-alpha-500);
-  background: var(--paper-surface), #f5f5f5;
+  background: var(--paper-surface), #f7f0de;
   transform: translateY(-2px);
 }
 
@@ -1820,3 +2262,5 @@ a.article-pagination-item:hover {
   *, *::before, *::after { transition: none !important; }
   .audio-embed .aplayer-loading-icon svg { animation: none !important; }
 }
+~~~
+<!-- CSS_SNAPSHOT_END -->

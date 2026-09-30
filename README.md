@@ -67,3 +67,5 @@ dist/client/         自动生成的部署产物（不提交 Git）
 ```
 
 详细部署方案与 Git 工作流见 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)。内容迁移格式见 [`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)，视觉规范见 [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)。
+
+改色前的完整 UI / UX 参数、源文件指纹与 CSS 快照见 [2026-09-30 外观恢复基线](docs/UI-UX-BASELINE-2026-09-30.md)。

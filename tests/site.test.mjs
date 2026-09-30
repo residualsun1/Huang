@@ -53,7 +53,7 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.ok(favicon.length > 1_000);
   assert.ok(brandMark.length > 1_000);
   assert.ok(brandMark.length < 100_000);
-  assert.match(html, /<meta name="theme-color" content="#fcf5e4">/);
+  assert.match(html, /<meta name="theme-color" content="#ffffff">/);
   assert.match(html, /<meta name="robots" content="index, follow">/);
   assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
   assert.match(notFound, /页面不存在/);
@@ -161,9 +161,9 @@ test("项目、写作和阅读归档页采用聚焦且无摘要的布局", async
   assert.match(readings, /<h1>阅读<\/h1>/);
   assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
   assert.match(css, /\.listing \.collection-shell \{[\s\S]*?760px/);
-  assert.match(css, /\.collection-header h1 \{[\s\S]*?color: #34312f;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.02em;/);
+  assert.match(css, /\.collection-header h1 \{[\s\S]*?color: #1a1a1a;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.02em;/);
   assert.match(css, /\.listing \.writing-row \{[\s\S]*?padding: 16px 4px;[\s\S]*?border-bottom: 0;/);
-  assert.match(css, /\.listing \.writing-copy strong \{[\s\S]*?color: #34312f;[\s\S]*?font-size: 17px;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.01em;/);
+  assert.match(css, /\.listing \.writing-copy strong \{[\s\S]*?color: #1a1a1a;[\s\S]*?font-size: 17px;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.01em;/);
 });
 
 test("固定夹具保留参考资料标题，不依赖正式文章", async () => {
@@ -209,7 +209,7 @@ test("项目复用其他栏目的日期、标题、摘要与箭头布局", async
   assert.doesNotMatch(css, /\.project-(?:list|row|description|title)/);
   assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: 112px minmax\(0, 1fr\) 32px;/);
   assert.match(css, /\.writing-row time \{[\s\S]*?color: var\(--gray-700\);[\s\S]*?font-family: var\(--mono\);[\s\S]*?font-variant-numeric: tabular-nums;/);
-  assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid var\(--red-800\);[\s\S]*?border-radius: 999px;[\s\S]*?background: var\(--red-800\);[\s\S]*?color: #fff;[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
+  assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid var\(--gray-1000\);[\s\S]*?border-radius: 999px;[\s\S]*?background: var\(--gray-1000\);[\s\S]*?color: #fff;[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
   assert.doesNotMatch(css, /\.pin-badge::before/);
   assert.doesNotMatch(css, /\.home \.is-pinned|box-shadow: inset 2px 0 0 rgba\(139, 69, 19, 0\.68\)/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.writing-row \{[\s\S]*?grid-template-columns: 82px minmax\(0, 1fr\) 20px;/);
@@ -352,7 +352,7 @@ test("详情页根据完整 Git 历史显示最后修改日期与修改次数", 
   }
 });
 
-test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面", async () => {
+test("移动端 notice、宽表格和文章翻页卡片不会破坏版面", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const fixture = await readFixture("markdown/legacy-features.md");
   const writing = renderMarkdown(fixture).html;
@@ -366,7 +366,7 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏纸张版面"
   assert.match(css, /\.notice-info \{[\s\S]*?--notice-surface: #e2e9e5;[\s\S]*?--notice-accent: #3f6664;/);
   assert.match(css, /\.notice-body \{[\s\S]*?min-width: 0;/);
   assert.match(css, /\.article-pagination-item \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\);/);
-  assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #f7f0de;/);
+  assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #f5f5f5;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
 });
 
@@ -397,28 +397,16 @@ test("首页使用 1020px 宽幅展示区与无照片的单列简介", async () 
   assert.doesNotMatch(css, /\.home-toc/);
 });
 
-test("全站使用均匀颗粒与斜向纸张纹理背景", async () => {
+test("全站使用白底、近黑文字与中性灰界面层", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  const cssWithoutComponentTextures = css.replace(
-    /--paper-surface:[\s\S]*?\) 0 0 \/ 8px 8px;/,
-    "",
-  );
-
-  assert.match(css, /--background-100: #fcf5e4;/);
-  assert.match(css, /--surface-raised: rgba\(255, 252, 244, 0\.82\);/);
-  assert.match(css, /--surface-code-toolbar: #e4dcc8;/);
-  assert.match(css, /--accent-100: rgba\(139, 69, 19, 0\.08\);/);
-  assert.match(css, /--accent-200: rgba\(139, 69, 19, 0\.14\);/);
-  assert.match(
-    css,
-    /--paper-surface:[\s\S]*?rgba\(93, 75, 57, 0\.05\) 0 0\.45px,[\s\S]*?\) 0 0 \/ 4px 4px,[\s\S]*?rgba\(255, 255, 255, 0\.34\) 0 0\.4px,[\s\S]*?\) 2px 1px \/ 6px 6px/,
-  );
-  assert.match(
-    css,
-    /--paper-surface:[\s\S]*?linear-gradient\([\s\S]*?115deg[\s\S]*?rgba\(112, 90, 66, 0\.024\)[\s\S]*?\) 0 0 \/ 8px 8px/,
-  );
-  assert.doesNotMatch(css, /circle at 13% 7%|circle at 88% 18%/);
-  assert.doesNotMatch(cssWithoutComponentTextures, /(?:radial|linear)-gradient\(/);
+  assert.match(css, /--background-100: #fff;/);
+  assert.match(css, /--paper-surface: none;/);
+  assert.match(css, /--gray-1000: #151515;/);
+  assert.match(css, /--gray-700: #737373;/);
+  assert.match(css, /--accent-700: #151515;/);
+  assert.match(css, /--surface-raised: rgba\(248, 248, 248, 0\.94\);/);
+  assert.match(css, /--surface-code-toolbar: #ededed;/);
+  assert.doesNotMatch(css, /(?:radial|linear)-gradient\(/);
   assert.match(css, /body \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
   assert.match(css, /\.site-header \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\)/);
 });
@@ -453,7 +441,7 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   const asciiLabel = renderMarkdown("```ASCII 图\nA -> B\n```").html;
   assert.match(css, /\.prose pre \{[\s\S]*?overflow: auto/);
   assert.match(css, /--code-font:/);
-  assert.match(css, /--surface-code: #f4ecda;/);
+  assert.match(css, /--surface-code: #f6f6f6;/);
   assert.match(css, /\.code-toolbar \{[\s\S]*?color: #595959;/);
   assert.match(css, /\.prose pre \{[\s\S]*?background: var\(--surface-code\)/);
   assert.match(css, /\.prose pre \{[\s\S]*?font-family: var\(--code-font\)/);
@@ -462,10 +450,10 @@ test("代码块拥有本地高亮样式、复制按钮脚本与横向滚动", as
   assert.match(css, /\.code-toolbar \{/);
   assert.match(css, /\.code-toolbar \{[\s\S]*?min-height: 40px;[\s\S]*?padding: 3px 10px 3px 14px/);
   assert.match(css, /\.token-keyword/);
-  assert.match(css, /\.token-tag \{ color: #98482f; font-weight: 600; \}/);
-  assert.match(css, /\.token-string \{ color: #3f7156; \}/);
-  assert.match(css, /\.token-property \{ color: #6b528c; \}/);
-  assert.match(css, /\.token-constant \{ color: #a04f42; \}/);
+  assert.match(css, /\.token-tag \{ color: #222; font-weight: 600; \}/);
+  assert.match(css, /\.token-string \{ color: #555; \}/);
+  assert.match(css, /\.token-property \{ color: #444; \}/);
+  assert.match(css, /\.token-constant \{ color: #555; \}/);
   assert.match(script, /navigator\.clipboard/);
   assert.match(script, /\.prose \.code-block, \.prose \.prompt-block/);
   assert.match(script, /querySelector\("\.inline-prompt-copy-btn"\)/);
@@ -519,9 +507,9 @@ test("Prompt 与 React 围栏生成可区分的对话组件并兼容中文旧写
   assert.match(css, /\.inline-prompt-copy-btn\.is-copied svg path \{[\s\S]*?opacity: 0/);
   assert.match(css, /--surface-prompt: var\(--surface-code\);/);
   assert.match(css, /--surface-prompt-toolbar: var\(--surface-code-toolbar\);/);
-  assert.match(css, /--surface-react: #fffaf0;/);
+  assert.match(css, /--surface-react: #fff;/);
   assert.match(css, /--border-prompt: var\(--border-code\);/);
-  assert.match(css, /--border-react: #e4dcc8;/);
+  assert.match(css, /--border-react: #e2e2e2;/);
   assert.match(css, /\.prompt-block \{[\s\S]*?background: var\(--surface-prompt\)/);
   assert.match(css, /\.react-block \{[\s\S]*?border: 0;[\s\S]*?background: var\(--surface-react\)[\s\S]*?box-shadow: 0 2px 8px rgba\(0, 0, 0, 0\.04\)/);
   assert.match(css, /\.react-block \.prompt-toolbar \{[\s\S]*?border-bottom-color: var\(--border-react\)/);
@@ -641,7 +629,7 @@ test("网易云音频支持结构化 ID 与页面 URL，并单独按需加载 Me
   assert.match(siteCss, /\.audio-embed\.is-enhanced \.audio-caption:not\(\.has-source-link\)[\s\S]*?display: none;/);
 });
 
-test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题", async () => {
+test("首页文章列表使用留白分组、Libre Baskerville 与黑色标题", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   const homeTitleRule = css.match(/\.home \.writing-title-text \{[\s\S]*?\n\}/)?.[0] ?? "";
   assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
@@ -651,20 +639,20 @@ test("首页文章列表使用留白分组、Libre Baskerville 与棕色标题",
   assert.match(css, /\.writing-copy strong \{[\s\S]*?max-width: 100%;[\s\S]*?overflow: hidden;/);
   assert.match(css, /\.writing-title-text \{[\s\S]*?flex: 0 1 auto;[\s\S]*?text-overflow: ellipsis;/);
   assert.match(css, /--title-serif: "Libre Baskerville"/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: rgb\(139, 69, 19\)/);
+  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: var\(--gray-1000\)/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
   assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?display: block;[\s\S]*?width: 100%;[\s\S]*?overflow: visible;/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?display: inline;[\s\S]*?text-overflow: clip;[\s\S]*?white-space: normal;[\s\S]*?overflow-wrap: anywhere;/);
   assert.match(css, /\.home \.writing-copy \.pin-badge--writing-title \{[\s\S]*?margin-left: 8px;[\s\S]*?vertical-align: 0\.12em;/);
-  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(190, 155, 128\)/);
+  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: #a3a3a3/);
   assert.match(css, /\.home \.writing-title-text \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
   assert.doesNotMatch(homeTitleRule, /text-decoration-line: underline/);
   assert.doesNotMatch(css, /\.home \.writing-row\.is-pinned \.writing-title-text/);
-  assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: rgb\(139, 69, 19\);[\s\S]*?text-decoration-line: underline;[\s\S]*?text-decoration-thickness: 1\.5px/);
+  assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: var\(--gray-1000\);[\s\S]*?text-decoration-line: underline;[\s\S]*?text-decoration-thickness: 1\.5px/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.pin-badge--writing-title \{ display: none; \}[\s\S]*?\.home \.writing-meta \{[\s\S]*?width: max-content;[\s\S]*?justify-items: center;[\s\S]*?\.home \.pin-badge--writing-meta \{[\s\S]*?display: inline-flex;[\s\S]*?margin-top: 3px;/);
   assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #74685d/);
+  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #555/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-family: var\(--body-reading\)/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 13\.8px/);
   assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 23\.5px/);
@@ -687,12 +675,12 @@ test("首页复刻参考站的视口级个人展示与滚动节奏", async () =>
   assert.doesNotMatch(html, /family=Nunito\+Sans/);
 });
 
-test("社交入口使用指定的默认与悬浮颜色", async () => {
+test("社交入口使用中性灰默认色与黑色悬浮状态", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.match(css, /\.social-links \{[\s\S]*?color: rgb\(79, 77, 74\)/);
-  assert.match(css, /border-bottom: 1px solid rgb\(197, 193, 187\)/);
-  assert.match(css, /\.social-links a:hover \{ color: rgb\(29, 27, 27\); \}/);
-  assert.match(css, /\.social-links a:hover span \{ border-bottom-color: rgb\(29, 27, 27\); \}/);
+  assert.match(css, /\.social-links \{[\s\S]*?color: #555/);
+  assert.match(css, /\.social-links a span \{[\s\S]*?border-bottom: 1px solid #bdbdbd/);
+  assert.match(css, /\.social-links a:hover \{ color: var\(--gray-1000\); \}/);
+  assert.match(css, /\.social-links a:hover span \{ border-bottom-color: var\(--gray-1000\); \}/);
 });
 
 test("Markdown 无序与有序列表支持多层缩进", () => {
@@ -809,7 +797,7 @@ test("页眉页脚无分隔线且页脚显示邮箱", async () => {
   assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me"[\s\S]*?<svg width="14" height="14"[\s\S]*?<span>Residualsun@proton\.me<\/span>/);
   assert.doesNotMatch(html, /持续学习，持续修订/);
   assert.match(css, /\.footer-email \{[\s\S]*?font-family: var\(--title-serif\)/);
-  assert.match(css, /\.footer-email \{[\s\S]*?color: rgb\(79, 77, 74\)/);
+  assert.match(css, /\.footer-email \{[\s\S]*?color: #555/);
 });
 
 test("所有正文的回到首页入口位于正文主列最左侧", async () => {
