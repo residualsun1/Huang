@@ -137,7 +137,7 @@ test("首页图片、图标、字体和筛选脚本均包含在静态构建中",
   const script = await readFile(new URL("homepage.js", root), "utf8");
   assert.match(html, /src="\/homepage\.js\?v=[0-9a-f]{12}"[^>]*defer/);
   assert.doesNotMatch(html, /_next\/|react-dom|next\/|cdn\.tailwindcss/);
-  assert.match(css, /\.homepage\s*\{[\s\S]*?--rs-serif:\s*"Cormorant Garamond"/);
+  assert.match(css, /\.homepage\s*\{[\s\S]*?--rs-serif:\s*var\(--rs-reading\)/);
   assert.match(chrome, /--rs-brand-font:\s*"Libre Baskerville"/);
   assert.match(html, /class="rs-brand"/);
   assert.match(detail, /class="rs-brand"/);

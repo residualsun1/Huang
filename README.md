@@ -57,7 +57,7 @@ git push origin main
 - `scripts/template.mjs`：阅读页、归档、404 模板。
 - `scripts/markdown.mjs`：原 Markdown 转换器及兼容能力。
 - `scripts/frontmatter.mjs`、`scripts/assets.mjs`：元数据解析与资源版本。
-- `public/homepage.css`：首页排版、英文 Cormorant Garamond 与局部动效。
+- `public/homepage.css`：首页排版、与阅读正文一致的英文 Times New Roman 与局部动效。
 - `public/site-chrome.css`：共用页头、Libre Baskerville 字标与 240ms 页面淡化。
 - `public/reader.css`、`public/styles.css`：阅读页适配和原正文样式。
 - `public/fonts/`、`public/images/`、`public/icons/`：本地字体、头像、封面和社交图标。

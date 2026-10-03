@@ -73,7 +73,6 @@ export function homePage(collections) {
   <link rel="icon" type="image/png" href="${escapeHtml(assetUrl("/favicon.png"))}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-  <link rel="preload" href="/fonts/cormorant-garamond-400-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <link rel="stylesheet" href="${escapeHtml(assetUrl("/homepage.css"))}">
   <link rel="stylesheet" href="${escapeHtml(assetUrl("/fonts.css"))}">
   <link rel="stylesheet" href="${escapeHtml(assetUrl("/site-chrome.css"))}">
