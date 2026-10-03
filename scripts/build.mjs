@@ -3,14 +3,16 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "./markdown.mjs";
+import { detailPage, collectionPage, notFoundPage } from "./template.mjs";
+import { homePage } from "./homepage.mjs";
+import { escapeHtml, parseFrontmatter, normalizeList, deriveDescription } from "./frontmatter.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const contentRoot = path.join(root, "content");
 const publicRoot = path.join(root, "public");
 const distRoot = path.join(root, "dist");
 const clientRoot = path.join(distRoot, "client");
-const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "")
+const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "https://guozheng.dev")
   .trim()
   .replace(/\/+$/, "");
 const buildCommit = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "").trim();
@@ -57,83 +59,6 @@ const groups = [
   { key: "readings", number: "03", label: "阅读", eyebrow: "READING" },
 ];
 
-// 社交平台链接集中维护：将下面两个地址替换为你的个人主页即可。
-const socialLinks = {
-  x: "https://x.com/Residualsun1/",
-  github: "https://github.com/residualsun1/",
-};
-
-const escapeHtml = (value = "") =>
-  String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-function parseFrontmatter(source) {
-  const normalized = source.replaceAll("\r\n", "\n");
-  if (!normalized.startsWith("---\n")) return { data: {}, body: normalized };
-  const end = normalized.indexOf("\n---\n", 4);
-  if (end < 0) return { data: {}, body: normalized };
-
-  const data = {};
-  let activeKey = "";
-  const parseValue = (rawValue) => {
-    let value = rawValue.trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-    return value;
-  };
-
-  for (const line of normalized.slice(4, end).split("\n")) {
-    const arrayItem = line.match(/^\s+-\s+(.+)$/);
-    if (arrayItem && activeKey) {
-      if (!Array.isArray(data[activeKey])) data[activeKey] = [];
-      data[activeKey].push(parseValue(arrayItem[1]));
-      continue;
-    }
-
-    const separator = line.indexOf(":");
-    if (separator < 0) continue;
-    const key = line.slice(0, separator).trim();
-    const value = parseValue(line.slice(separator + 1));
-    data[key] = value;
-    activeKey = key;
-  }
-  return { data, body: normalized.slice(end + 5).trim() };
-}
-
-function normalizeList(value) {
-  if (Array.isArray(value)) return value.map(String).map((item) => item.trim()).filter(Boolean);
-  const source = String(value || "").trim().replace(/^\[|\]$/g, "");
-  if (!source) return [];
-  return source.split(",").map((item) => item.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
-}
-
-function deriveDescription(markdown) {
-  const plainText = markdown
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/<!--([\s\S]*?)-->/g, " ")
-    .replace(/\{\{[<%][\s\S]*?[>%]\}\}/g, " ")
-    .replace(/^\[\^[^\]]+\]:.*$/gm, " ")
-    .replace(/\[\^[^\]]+\]/g, "")
-    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/^[-*>\d.]+\s+/gm, "")
-    .replace(/[*_`~]/g, "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  if (!plainText) return "阅读全文。";
-  return plainText.length > 92 ? `${plainText.slice(0, 92)}…` : plainText;
-}
-
-// 递归查找栏目目录中的 Markdown 文件。
-// 既兼容 content/writings/article.md，也兼容 content/writings/2026/article.md。
 async function findMarkdownFiles(directory, relativeDirectory = "") {
   const currentDirectory = path.join(directory, relativeDirectory);
   const directoryEntries = await readdir(currentDirectory, { withFileTypes: true });
@@ -167,6 +92,7 @@ async function loadContent(group) {
     if (!data.title || !data.date) {
       throw new Error(`${group.key}/${displayPath} 缺少 title 或 date`);
     }
+    if (!slug || /[/\\?#]/.test(slug) || slug === "." || slug === "..") throw new Error(`无效 slug: ${slug}`);
     if (slugSources.has(slug)) {
       throw new Error(
         `${group.key} 中存在重复 slug「${slug}」：${slugSources.get(slug)} 与 ${displayPath}`,
@@ -191,323 +117,9 @@ async function loadContent(group) {
   return entries.sort((a, b) => String(b.date).localeCompare(String(a.date)));
 }
 
-function formatDate(value) {
-  const [year, month, day] = String(value).split("-");
-  return [year, month, day].filter(Boolean).join(".");
-}
+const absoluteUrl = (pathname) => new URL(pathname, `${siteUrl}/`).href;
 
-function absoluteUrl(pathname) {
-  return siteUrl ? new URL(pathname, `${siteUrl}/`).href : "";
-}
-
-function layout({
-  title,
-  description,
-  content,
-  bodyClass = "",
-  audio = false,
-  metingAudio = false,
-  math = false,
-  pathname = "/",
-  index = true,
-}) {
-  const canonicalUrl = absoluteUrl(pathname);
-  const socialImageUrl = absoluteUrl("/og.png");
-  const canonicalAssets = canonicalUrl ? `
-  <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-  <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
-  <meta property="og:image" content="${escapeHtml(socialImageUrl)}">
-  <meta name="twitter:image" content="${escapeHtml(socialImageUrl)}">` : "";
-  const mathAssets = math ? `
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.css" integrity="sha384-1vdNCNel6Tx/NQa8IR1mGOGKsbGreCkOPfbtPPnUURJ5Tu2PRVfQ/7KLZC+Pi1p1" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.js" integrity="sha384-ycJ6GAwiS15LoUPipwJOrWTvkUHl/YqELValBwI5I4awP1EeEQJYarj+w85ntcz7" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"></script>
-  <script defer src="/math.js"></script>` : "";
-  const audioStyles = audio ? `
-  <link rel="stylesheet" href="/vendor/aplayer/1.10.1/APlayer.min.css">` : "";
-  const audioScripts = audio ? `
-  <script defer src="/vendor/aplayer/1.10.1/APlayer.min.js"></script>
-  ${metingAudio ? '<script defer src="/vendor/meting/2.0.2/Meting.min.js"></script>' : ""}
-  <script defer src="/audio-player.js"></script>` : "";
-  return `<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(title)}</title>
-  <meta name="description" content="${escapeHtml(description)}">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="robots" content="${index ? "index, follow" : "noindex, follow"}">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="${escapeHtml(title)}">
-  <meta property="og:description" content="${escapeHtml(description)}">
-  <meta name="twitter:card" content="summary_large_image">
-  ${canonicalAssets}
-  <link rel="icon" href="/favicon.png?v=${stylesVersion}" type="image/png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&amp;family=Noto+Serif+SC:wght@400;500;600;700&amp;display=swap">
-  <link rel="stylesheet" href="/styles.css?v=${stylesVersion}">${mathAssets}${audioStyles}
-</head>
-<body class="${escapeHtml(bodyClass)}">
-${content}${audioScripts}
-</body>
-</html>`;
-}
-
-function siteHeader() {
-  return `<header class="site-header">
-    <div class="site-header-inner">
-      <a class="site-brand" href="/" aria-label="首页">
-        <img class="brand-mark" src="/brand-mark.png?v=${stylesVersion}" alt="" width="384" height="384">
-      </a>
-    </div>
-  </header>`;
-}
-
-function siteFooter() {
-  return `<footer class="site-footer">
-    <div class="site-footer-inner">
-      <a class="footer-email" href="mailto:Residualsun@proton.me" aria-label="发送邮件至 Residualsun@proton.me">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
-          <path d="m3 7 9 6 9-6"></path>
-        </svg>
-        <span>Residualsun@proton.me</span>
-      </a>
-      <span class="footer-meta">© 2026 Huang</span>
-    </div>
-  </footer>`;
-}
-
-function socialNavigation() {
-  return `<nav class="social-links" aria-label="社交平台">
-    <a href="${socialLinks.github}" target="_blank" rel="noreferrer" aria-label="GitHub 个人主页">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.419 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.014-1.699-2.782.604-3.369-1.341-3.369-1.341-.455-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.004.071 1.532 1.031 1.532 1.031.892 1.529 2.341 1.087 2.91.831.091-.646.349-1.087.635-1.337-2.221-.253-4.555-1.111-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.845a9.56 9.56 0 0 1 2.504.337c1.909-1.294 2.748-1.025 2.748-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.591 1.028 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.679.92.679 1.855 0 1.338-.012 2.419-.012 2.748 0 .268.18.579.688.481A10.003 10.003 0 0 0 22 12c0-5.523-4.477-10-10-10z"></path></svg>
-      <span>Guozheng Huang</span>
-    </a>
-    <span class="social-separator" aria-hidden="true">·</span>
-    <a href="${socialLinks.x}" target="_blank" rel="noreferrer" aria-label="X 个人主页">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-      <span>Residualsun</span>
-    </a>
-  </nav>`;
-}
-
-export function selectHomeEntries(entries, minimum = 3) {
-  const pinned = entries.filter((entry) => entry.pinned);
-  const unpinned = entries.filter((entry) => !entry.pinned);
-  return [...pinned, ...unpinned.slice(0, Math.max(0, minimum - pinned.length))];
-}
-
-export function listRow(entry, { summary = entry.description, showPinned = false } = {}) {
-  const isPinned = showPinned && entry.pinned;
-  const titlePinBadge = isPinned ? `<span class="pin-badge pin-badge--writing-title">置顶</span>` : "";
-  const metaPinBadge = isPinned ? `<span class="pin-badge pin-badge--writing-meta">置顶</span>` : "";
-  return `<a class="writing-row${isPinned ? " is-pinned" : ""}" href="${entry.href}">
-    <span class="writing-meta">
-      <time datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
-      ${metaPinBadge}
-    </span>
-    <span class="writing-copy">
-      <strong><span class="writing-title-text">${escapeHtml(entry.title)}</span>${titlePinBadge}</strong>
-      ${summary ? `<span>${escapeHtml(summary)}</span>` : ""}
-    </span>
-    <span class="row-arrow" aria-hidden="true">→</span>
-  </a>`;
-}
-
-function homePage(collections) {
-  const byKey = Object.fromEntries(collections.map((collection) => [collection.group.key, collection]));
-  const projects = selectHomeEntries(byKey.projects.entries)
-    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
-    .join("");
-  const writings = selectHomeEntries(byKey.writings.entries)
-    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
-    .join("");
-  const readings = selectHomeEntries(byKey.readings.entries)
-    .map((entry) => listRow(entry, { summary: entry.homeDescription, showPinned: true }))
-    .join("");
-
-  const sectionHeader = (group) => `<header class="section-heading">
-    <p class="section-kicker" id="${group.key}-title">
-      <span class="section-kicker__label">${group.number} / ${group.label}</span>
-      <span class="section-kicker__rail" aria-hidden="true"></span>
-    </p>
-  </header>`;
-
-  return layout({
-    title: "Huang",
-    description: "你好，我是 Huang。我在探索 AI、人文、艺术，希望能做出一些有个人品味的产品。",
-    pathname: "/",
-    bodyClass: "home",
-    content: `${siteHeader()}
-    <main class="site-shell home-layout">
-      <section class="hero" aria-labelledby="home-title">
-        <h1 id="home-title" class="sr-only">Huang 的 AI 学习记录</h1>
-        <div class="hero-copy">
-          <div class="hero-intro">
-            <p>Hello, I’m Huang.</p>
-            <p>I explore the possibilities where AI meets the humanities, hoping to create some thoughtful things.</p>
-            <p>This site is home to my projects, writings and readings.</p>
-          </div>
-          ${socialNavigation()}
-        </div>
-      </section>
-
-      <section class="content-section" id="projects" aria-labelledby="projects-title">
-        ${sectionHeader(byKey.projects.group)}
-        <div class="writing-list">${projects}</div>
-        <div class="section-more"><a href="/projects/">所有项目<span aria-hidden="true">→</span></a></div>
-      </section>
-
-      <section class="content-section" id="writings" aria-labelledby="writings-title">
-        ${sectionHeader(byKey.writings.group)}
-        <div class="writing-list">${writings}</div>
-        <div class="section-more"><a href="/writings/">所有文章<span aria-hidden="true">→</span></a></div>
-      </section>
-
-      <section class="content-section" id="readings" aria-labelledby="readings-title">
-        ${sectionHeader(byKey.readings.group)}
-        <div class="writing-list">${readings}</div>
-        <div class="section-more"><a href="/readings/">所有文章<span aria-hidden="true">→</span></a></div>
-      </section>
-    </main>
-    ${siteFooter()}`,
-  });
-}
-
-function collectionPage(collection) {
-  const { group, entries } = collection;
-  const archive = `<div class="writing-list">${entries.map((entry) => listRow(entry, { summary: "" })).join("")}</div>`;
-
-  return layout({
-    title: `${group.label} — Huang`,
-    description: `Huang 的${group.label}归档。`,
-    pathname: `/${group.key}/`,
-    bodyClass: `listing listing-${group.key}`,
-    content: `${siteHeader()}
-    <main class="collection-shell">
-      <header class="collection-header">
-        <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
-        <h1>${group.label}</h1>
-      </header>
-      ${archive}
-      <a class="collection-back" href="/#${group.key}">← 返回首页</a>
-    </main>
-    ${siteFooter()}`,
-  });
-}
-
-function createTableOfContents(html) {
-  const headings = [...html.matchAll(/<h([2-4]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)].map((match) => ({
-    level: Number(match[1]),
-    id: match[2],
-    label: match[3].replace(/<[^>]+>/g, "").replace(/&amp;/g, "&"),
-  }));
-  if (headings.length < 2) return "";
-
-  return `<aside class="article-toc" aria-label="文章目录" tabindex="0">
-    <p>本文目录</p>
-    <ol>${headings.map((heading) => `<li class="toc-level-${heading.level}"><a href="#${heading.id}">${heading.label}</a></li>`).join("")}</ol>
-  </aside>`;
-}
-
-export function articlePagination(previousEntry, nextEntry) {
-  const item = (entry, direction) => {
-    const isPrevious = direction === "previous";
-    const label = isPrevious ? "← 上一篇文章" : "下一篇文章 →";
-    if (!entry) {
-      return `<span class="article-pagination-item is-disabled ${direction}">
-        <span>${label}</span>
-        <strong>暂无${isPrevious ? "上一篇" : "下一篇"}</strong>
-      </span>`;
-    }
-    return `<a class="article-pagination-item ${direction}" href="${entry.href}" aria-label="${label}：${escapeHtml(entry.title)}">
-      <span>${label}</span>
-      <strong>${escapeHtml(entry.title)}</strong>
-    </a>`;
-  };
-
-  return `<nav class="article-pagination" aria-label="上一篇与下一篇文章">
-    ${item(previousEntry, "previous")}
-    ${item(nextEntry, "next")}
-  </nav>`;
-}
-
-export function detailPage(entry, previousEntry, nextEntry) {
-  const warnings = [];
-  const rendered = renderMarkdown(entry.body, { warnings });
-  for (const warning of warnings) {
-    console.warn(`[${entry.group.key}/${entry.slug}] ${warning}`);
-  }
-  const toc = createTableOfContents(rendered.html);
-  const author = entry.author ? `<span class="article-author">${escapeHtml(entry.author)}</span>` : "";
-  const updatedDate = entry.updatedDate || entry.date;
-  const modificationCount = Math.max(0, Number(entry.modificationCount) || 0);
-  const articleHistory = `<span class="article-history">
-            <time datetime="${escapeHtml(entry.date)}">发布于：${formatDate(entry.date)}</time>
-            <span class="article-history-separator" aria-hidden="true">·</span>
-            <time datetime="${escapeHtml(updatedDate)}">修改于：${formatDate(updatedDate)}</time>
-            <span class="article-history-separator" aria-hidden="true">·</span>
-            <span>已修改 ${modificationCount} 次</span>
-          </span>`;
-  const tags = entry.tags.length ? `<ul class="article-tags" aria-label="文章标签">${entry.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : "";
-  const pagination = articlePagination(previousEntry, nextEntry);
-  return layout({
-    title: `${entry.title} — Huang`,
-    description: entry.description,
-    pathname: entry.href,
-    bodyClass: `detail detail-${entry.group.key} detail-editorial`,
-    audio: hasAudio(entry.body),
-    metingAudio: hasMetingAudio(entry.body),
-    math: hasMath(entry.body),
-    content: `${siteHeader()}
-    <main class="article-shell">
-      <nav class="breadcrumb" aria-label="面包屑">
-        <a href="/">首页</a><span aria-hidden="true">/</span><a href="/${entry.group.key}/">${entry.group.label}</a>
-      </nav>
-      <header class="article-header">
-        <h1>${escapeHtml(entry.title)}</h1>
-        <div class="article-meta">
-          <div class="article-byline">${author}${articleHistory}</div>
-          ${tags}
-        </div>
-      </header>
-      <div class="article-layout">
-        <div class="article-main">
-          <article class="prose">${rendered.html}</article>
-          ${pagination}
-          <footer class="article-footer"><a href="/">← 回到首页</a></footer>
-        </div>
-        ${toc}
-      </div>
-    </main>
-    ${siteFooter()}
-    <script defer src="/code-blocks.js"></script>
-    <script defer src="/toc.js"></script>`,
-  });
-}
-
-function notFoundPage() {
-  return layout({
-    title: "页面不存在 — Huang",
-    description: "你访问的页面不存在。",
-    pathname: "/404.html",
-    index: false,
-    content: `${siteHeader()}
-    <main class="collection-shell">
-      <header class="collection-header">
-        <p class="section-kicker">404 / NOT FOUND</p>
-        <h1>页面不存在</h1>
-      </header>
-      <p>这个链接可能已经失效，或者页面地址有误。</p>
-      <a class="collection-back" href="/">← 返回首页</a>
-    </main>
-    ${siteFooter()}`,
-  });
-}
+export { detailPage } from "./template.mjs";
 
 async function writeDiscoveryFiles(collections) {
   await writeFile(
@@ -540,8 +152,9 @@ export async function buildSite() {
   await rm(distRoot, { recursive: true, force: true });
   await mkdir(clientRoot, { recursive: true });
   await cp(publicRoot, clientRoot, { recursive: true });
-  const styles = await readFile(path.join(publicRoot, "styles.css"));
-  stylesVersion = createHash("sha256").update(styles).digest("hex").slice(0, 12);
+  const styleFiles = ["styles.css", "homepage.css", "homepage.js", "site-chrome.css", "reader.css", "fonts.css"];
+  const styles = await Promise.all(styleFiles.map((name) => readFile(path.join(publicRoot, name))));
+  stylesVersion = createHash("sha256").update(Buffer.concat(styles)).digest("hex").slice(0, 12);
 
   const collections = [];
   for (const group of groups) {

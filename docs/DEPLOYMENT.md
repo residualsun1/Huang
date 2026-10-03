@@ -1,5 +1,7 @@
 # 部署上线规划
 
+2026-10-03 更新：当前站点为 Residualsun 编辑式界面，仍沿用本文件的 GitHub → Cloudflare Pages 部署流程、`npm test` 构建及 `dist/client` 输出。首页模板位于 `scripts/homepage.mjs`，阅读模板位于 `scripts/template.mjs`；样式分别加载，文章仍来自同一套 `content/`。正式远端是 `https://github.com/residualsun1/Huang.git`，正式域名是 `https://guozheng.dev`。迁移记录见 [RESIDUALSUN-MIGRATION.md](RESIDUALSUN-MIGRATION.md)。以下初次上线步骤保留作参考。
+
 ## 1. 当前架构
 
 “架构”是项目各部分的职责划分、依赖方向和协作方式。本站采用自建静态站点生成器：
@@ -61,7 +63,7 @@ git remote add origin https://github.com/<你的用户名>/<仓库名>.git
 git push -u origin main
 ```
 
-当前仓库没有配置远端，因此这一步不会覆盖既有远端。
+当前仓库已配置上述正式远端，不需要重复执行 `git remote add`。
 
 ### 4.2 连接 Cloudflare Pages
 

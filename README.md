@@ -1,10 +1,12 @@
-# Huang 的 AI 学习与思考
+# Residualsun
 
-一个零运行时依赖、Markdown 驱动的中文个人网站。内容在构建阶段生成静态 HTML，适合长期写作、项目展示和求职作品集。
+个人网站，正式地址为 [guozheng.dev](https://guozheng.dev)。页面移自 `D:\03_Project\Website`，继续使用 Huang 原来的零依赖静态构建、Markdown 内容、Git 历史及 Cloudflare 发布流程。
 
-## 本地使用
+现在 `D:\03_Project\Huang` 是后续写作与维护的唯一正式项目。页面、文章和资源均在此目录内，不依赖 Website 文件夹；不要编辑 `dist/` 里的生成文件。
 
-需要 Node.js 24。项目根目录的 `.node-version` 与 `package.json` 已固定运行时主版本。
+## 本地写作
+
+需要 Node.js 24。首次使用：
 
 ```powershell
 npm ci
@@ -12,60 +14,55 @@ npm run hooks:install
 npm run dev
 ```
 
-`npm run hooks:install` 只需在每个本地克隆中运行一次；它会让普通的 `git push` 在上传前自动执行完整检查。浏览器访问终端显示的本地地址。也可以随时手动检查：
+预览默认在 `http://127.0.0.1:4173`。修改 Markdown 或 `public/` 资源后自动重新构建，刷新浏览器即可查看。修改 `scripts/` 模板后重启预览。
 
-```powershell
-npm test
-```
-
-`npm run build` 会将可部署文件生成到 `dist/client/`。不要直接修改 `dist/`，它会在下次构建时被覆盖。
-
-## 添加内容
-
-在以下任一目录中新增 `.md` 文件：
-
-- `content/projects/`
-- `content/writings/`
-- `content/readings/`
-
-栏目目录支持按年份继续分层，例如：
-
-```text
-content/
-└── writings/
-    ├── 2026/
-    │   └── example.md
-    └── 2027/
-        └── another-article.md
-```
-
-每篇内容至少需要 `title` 和 `date`：
+文章继续放在 `content/writings/`、`content/projects/`、`content/readings/`，支持年份子目录，例如 `content/writings/2026/example.md`：
 
 ```md
 ---
-title: 标题
+title: 文章标题
 description: 一句话摘要
-date: 2026-07-14
+author: 作者名称
+date: 2026-10-03
+slug: example
+tags:
+  - 写作
+cover: /images/example.webp
+coverAlt: 图片内容的简要说明
 ---
+
+这里写 Markdown 正文。
 ```
 
-文件名默认成为网址的一部分。无论文章位于 `content/writings/example.md` 还是 `content/writings/2026/example.md`，都会生成 `/writings/example/`；也可以通过 Front Matter 的 `slug` 自定义网址。
+`title`、`date` 必填；其余字段按需填写。`slug` 决定固定文章网址，已发布文章请保持其值。省略时使用文件名。首页自动读取标题、摘要、日期、标签与封面；标签侧栏自动汇总所有文章。原有文章的 URL、正文及真实修改日期/次数保留。
 
-首页按照“项目 → 写作 → 阅读”排列，每个栏目展示最新三项。社交链接集中定义在 `scripts/build.mjs` 顶部的 `socialLinks`。
+封面文件放在 `public/images/`。支持 JPG、PNG、WebP 和 GIF，动态 WebP/GIF 直接显示原文件。未填写 `cover` 时，已有文章使用 `scripts/covers.mjs` 中的生成封面；新文章没有映射时显示文字卡片。首页两张默认封面保持轻缓漂移。
 
-## 项目结构
+## 发布
 
-```text
-content/             Markdown 内容
-public/              浏览器直接加载的 CSS、脚本和图片
-scripts/build.mjs    页面模板、内容读取和静态站点构建
-scripts/markdown.mjs Markdown 与旧 Hugo 格式转换
-scripts/dev.mjs      本地预览与自动重建
-tests/               构建结果和 Markdown 转换测试
-docs/                维护、内容兼容和部署文档
-dist/client/         自动生成的部署产物（不提交 Git）
+```powershell
+npm test
+git add <本次修改的文件>
+git commit -m "更新文章"
+git push origin main
 ```
 
-详细部署方案与 Git 工作流见 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)。内容迁移格式见 [`docs/CONTENT-COMPATIBILITY.md`](docs/CONTENT-COMPATIBILITY.md)，视觉规范见 [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)。
+推送 `main` 后，现有 Cloudflare Pages 自动检查并发布到 guozheng.dev。构建命令仍为 `npm test`，输出目录仍为 `dist/client`，无需更换托管或域名。正式环境 `SITE_URL=https://guozheng.dev`；预览环境可使用平台的 `CF_PAGES_URL`。Git pre-push hook 会在普通推送前再运行检查。
 
-改色前的完整 UI / UX 参数、源文件指纹与 CSS 快照见 [2026-09-30 外观恢复基线](docs/UI-UX-BASELINE-2026-09-30.md)。
+## 维护位置
+
+- `content/`：Markdown 正文，原文件保留。
+- `scripts/build.mjs`：内容读取、Git 历史、静态产物、robots 与 sitemap。
+- `scripts/homepage.mjs`、`public/homepage.js`：首页模板、分类/标签筛选与展开。
+- `scripts/template.mjs`：阅读页、归档、404 模板。
+- `scripts/markdown.mjs`：原 Markdown 转换器及兼容能力。
+- `scripts/frontmatter.mjs`、`scripts/assets.mjs`：元数据解析与资源版本。
+- `public/homepage.css`：首页排版、英文 Cormorant Garamond 与局部动效。
+- `public/site-chrome.css`：共用页头、Libre Baskerville 字标与 240ms 页面淡化。
+- `public/reader.css`、`public/styles.css`：阅读页适配和原正文样式。
+- `public/fonts/`、`public/images/`、`public/icons/`：本地字体、头像、封面和社交图标。
+- `tests/`：内容格式、资源、链接、交互约定及构建回归。
+
+分类/标签结果淡入 200ms；展开只让新增卡片浮现 280ms、上移 6px。首次内容和正文直接可见，新增动效遵守减少动态偏好，不支持原生跨页过渡的浏览器正常跳转。
+
+迁移、验证及回滚说明见 [迁移记录](docs/RESIDUALSUN-MIGRATION.md)。原部署文档见 [DEPLOYMENT.md](docs/DEPLOYMENT.md)。

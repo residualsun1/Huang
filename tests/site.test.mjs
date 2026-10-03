@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { detailPage, listRow, selectHomeEntries } from "../scripts/build.mjs";
+import { detailPage } from "../scripts/build.mjs";
+import { homePage } from "../scripts/homepage.mjs";
 import { createBuildQueue } from "../scripts/build-queue.mjs";
 import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "../scripts/markdown.mjs";
 
@@ -41,18 +42,13 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   const robots = await readFile(new URL("robots.txt", root), "utf8");
   const headers = await readFile(new URL("_headers", root), "utf8");
   const favicon = await readFile(new URL("favicon.png", root));
-  const brandMark = await readFile(new URL("brand-mark.png", root));
   const version = JSON.parse(await readFile(new URL("version.json", root), "utf8"));
   const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
 
   assert.doesNotMatch(html, /chatgpt\.site/);
-  assert.match(
-    html,
-    new RegExp(`<link rel="icon" href="/favicon\\.png\\?v=${version.assetVersion}" type="image/png">`),
-  );
+  const faviconVersion = createHash("sha256").update(favicon).digest("hex").slice(0, 12);
+  assert.match(html, new RegExp(`href="/favicon\\.png\\?v=${faviconVersion}"`));
   assert.ok(favicon.length > 1_000);
-  assert.ok(brandMark.length > 1_000);
-  assert.ok(brandMark.length < 100_000);
   assert.match(html, /<meta name="theme-color" content="#ffffff">/);
   assert.match(html, /<meta name="robots" content="index, follow">/);
   assert.match(notFound, /<meta name="robots" content="noindex, follow">/);
@@ -64,83 +60,135 @@ test("构建产物可独立部署并包含基础上线文件", async () => {
   assert.match(headers, /\/vendor\/aplayer\/1\.10\.1\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
   assert.match(headers, /\/vendor\/meting\/2\.0\.2\/\*[\s\S]*?Cache-Control: public, max-age=31536000, immutable/);
   assert.match(buildSource, /process\.env\.SITE_URL \|\| process\.env\.CF_PAGES_URL/);
-  assert.match(html, new RegExp(`/styles\\.css\\?v=${version.assetVersion}`));
+  assert.match(html, /href="\/homepage\.css\?v=[0-9a-f]{12}"/);
   assert.match(version.assetVersion, /^[0-9a-f]{12}$/);
   assert.equal(version.commit, process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "local");
 });
 
-test("首页按项目、写作、阅读顺序展示三个栏目", async () => {
-  const html = await readFile(new URL("index.html", root), "utf8");
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
-  assert.match(html, /class="site-header"/);
-  assert.match(html, /<img class="brand-mark" src="\/brand-mark\.png\?v=[0-9a-f]{12}" alt="" width="384" height="384">/);
-  assert.doesNotMatch(html, /family=Homemade\+Apple/);
-  assert.doesNotMatch(html, /class="site-nav"/);
-  assert.doesNotMatch(html, /class="home-toc"/);
-  assert.doesNotMatch(html, /class="portrait-space"/);
-  assert.doesNotMatch(html, /blog-static\/about\/gz\.jpg/);
-  assert.doesNotMatch(css, /--brand-script/);
-  assert.match(css, /\.brand-mark \{[\s\S]*?width: 40px;[\s\S]*?height: 40px;[\s\S]*?object-fit: contain;/);
-  assert.match(css, /html \{[\s\S]*?-webkit-text-size-adjust: 100%;[\s\S]*?text-size-adjust: 100%;/);
-  assert.match(css, /body \{[\s\S]*?-webkit-font-smoothing: antialiased;[\s\S]*?text-rendering: auto;/);
-  assert.match(css, /\.article-header h1,[\s\S]*?\.prose h4 \{[\s\S]*?font-kerning: normal;[\s\S]*?text-rendering: optimizeLegibility;/);
-  assert.match(html, /01 \/ 项目/);
-  assert.match(html, /02 \/ 写作/);
-  assert.match(html, /03 \/ 阅读/);
-  assert.doesNotMatch(html, /id="prompts"|\/prompts\/|02 \/ Prompt/);
-  assert.doesNotMatch(html, /<h2 id="(?:projects|writings|readings)-title">/);
-  assert.match(html, /class="writing-row"/);
-  assert.doesNotMatch(html, /class="prompt-card"/);
-  assert.doesNotMatch(html, /class="hero-scene"/);
-  assert.doesNotMatch(html, /class="scene-frame"/);
-  assert.doesNotMatch(html, /src="\/scene\.js"/);
-  assert.match(html, /class="hero-intro"/);
-  assert.match(html, /class="social-links"/);
-  assert.match(html, /aria-label="X 个人主页"/);
-  assert.match(html, /aria-label="GitHub 个人主页"/);
-  assert.match(html, />Residualsun<\/span>/);
-  assert.match(html, />Guozheng Huang<\/span>/);
-  assert.ok(
-    html.indexOf('aria-label="GitHub 个人主页"') < html.indexOf('aria-label="X 个人主页"'),
-    "GitHub 应显示在 X 之前",
-  );
-  assert.match(html, /<p>Hello, I’m Huang\.<\/p>/);
-  assert.match(html, /<p>I explore the possibilities where AI meets the humanities, hoping to create some thoughtful things\.<\/p>/);
-  assert.match(html, /<p>This site is home to my projects, writings and readings\.<\/p>/);
-  assert.doesNotMatch(html, /<h1 id="home-title">AI 学习与理解<\/h1>/);
+function decodeHtml(value) {
+  return value.replaceAll("&quot;", '"').replaceAll("&#039;", "'")
+    .replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&");
+}
 
-  const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const writingSection = html.match(/<section class="content-section" id="writings"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const readingSection = html.match(/<section class="content-section" id="readings"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const archivePages = {
-    projects: await readFile(new URL("projects/index.html", root), "utf8"),
-    writings: await readFile(new URL("writings/index.html", root), "utf8"),
-    readings: await readFile(new URL("readings/index.html", root), "utf8"),
-  };
-  const archiveCount = (group) => (archivePages[group].match(/class="writing-row(?: [^"]+)?"/g) ?? []).length;
-  const homeCount = (section) => (section.match(/class="writing-row(?: [^"]+)?"/g) ?? []).length;
-  assert.ok(html.indexOf('id="projects"') < html.indexOf('id="writings"'));
-  assert.ok(html.indexOf('id="writings"') < html.indexOf('id="readings"'));
-  for (const [section, group] of [
-    [projectSection, "projects"],
-    [writingSection, "writings"],
-    [readingSection, "readings"],
-  ]) {
-    assert.ok(homeCount(section) >= Math.min(archiveCount(group), 3));
-    assert.ok(homeCount(section) <= archiveCount(group));
+function archiveCards(html) {
+  return [...html.matchAll(/<article class="entry entry--archive(?: [^"]+)?"[\s\S]*?<\/article>/g)]
+    .map(([card]) => ({
+      card,
+      href: decodeHtml(card.match(/data-href="([^"]+)"/)?.[1] || ""),
+      kind: decodeHtml(card.match(/data-kind="([^"]+)"/)?.[1] || ""),
+      tags: JSON.parse(decodeHtml(card.match(/data-tags="([^"]*)"/)?.[1] || "[]")),
+    }));
+}
+
+test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入口", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const template = html.match(/<template id="archive-cards">([\s\S]*?)<\/template>/)?.[1] || "";
+  const cards = archiveCards(template);
+  const firstGrid = html.slice(html.indexOf('<div class="archive-grid">'), html.indexOf('<button type="button" class="button see-all"'));
+  const additionalGrid = html.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] || "";
+  const expected = [];
+  const articleTags = new Set();
+
+  for (const { key, label } of groupDefinitions) {
+    for (const slug of await groupDirectoryNames(key)) {
+      const href = `/${key}/${slug}/`;
+      expected.push(href);
+      const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
+      const tagList = page.match(/<ul class="article-tags"[^>]*>([\s\S]*?)<\/ul>/)?.[1] || "";
+      const tags = [...tagList.matchAll(/<li>([^<]*)<\/li>/g)].map((match) => decodeHtml(match[1]));
+      tags.forEach((tag) => articleTags.add(tag));
+      const card = cards.find((entry) => entry.href === href);
+      assert.ok(card, `首页应包含 ${href}`);
+      assert.equal(card.kind, label);
+      assert.deepEqual(card.tags, tags, `${href} 的筛选标签应来自文章本身`);
+    }
   }
-  assert.match(buildSource, /selectHomeEntries\(byKey\.projects\.entries\)/);
-  assert.match(buildSource, /selectHomeEntries\(byKey\.writings\.entries\)/);
-  assert.match(buildSource, /selectHomeEntries\(byKey\.readings\.entries\)/);
-  assert.equal((projectSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(projectSection));
-  assert.equal((writingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(writingSection));
-  assert.equal((readingSection.match(/<\/strong>\s*<span>/g) ?? []).length, homeCount(readingSection));
-  assert.match(projectSection, /href="\/projects\/">所有项目/);
-  assert.match(css, /\.home #projects \.section-more \{[\s\S]*?margin-top: 18px;/);
-  assert.match(writingSection, /href="\/writings\/">所有文章/);
-  assert.match(writingSection, /class="writing-row(?: is-pinned)?" href="\/writings\/[^"/]+\/"/);
-  assert.match(readingSection, /href="\/readings\/">所有文章/);
+
+  assert.deepEqual(cards.map(({ href }) => href).sort(), expected.sort());
+  assert.equal(archiveCards(firstGrid).length, Math.min(9, cards.length));
+  assert.deepEqual(
+    [...archiveCards(firstGrid), ...archiveCards(additionalGrid)].map(({ href }) => href).sort(),
+    expected,
+    "禁用 JavaScript 时仍能访问每篇文章",
+  );
+  const tags = [...html.matchAll(/<a href="#archive" data-tag="([^"]*)">/g)]
+    .map((match) => decodeHtml(match[1]));
+  assert.deepEqual(tags, [...articleTags].sort((a, b) => a.localeCompare(b, "zh-CN")));
+  assert.match(html, /class="spotlight" aria-label="精选内容"/);
+  assert.match(html, /class="rs-nav" aria-label="主导航"/);
+  assert.match(html, /role="group" aria-label="按内容类型筛选"/);
+  assert.match(html, /class="result-count" aria-live="polite"/);
+  for (const label of ["首页", "写作", "项目", "阅读", "归档", "关于"]) {
+    const nav = html.match(/<nav class="rs-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || "";
+    assert.ok(nav.includes(`>${label}</a>`));
+  }
+  assert.match(html, /class="profile-socials" aria-label="社交平台"/);
+  assert.match(html, /href="https:\/\/x\.com\/Residualsun1\/"/);
+  assert.match(html, /href="https:\/\/github\.com\/residualsun1"/);
+  assert.match(html, /重要的是此时此刻/);
+  assert.doesNotMatch(html, /mailto:|class="hero-intro"|class="breadcrumb"/);
+});
+
+test("首页图片、图标、字体和筛选脚本均包含在静态构建中", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  const css = await readFile(new URL("homepage.css", root), "utf8");
+  const chrome = await readFile(new URL("site-chrome.css", root), "utf8");
+  const detail = detailPage(fixtureEntry(groupDefinitions[0]));
+  const script = await readFile(new URL("homepage.js", root), "utf8");
+  assert.match(html, /src="\/homepage\.js\?v=[0-9a-f]{12}"[^>]*defer/);
+  assert.doesNotMatch(html, /_next\/|react-dom|next\/|cdn\.tailwindcss/);
+  assert.match(css, /\.homepage\s*\{[\s\S]*?--rs-serif:\s*"Cormorant Garamond"/);
+  assert.match(chrome, /--rs-brand-font:\s*"Libre Baskerville"/);
+  assert.match(html, /class="rs-brand"/);
+  assert.match(detail, /class="rs-brand"/);
+  assert.doesNotMatch(detail, /homepage\.css|cormorant-garamond/);
+  assert.match(detail, /href="\/reader\.css\?v=[0-9a-f]{12}"/);
+  assert.match(script, /addEventListener\("hashchange"/);
+  assert.match(script, /aria-pressed/);
+  assert.match(script, /aria-expanded/);
+  const resources = new Set([
+    ...[...html.matchAll(/<img[^>]*src="([^"]+)"/g)].map((match) => match[1]),
+    ...[...css.matchAll(/url\("(\/fonts\/[^"?#]+\.woff2)"\)/g)].map((match) => match[1]),
+    "/icons/github.svg", "/icons/x.svg", "/fonts/libre-baskerville-latin.woff2",
+  ]);
+  for (const resource of resources) {
+    if (!resource.startsWith("/")) continue;
+    const bytes = await readFile(new URL(resource.slice(1).split("?")[0], root));
+    assert.ok(bytes.length > 0, `${resource} 应包含在静态部署产物中`);
+    if (resource.endsWith(".woff2")) assert.equal(bytes.subarray(0, 4).toString("ascii"), "wOF2");
+    if (resource.endsWith(".webp")) {
+      assert.equal(bytes.subarray(0, 4).toString("ascii"), "RIFF");
+      assert.equal(bytes.subarray(8, 12).toString("ascii"), "WEBP");
+    }
+  }
+});
+
+test("后续新文章自动进入首页，封面保留 GIF/WebP 且内容安全转义", () => {
+  const group = groupDefinitions[0];
+  const entries = Array.from({ length: 12 }, (_, index) => fixtureEntry(group, {
+    slug: `fixture-${index}`,
+    href: `/projects/fixture-${index}/`,
+    title: `新文章 ${index} <script>`,
+    description: "内容包含 </template> 与 & 符号",
+    author: '作者 "A"',
+    date: `2026-01-${String(index + 1).padStart(2, "0")}`,
+    tags: [index % 2 ? "阅读 & 讨论" : "AI", '标签 "A"'],
+    cover: index === 11 ? "/images/new-cover.gif" : index === 10 ? "/images/new-cover.webp" : "",
+    coverAlt: '封面 "A"',
+  }));
+  const html = homePage([{ group, entries }]);
+  const template = html.match(/<template id="archive-cards">([\s\S]*?)<\/template>/)?.[1] || "";
+  const cards = archiveCards(template);
+  assert.equal(cards.length, entries.length);
+  assert.equal(cards[0].href, "/projects/fixture-11/");
+  assert.deepEqual(cards[0].tags, entries[11].tags);
+  assert.match(html, /src="\/images\/new-cover\.gif"/);
+  assert.match(html, /src="\/images\/new-cover\.webp"/);
+  assert.match(html, /class="entry entry--archive entry--text-only"/);
+  assert.match(html, /&lt;script&gt;/);
+  assert.match(html, /&lt;\/template&gt; 与 &amp; 符号/);
+  assert.doesNotMatch(template, /<script>|<\/template>/);
+  assert.equal((html.match(/data-tag=/g) || []).length, 3);
 });
 
 test("项目、写作和阅读归档页采用聚焦且无摘要的布局", async () => {
@@ -179,69 +227,6 @@ test("按年份分层的 Markdown 文件保持原有栏目 URL", async () => {
   }
 });
 
-test("项目复用其他栏目的日期、标题、摘要与箭头布局", async () => {
-  const html = await readFile(new URL("index.html", root), "utf8");
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const projectSection = html.match(/<section class="content-section" id="projects"[\s\S]*?<\/section>/)?.[0] ?? "";
-  const projectGroup = groupDefinitions.find(({ key }) => key === "projects");
-  const fixtureRow = listRow(fixtureEntry(projectGroup, {
-    title: "固定项目标题",
-    description: "固定项目摘要",
-    date: "2026-01-02",
-    href: "/projects/fixture-current/",
-  }));
-  const projectRows = projectSection.match(/<a class="writing-row(?: is-pinned)?" href="\/projects\/[^"/]+\/">[\s\S]*?<\/a>/g) ?? [];
-
-  assert.match(projectSection, /class="writing-list"/);
-  assert.ok(projectRows.length >= 1);
-  for (const row of projectRows) {
-    assert.match(row, /class="writing-meta">[\s\S]*?<time datetime="\d{4}-\d{2}-\d{2}">\d{4}\.\d{2}\.\d{2}<\/time>/);
-    assert.match(row, /class="writing-copy">[\s\S]*?<strong>[\s\S]*?<\/strong>\s*<span>[^<]+<\/span>/);
-    assert.match(row, /class="row-arrow" aria-hidden="true">→<\/span>/);
-  }
-  assert.match(fixtureRow, /class="writing-row" href="\/projects\/fixture-current\/"/);
-  assert.match(fixtureRow, /<time datetime="2026-01-02">2026\.01\.02<\/time>/);
-  assert.match(fixtureRow, /<strong><span class="writing-title-text">固定项目标题<\/span><\/strong>\s*<span>固定项目摘要<\/span>/);
-  assert.match(fixtureRow, /class="row-arrow" aria-hidden="true">→<\/span>/);
-  assert.doesNotMatch(projectSection, /status-(?:label|active|completed)|迭代中|已完结/);
-  assert.doesNotMatch(projectSection, /更新于/);
-  assert.doesNotMatch(css, /\.status-(?:label|dot|completed)/);
-  assert.doesNotMatch(css, /\.project-(?:list|row|description|title)/);
-  assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: 112px minmax\(0, 1fr\) 32px;/);
-  assert.match(css, /\.writing-row time \{[\s\S]*?color: var\(--gray-700\);[\s\S]*?font-family: var\(--mono\);[\s\S]*?font-variant-numeric: tabular-nums;/);
-  assert.match(css, /\.pin-badge \{[\s\S]*?border: 1px solid var\(--gray-1000\);[\s\S]*?border-radius: 999px;[\s\S]*?background: var\(--gray-1000\);[\s\S]*?color: #fff;[\s\S]*?font-size: 10px;[\s\S]*?font-weight: 700;/);
-  assert.doesNotMatch(css, /\.pin-badge::before/);
-  assert.doesNotMatch(css, /\.home \.is-pinned|box-shadow: inset 2px 0 0 rgba\(139, 69, 19, 0\.68\)/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.writing-row \{[\s\S]*?grid-template-columns: 82px minmax\(0, 1fr\) 20px;/);
-});
-
-test("首页优先展示置顶内容并只在首页显示置顶标记", () => {
-  const group = groupDefinitions.find(({ key }) => key === "writings");
-  const entries = [
-    fixtureEntry(group, { title: "最新普通内容", date: "2026-08-05", pinned: false }),
-    fixtureEntry(group, { title: "较新置顶内容", date: "2026-08-04", pinned: true }),
-    fixtureEntry(group, { title: "次新普通内容", date: "2026-08-03", pinned: false }),
-    fixtureEntry(group, { title: "较早置顶内容", date: "2026-08-02", pinned: true }),
-  ];
-
-  assert.deepEqual(
-    selectHomeEntries(entries).map(({ title }) => title),
-    ["较新置顶内容", "较早置顶内容", "最新普通内容"],
-  );
-  assert.equal(selectHomeEntries(entries.map((entry) => ({ ...entry, pinned: true }))).length, 4);
-
-  const homeRow = listRow(entries[1], { showPinned: true });
-  const ordinaryHomeRow = listRow(entries[0], { showPinned: true });
-  const archiveRow = listRow(entries[1]);
-  assert.match(homeRow, /class="writing-row is-pinned"/);
-  assert.match(homeRow, /class="writing-meta">[\s\S]*?<time[\s\S]*?<span class="pin-badge pin-badge--writing-meta">置顶<\/span>/);
-  assert.match(homeRow, /<strong><span class="writing-title-text">较新置顶内容<\/span><span class="pin-badge pin-badge--writing-title">置顶<\/span><\/strong>/);
-  assert.doesNotMatch(homeRow, /class="pin-label"|class="pin-marker"/);
-  assert.doesNotMatch(ordinaryHomeRow, /class="writing-row is-pinned"|class="pin-badge"/);
-  assert.doesNotMatch(archiveRow, /class="pin-badge"/);
-
-});
-
 test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
   const fixture = await readFixture("markdown/legacy-features.md");
   const group = groupDefinitions.find(({ key }) => key === "writings");
@@ -265,7 +250,9 @@ test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
   assert.match(rendered, /<details>/);
   assert.match(rendered, /<summary>查看测试内容<\/summary>/);
   assert.match(page, /class="article-toc"/);
-  assert.match(page, /class="breadcrumb"/);
+  assert.doesNotMatch(page, /class="breadcrumb"/);
+  assert.match(page, /class="rs-header"/);
+  assert.match(page, /class="rs-brand"/);
   assert.match(page, /class="article-pagination"/);
   assert.match(page, /上一篇文章/);
   assert.match(page, /下一篇文章/);
@@ -275,7 +262,7 @@ test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
   assert.match(page, /class="article-author">测试作者<\/span>/);
   assert.match(page, /class="article-tags"/);
   assert.match(page, /<li>测试<\/li>/);
-  assert.match(page, /src="\/code-blocks\.js"/);
+  assert.match(page, /src="\/code-blocks\.js(?:\?v=[0-9a-f]{12})?"/);
 });
 
 test("归档和翻页链接只指向当前存在的文章", async () => {
@@ -324,10 +311,10 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   assert.match(css, /\.detail-editorial \.prose \{[\s\S]*?font-size: 15\.5px/);
   assert.match(css, /\.detail-editorial \.prose blockquote \{[\s\S]*?background: transparent/);
   assert.match(css, /\.detail-editorial \.article-pagination \{[\s\S]*?border-top: 0/);
-  assert.match(css, /\.hero-intro \{[\s\S]*?font-family: var\(--source-han-serif\)/);
   for (const { key } of groupDefinitions) {
     assert.match(detailPages[key], new RegExp(`<body class="detail detail-${key} detail-editorial">`));
-    assert.match(detailPages[key], /class="article-history">[\s\S]*?发布于：2026\.01\.02[\s\S]*?修改于：2026\.01\.02[\s\S]*?已修改 0 次/);
+    assert.match(detailPages[key], /class="article-published" datetime="2026-01-02">2026\.01\.02/);
+    assert.match(detailPages[key], /class="article-history">[\s\S]*?修改于：2026\.01\.02[\s\S]*?已修改 0 次/);
     assert.doesNotMatch(detailPages[key], /class="article-description"/);
     assert.match(detailPages[key], /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
     assert.doesNotMatch(detailPages[key], /class="eyebrow"/);
@@ -347,7 +334,8 @@ test("详情页根据完整 Git 历史显示最后修改日期与修改次数", 
     const directories = await groupDirectoryNames(key);
     for (const slug of directories) {
       const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
-      assert.match(page, /class="article-history">[\s\S]*?发布于：\d{4}\.\d{2}\.\d{2}[\s\S]*?修改于：\d{4}\.\d{2}\.\d{2}[\s\S]*?已修改 \d+ 次/);
+      assert.match(page, /class="article-published" datetime="\d{4}-\d{2}-\d{2}">\d{4}\.\d{2}\.\d{2}/);
+      assert.match(page, /class="article-history">[\s\S]*?修改于：\d{4}\.\d{2}\.\d{2}[\s\S]*?已修改 \d+ 次/);
     }
   }
 });
@@ -368,33 +356,6 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏版面", asyn
   assert.match(css, /\.article-pagination-item \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\);/);
   assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #f5f5f5;/);
   assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
-});
-
-test("首页三个栏目使用标题右侧延伸分隔线", async () => {
-  const html = await readFile(new URL("index.html", root), "utf8");
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const headings = html.match(/<header class="section-heading">/g) ?? [];
-  const rails = html.match(/<span class="section-kicker__rail" aria-hidden="true"><\/span>/g) ?? [];
-
-  assert.equal(headings.length, 3);
-  assert.equal(rails.length, 3);
-  assert.match(css, /\.section-kicker__rail::before \{[\s\S]*?height: 1px;[\s\S]*?background: var\(--gray-alpha-400\)/);
-  assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-size: 14px/);
-  assert.match(css, /\.section-heading \.section-kicker \{[\s\S]*?font-weight: 600/);
-  assert.match(css, /@media \(min-width: 601px\) \{[\s\S]*?\.home-layout > \.content-section \+ \.content-section \{ padding-top: 48px; \}/);
-  assert.match(css, /\.home-layout > #projects \{ padding-top: 15px; \}/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.section-heading \.section-kicker \{ gap: 10px; \}/);
-});
-
-test("首页使用 1020px 宽幅展示区与无照片的单列简介", async () => {
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const heroRule = css.match(/\.hero \{([^}]*)\}/)?.[1] ?? "";
-  assert.match(css, /\.home-layout \{[\s\S]*?padding-bottom: 112px/);
-  assert.match(css, /\.home-layout \{[\s\S]*?width: min\(calc\(100% - 48px\), 1020px\)/);
-  assert.doesNotMatch(css, /\.portrait-space/);
-  assert.doesNotMatch(heroRule, /grid-template-columns/);
-  assert.match(css, /\.hero-copy \{ width: 100%; \}/);
-  assert.doesNotMatch(css, /\.home-toc/);
 });
 
 test("全站使用白底、近黑文字与中性灰界面层", async () => {
@@ -544,10 +505,13 @@ test("数学公式按需加载当前 KaTeX 自动渲染资源", async () => {
   assert.equal(hasMath("$$\\int_0^1 x^2 \\, dx$$"), true);
   assert.equal(hasMath("```text\n$这只是代码$\n```"), false);
 
-  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
+  const mathPage = detailPage(fixtureEntry(groupDefinitions[1], { body: "行内公式 $E = mc^2$" }));
+  const plainPage = detailPage(fixtureEntry(groupDefinitions[1], { body: "不包含公式的文章。" }));
   const mathScript = await readFile(new URL("math.js", root), "utf8");
-  assert.match(buildSource, /katex@0\.18\.1/);
-  assert.match(buildSource, /integrity="sha384-/);
+  assert.match(mathPage, /katex@0\.18\.1/);
+  assert.match(mathPage, /integrity="sha384-/);
+  assert.match(mathPage, /src="\/math\.js\?v=[0-9a-f]{12}"/);
+  assert.doesNotMatch(plainPage, /katex|\/math\.js/);
   assert.match(mathScript, /renderMathInElement/);
   assert.match(mathScript, /document\.querySelector\("\.prose"\)/);
 });
@@ -572,7 +536,7 @@ test("文章音频安全渲染、原生降级并按需加载本地 APlayer", asy
   assert.match(rendered, /<source src="https:\/\/media\.example\.com\/song\.mp3">/);
   assert.match(rendered, /rel="noreferrer">打开音频来源<\/a>/);
   assert.match(audioPage, /href="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.css"/);
-  assert.match(audioPage, /src="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.js"[\s\S]*?src="\/audio-player\.js"/);
+  assert.match(audioPage, /src="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.js"[\s\S]*?src="\/audio-player\.js(?:\?v=[0-9a-f]{12})?"/);
   assert.doesNotMatch(audioPage, /Meting\.min\.js/);
   assert.doesNotMatch(plainPage, /APlayer\.min|audio-player\.js/);
   assert.match(playerScript, /autoplay: false/);
@@ -617,7 +581,7 @@ test("网易云音频支持结构化 ID 与页面 URL，并单独按需加载 Me
   assert.doesNotMatch(structuredHtml, /audio-caption|audio-source-link|打开音乐来源/);
   assert.match(compatibleHtml, /<meting-js server="netease" type="playlist" id="60198"/);
   assert.doesNotMatch(compatibleHtml, /audio-caption|audio-source-link|打开音乐来源/);
-  assert.match(metingPage, /src="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.js"[\s\S]*?src="\/vendor\/meting\/2\.0\.2\/Meting\.min\.js"[\s\S]*?src="\/audio-player\.js"/);
+  assert.match(metingPage, /src="\/vendor\/aplayer\/1\.10\.1\/APlayer\.min\.js"[\s\S]*?src="\/vendor\/meting\/2\.0\.2\/Meting\.min\.js"[\s\S]*?src="\/audio-player\.js(?:\?v=[0-9a-f]{12})?"/);
   assert.doesNotMatch(directPage, /Meting\.min\.js/);
   assert.match(metingScript.toString("utf8"), /MetingJS v2\.0\.2/);
   assert.match(metingScript.toString("utf8"), /lrcType:\w+\.meta\.lrcType\|\|3/);
@@ -627,60 +591,6 @@ test("网易云音频支持结构化 ID 与页面 URL，并单独按需加载 Me
   assert.match(playerScript, /status\.textContent = "播放器暂时无法加载。"/);
   assert.match(siteCss, /\.audio-embed\.is-enhanced \.audio-caption-title,[\s\S]*?display: none;/);
   assert.match(siteCss, /\.audio-embed\.is-enhanced \.audio-caption:not\(\.has-source-link\)[\s\S]*?display: none;/);
-});
-
-test("首页文章列表使用留白分组、Libre Baskerville 与黑色标题", async () => {
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const homeTitleRule = css.match(/\.home \.writing-title-text \{[\s\S]*?\n\}/)?.[0] ?? "";
-  assert.match(css, /\.home \.writing-list \{ border-top: 0; \}/);
-  assert.match(css, /\.home \.writing-row \{[\s\S]*?padding-block: \d+px;[\s\S]*?border-bottom: 0;/);
-  assert.match(css, /\.writing-row \{[\s\S]*?grid-template-columns: 112px minmax\(0, 1fr\) 32px/);
-  assert.match(css, /\.writing-copy \{[\s\S]*?min-width: 0;/);
-  assert.match(css, /\.writing-copy strong \{[\s\S]*?max-width: 100%;[\s\S]*?overflow: hidden;/);
-  assert.match(css, /\.writing-title-text \{[\s\S]*?flex: 0 1 auto;[\s\S]*?text-overflow: ellipsis;/);
-  assert.match(css, /--title-serif: "Libre Baskerville"/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?color: var\(--gray-1000\)/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-size: 16px/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?font-weight: 700/);
-  assert.match(css, /\.home \.writing-copy strong \{[\s\S]*?display: block;[\s\S]*?width: 100%;[\s\S]*?overflow: visible;/);
-  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?display: inline;[\s\S]*?text-overflow: clip;[\s\S]*?white-space: normal;[\s\S]*?overflow-wrap: anywhere;/);
-  assert.match(css, /\.home \.writing-copy \.pin-badge--writing-title \{[\s\S]*?margin-left: 8px;[\s\S]*?vertical-align: 0\.12em;/);
-  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?text-decoration-color: #a3a3a3/);
-  assert.match(css, /\.home \.writing-title-text \{[\s\S]*?transition: text-decoration-color 0\.2s ease, text-decoration-thickness 0\.2s ease/);
-  assert.doesNotMatch(homeTitleRule, /text-decoration-line: underline/);
-  assert.doesNotMatch(css, /\.home \.writing-row\.is-pinned \.writing-title-text/);
-  assert.match(css, /\.home \.writing-row:hover \.writing-title-text \{[\s\S]*?text-decoration-color: var\(--gray-1000\);[\s\S]*?text-decoration-line: underline;[\s\S]*?text-decoration-thickness: 1\.5px/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.pin-badge--writing-title \{ display: none; \}[\s\S]*?\.home \.writing-meta \{[\s\S]*?width: max-content;[\s\S]*?justify-items: center;[\s\S]*?\.home \.pin-badge--writing-meta \{[\s\S]*?display: inline-flex;[\s\S]*?margin-top: 3px;/);
-  assert.match(css, /\.home \.writing-row:hover \{ background: transparent; \}/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?color: #555/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-family: var\(--body-reading\)/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?font-size: 13\.8px/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?line-height: 23\.5px/);
-  assert.match(css, /\.home \.writing-copy > span \{[\s\S]*?text-align: left/);
-});
-
-test("首页复刻参考站的视口级个人展示与滚动节奏", async () => {
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const html = await readFile(new URL("index.html", root), "utf8");
-  assert.match(css, /\.home \.site-header-inner \{[\s\S]*?min-height: 172px;[\s\S]*?padding-top: 82px;/);
-  assert.match(css, /\.home \.brand-mark \{[\s\S]*?width: 90px;[\s\S]*?height: 90px;/);
-  assert.match(css, /\.hero \{[\s\S]*?display: flex;[\s\S]*?min-height: max\(620px, calc\(100svh - 317px\)\);[\s\S]*?padding: 0 0 76px;[\s\S]*?align-items: flex-end;/);
-  assert.match(css, /\.hero-intro \{[\s\S]*?max-width: 760px;[\s\S]*?color: var\(--gray-1000\);[\s\S]*?font-family: "Times New Roman", Times, serif;[\s\S]*?font-size: 30px;[\s\S]*?font-weight: 400;[\s\S]*?line-height: 1\.3;/);
-  assert.match(css, /\.hero-intro p \{ margin: 0; color: inherit; font-size: inherit; font-weight: inherit; \}/);
-  assert.doesNotMatch(css, /\.hero-intro p:first-child/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.home \.site-header-inner \{ min-height: 114px; padding-top: 24px; \}[\s\S]*?\.home \.brand-mark \{ width: 90px; height: 90px; \}[\s\S]*?\.hero \{[\s\S]*?min-height: max\(580px, calc\(100svh - 109px\)\);[\s\S]*?padding: 0 0 36px;[\s\S]*?\.hero-intro \{ gap: 24px; font-size: 30px; line-height: 1\.3; \}/);
-  assert.match(html, /Hello, I’m Huang\./);
-  assert.match(html, /where AI meets the humanities/);
-  assert.match(html, /home to my projects, writings and readings/);
-  assert.doesNotMatch(html, /family=Nunito\+Sans/);
-});
-
-test("社交入口使用中性灰默认色与黑色悬浮状态", async () => {
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  assert.match(css, /\.social-links \{[\s\S]*?color: #555/);
-  assert.match(css, /\.social-links a span \{[\s\S]*?border-bottom: 1px solid #bdbdbd/);
-  assert.match(css, /\.social-links a:hover \{ color: var\(--gray-1000\); \}/);
-  assert.match(css, /\.social-links a:hover span \{ border-bottom-color: var\(--gray-1000\); \}/);
 });
 
 test("Markdown 无序与有序列表支持多层缩进", () => {
@@ -734,7 +644,7 @@ test("正文目录可独立滚动并随当前章节自动高亮", async () => {
   assert.match(css, /\.article-toc::-webkit-scrollbar \{ display: none; \}/);
   assert.match(css, /\.article-toc a:hover,[\s\S]*?\.article-toc a\[aria-current="location"\][\s\S]*?color: var\(--gray-1000\)/);
   assert.match(page, /class="article-toc" aria-label="文章目录" tabindex="0"/);
-  assert.match(page, /src="\/toc\.js"/);
+  assert.match(page, /src="\/toc\.js(?:\?v=[0-9a-f]{12})?"/);
   assert.match(tocScript, /setAttribute\("aria-current", "location"\)/);
   assert.match(tocScript, /getBoundingClientRect\(\)\.top <= readingLine/);
   assert.match(tocScript, /window\.requestAnimationFrame\(updateActiveHeading\)/);
@@ -786,20 +696,6 @@ test("正文与引用中的西文使用 Times New Roman，引用中文使用网�
   assert.match(css, /\.prose code \{[\s\S]*?font-family: var\(--code-font\)/);
 });
 
-test("页眉页脚无分隔线且页脚显示邮箱", async () => {
-  const css = await readFile(new URL("styles.css", root), "utf8");
-  const html = await readFile(new URL("index.html", root), "utf8");
-  const headerRule = css.match(/\.site-header \{([\s\S]*?)\}/)?.[1] ?? "";
-  assert.doesNotMatch(headerRule, /border-bottom/);
-  assert.match(headerRule, /background: var\(--paper-surface\), var\(--background-100\)/);
-  assert.match(headerRule, /backdrop-filter: none/);
-  assert.doesNotMatch(css, /\.site-footer \{[\s\S]*?border-top/);
-  assert.match(html, /class="footer-email" href="mailto:Residualsun@proton\.me"[\s\S]*?<svg width="14" height="14"[\s\S]*?<span>Residualsun@proton\.me<\/span>/);
-  assert.doesNotMatch(html, /持续学习，持续修订/);
-  assert.match(css, /\.footer-email \{[\s\S]*?font-family: var\(--title-serif\)/);
-  assert.match(css, /\.footer-email \{[\s\S]*?color: #555/);
-});
-
 test("所有正文的回到首页入口位于正文主列最左侧", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   for (const group of groupDefinitions) {
@@ -810,7 +706,7 @@ test("所有正文的回到首页入口位于正文主列最左侧", async () =>
   assert.match(css, /\.article-footer \{[\s\S]*?margin: 24px 0 96px/);
 });
 
-test("普通拉丁文字统一使用 Libre Baskerville，代码保留代码字体", async () => {
+test("阅读界面拉丁标题使用 Libre Baskerville，代码保留代码字体", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
   assert.match(css, /--sans: "Libre Baskerville", Georgia/);
   assert.match(css, /--mono: "Libre Baskerville", Georgia/);

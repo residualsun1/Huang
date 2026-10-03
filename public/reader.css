@@ -1,0 +1,20 @@
+/* The imported article body keeps its original typography and interactions. */
+.detail-editorial .article-header { padding: 36px 0 32px; }
+.detail-editorial .article-header h1 { max-width: 940px; font-size: clamp(30px, 3.3vw, 44px); line-height: 1.3; }
+.detail-editorial .article-subtitle { max-width: 940px; margin: 16px 0 0; font-family: var(--rs-reading); font-size: 21px; line-height: 1.55; color: #626262; }
+.detail-editorial .article-meta { margin-top: 28px; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+.detail-editorial .article-byline { display: flex; align-items: center; flex-wrap: nowrap; gap: 14px; }
+.article-avatar { display: block; width: 48px; height: 48px; flex: 0 0 48px; object-fit: cover; border-radius: 50%; }
+.article-author-details { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-size: 13px; line-height: 20px; }
+.detail-editorial .article-author { color: #191919; font-weight: 400; }
+.detail-editorial .article-author::after { content: none; }
+.article-published { color: #626262; }
+.article-record { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; width: 100%; }
+.detail-editorial .article-history { font-size: 11px; line-height: 18px; }
+.detail-editorial .article-tags { margin: 0; }
+@media (max-width: 767px) {
+  .detail-editorial .article-header { padding: 24px 0; }
+  .detail-editorial .article-header h1 { font-size: 30px; line-height: 1.35; }
+  .detail-editorial .article-subtitle { font-size: 18px; line-height: 1.6; margin-top: 12px; }
+  .detail-editorial .article-meta { margin-top: 24px; gap: 16px; }
+}

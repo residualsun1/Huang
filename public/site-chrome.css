@@ -1,0 +1,57 @@
+/* One brand shell for the React homepage and standalone article pages. */
+:root {
+  --rs-brand-font: "Libre Baskerville", Georgia, "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
+  --rs-serif: var(--rs-brand-font);
+  --rs-reading: "Times New Roman", "Noto Serif SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
+}
+.rs-header, .rs-footer, .rs-copyright { color: #191919; font-family: var(--rs-serif); }
+.rs-header { background: #fff; }
+.rs-header *, .rs-footer *, .rs-copyright { box-sizing: border-box; }
+.rs-header a, .rs-footer a { color: inherit; text-decoration: none; }
+.rs-header a:focus-visible, .rs-footer a:focus-visible { outline: 2px solid #191919; outline-offset: 4px; }
+.rs-masthead { min-height: 76px; padding: 16px 5%; display: flex; align-items: center; justify-content: center; }
+.rs-brand { margin: 0; text-align: center; white-space: nowrap; font: 700 24px/32px var(--rs-brand-font); font-synthesis-weight: auto; }
+.rs-nav { display: flex; justify-content: safe center; align-items: stretch; width: min(1440px, 90%); margin-inline: auto; height: 56px; gap: 32px; border-block: 1px solid #e0e5e5; overflow-x: auto; scrollbar-width: none; }
+.rs-nav::-webkit-scrollbar { display: none; }
+.rs-nav a { display: flex; align-items: center; position: relative; flex: 0 0 auto; font-size: 14px; line-height: 20px; }
+.rs-nav a:hover { color: #666; }
+.rs-nav .is-active { font-weight: 700; }
+.rs-nav .is-active::after { content: ""; position: absolute; height: 3px; bottom: 0; left: 0; right: 0; background: #191919; }
+.rs-footer { margin: 80px 8px 0; padding-bottom: 40px; }
+.rs-footer-title { font: 700 15px/24px var(--rs-serif); border-bottom: 1px solid #e9e9e9; padding-bottom: 12px; }
+.rs-footer nav { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-top: 24px; font-size: 13px; line-height: 20px; color: #626262; }
+.rs-footer a:hover { text-decoration: underline; }
+.rs-copyright { background: #f5f5f5; border-top: 1px solid #e9e9e9; padding: 36px 16px; text-align: center; color: #626262; font-size: 12px; line-height: 18px; }
+.rs-footer-width { width: min(1248px, calc(100% - 64px)); margin-inline: auto; }
+@media (min-width: 768px) and (max-width: 1023px) { .rs-footer-width { width: calc(100% - 40px); } }
+@media (max-width: 767px) {
+  .rs-masthead { min-height: 60px; padding: 16px 3%; }
+  .rs-brand { font-size: 16px; line-height: 24px; }
+  .rs-nav { width: 94%; gap: clamp(16px, 6vw, 26px); height: 48px; }
+  .rs-footer-width { width: 100%; }
+  .rs-footer { margin: 48px 16px 0; padding-bottom: 32px; }
+}
+
+/* Shared by both documents: native links keep navigation and history intact. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  .rs-header { view-transition-name: site-header; }
+
+  ::view-transition { pointer-events: none; }
+  ::view-transition-group(root) { animation: none; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 240ms;
+    animation-timing-function: ease-in-out;
+  }
+
+  /* Show the incoming header immediately, without a duplicate or a slide. */
+  ::view-transition-group(site-header) { animation: none; z-index: 1; }
+  ::view-transition-old(site-header) { display: none; }
+  ::view-transition-new(site-header) { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}

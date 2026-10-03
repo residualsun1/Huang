@@ -16,6 +16,12 @@ const types = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+  ".woff2": "font/woff2",
+  ".json": "application/json; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
 };
 
 await buildSite();
@@ -27,7 +33,8 @@ const server = createServer((request, response) => {
   if (!path.extname(target)) target = path.join(target, "index.html");
   const resolved = path.resolve(target);
 
-  if (!resolved.startsWith(path.resolve(clientRoot)) || !existsSync(resolved) || !statSync(resolved).isFile()) {
+  const relative = path.relative(clientRoot, resolved);
+  if (relative.startsWith("..") || path.isAbsolute(relative) || !existsSync(resolved) || !statSync(resolved).isFile()) {
     response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
     response.end("页面不存在");
     return;
