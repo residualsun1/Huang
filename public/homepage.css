@@ -87,6 +87,7 @@ h2 {
   font-weight: 600;
 }
 .spotlight {
+  --line: #000;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2.057fr) minmax(0, 1fr);
   grid-template-rows: 1fr 1fr;
@@ -221,7 +222,7 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 3.22fr) minmax(0, 1fr);
   gap: 24px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid #000;
   margin-inline: 8px;
   padding-top: 24px;
 }

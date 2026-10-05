@@ -13,6 +13,7 @@
 .rs-brand { margin: 0; text-align: center; white-space: nowrap; font: 700 24px/32px var(--rs-brand-font); font-synthesis-weight: auto; }
 .rs-nav { display: flex; justify-content: safe center; align-items: stretch; width: min(1440px, 90%); margin-inline: auto; height: 56px; gap: 32px; border-block: 1px solid #e0e5e5; overflow-x: auto; scrollbar-width: none; }
 .rs-nav::-webkit-scrollbar { display: none; }
+.homepage .rs-nav { border-block-color: #000; }
 .rs-nav a { display: flex; align-items: center; position: relative; flex: 0 0 auto; font-size: 14px; line-height: 20px; }
 .rs-nav a:hover { color: #666; }
 .rs-nav .is-active { font-weight: 700; }

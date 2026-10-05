@@ -80,9 +80,6 @@ function siteHeader(active = "") {
     </div>
     <nav class="rs-nav" aria-label="主导航">
       ${navItem("首页", "/", "home")}
-      ${navItem("写作", "/#writings", "writings")}
-      ${navItem("项目", "/#projects", "projects")}
-      ${navItem("阅读", "/#readings", "readings")}
       <a href="/#archive">归档</a><a href="/#about">关于</a>
     </nav>
   </header>`;

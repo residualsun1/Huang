@@ -118,10 +118,15 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   assert.match(html, /class="rs-nav" aria-label="主导航"/);
   assert.match(html, /role="group" aria-label="按内容类型筛选"/);
   assert.match(html, /class="result-count" aria-live="polite"/);
-  for (const label of ["首页", "写作", "项目", "阅读", "归档", "关于"]) {
+  for (const label of ["首页", "归档", "关于"]) {
     const nav = html.match(/<nav class="rs-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || "";
     assert.ok(nav.includes(`>${label}</a>`));
   }
+  const nav = html.match(/<nav class="rs-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || "";
+  assert.doesNotMatch(nav, />写作<|>项目<|>阅读</);
+  const spotlight = html.match(/<section class="spotlight"[^>]*>([\s\S]*?)<\/section>/)?.[1] || "";
+  assert.equal((spotlight.match(/class="entry entry--small/g) || []).length, 4);
+  assert.doesNotMatch(spotlight, /href="\/projects\//);
   assert.match(html, /class="profile-socials" aria-label="社交平台"/);
   assert.match(html, /href="https:\/\/x\.com\/Residualsun1\/"/);
   assert.match(html, /href="https:\/\/github\.com\/residualsun1"/);
