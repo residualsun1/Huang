@@ -1,0 +1,39 @@
+.ink-animations { display: flex; flex-direction: column; justify-content: center; gap: 24px; min-height: 0; }
+.ink-animations > figure { flex: none; min-width: 0; margin: 0; }
+.echo-hero { --eh-ink: #161311; }
+  .echo-hero .eh-plate { position: relative; width: 100%; overflow: hidden; aspect-ratio: 16 / 9; container-type: inline-size; }
+.echo-brief .eb-plate { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+.echo-brief canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .echo-hero .eh-plate > * { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* What is on the plate, as plain text in the empty ground under the ink: whose voice (persona stage only), then
+     which model. Each label replaces the last, fading out before the next fades in. */
+  .echo-hero .eh-plate > .eh-caption {
+    inset: auto 0 3.4% 0; height: auto; display: flex; flex-direction: column; align-items: center; row-gap: 3px; pointer-events: none;
+    font-family: ui-monospace, monospace; color: var(--eh-ink); text-rendering: geometricPrecision;
+  }
+  .echo-hero .eh-ask { font-size: 13.5px; line-height: 1.25; min-height: 1.25em; text-align: center; padding: 0 1em; white-space: pre-wrap; }
+  .echo-hero .eh-ask-mark { opacity: 0.4; margin-right: 0.55em; }
+  .echo-hero .eh-steps { display: grid; font-size: 12px; line-height: 1.2; letter-spacing: 0.03em; }
+  .echo-hero .eh-step { grid-area: 1 / 1; text-align: center; opacity: 0; }
+  .echo-hero .eh-cursor { display: inline-block; width: 0.55em; height: 1.02em; margin-left: 1px; vertical-align: -0.17em; background: var(--eh-ink); }
+  .echo-hero .eh-cursor.off { visibility: hidden; }
+  /* The sample as a thought: a soft pale rounded card, no outline, sized to the whole line before it is typed. Its type is
+     sized in plate units (--eh-unit is one unit in px, set by the script), so a bubble keeps its place at any width. */
+  .echo-hero .eh-plate > .eh-bubble {
+    inset: auto; height: auto; display: block; isolation: isolate; box-sizing: border-box; padding: 0.76em 1.12em; text-align: center;
+    font-family: ui-monospace, monospace; font-size: calc(var(--eh-unit, 0.7px) * 17.6); line-height: 1.44; color: var(--eh-ink);
+    text-rendering: geometricPrecision; overflow-wrap: anywhere; opacity: 0; pointer-events: none;
+  }
+  .echo-hero .eh-bubble::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--soft);
+    border-radius: 0.9em; filter: blur(1px);
+  }
+  .echo-hero .eh-unsaid, .echo-hero .eh-prompt-unsaid { visibility: hidden; }
+  /* Phones: a square plate, so the ink draws larger and each thought has room above its mark. */
+  @media (max-width: 519px) {
+    .echo-brief .eb-plate { aspect-ratio: 540 / 850; }
+    .echo-hero .eh-plate { aspect-ratio: 1 / 1; }
+    .echo-hero .eh-ask { font-size: 12.5px; min-height: 2.5em; display: flex; align-items: flex-end; justify-content: center; }
+    .echo-hero .eh-steps { font-size: 11.5px; }
+  }
+

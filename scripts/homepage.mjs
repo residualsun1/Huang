@@ -76,7 +76,10 @@ export function homePage(collections) {
   <link rel="stylesheet" href="${escapeHtml(assetUrl("/homepage.css"))}">
   <link rel="stylesheet" href="${escapeHtml(assetUrl("/fonts.css"))}">
   <link rel="stylesheet" href="${escapeHtml(assetUrl("/site-chrome.css"))}">
+  <link rel="stylesheet" href="${escapeHtml(assetUrl("/ink-hero.css"))}">
   <script src="${escapeHtml(assetUrl("/homepage.js"))}" defer></script>
+  <script src="${escapeHtml(assetUrl("/ink-hero.js"))}" defer></script>
+  <script src="${escapeHtml(assetUrl("/training-animation.js"))}" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -93,7 +96,19 @@ export function homePage(collections) {
       </nav>
     </header>
     <main id="main" tabindex="-1" class="page-width">
-      <section class="spotlight" aria-label="精选内容">${lead ? entryCard(lead, "lead") : ""}${spotlights.map((entry) => entryCard(entry, "small")).join("")}</section>
+      <section class="spotlight" aria-label="精选内容">
+        <div class="entry entry--lead ink-animations">
+        <figure class="echo-hero" role="img" aria-label="墨迹动画：散落的墨点汇聚成方块，再变化成不同作者风格的墨迹。">
+          <div class="eh-plate" aria-hidden="true">
+            <canvas class="eh-ink"></canvas>
+            <div class="eh-bubble"><span class="eh-said"></span><span class="eh-cursor"></span><span class="eh-unsaid"></span></div>
+            <div class="eh-caption"><div class="eh-ask"><span class="eh-ask-line"><span class="eh-ask-mark">&gt;</span><span class="eh-prompt"></span><span class="eh-prompt-unsaid"></span></span></div><div class="eh-steps"><span class="eh-step">base model</span><span class="eh-step">assistant</span><span class="eh-step">writing model</span></div></div>
+          </div>
+        </figure>
+        <figure class="echo-brief" role="img" aria-label="墨迹流程解释动画：模型将文章提炼为不同详细程度的提纲，Echo 再根据作者风格和提纲学习写回文章。">
+          <div class="eb-plate" aria-hidden="true"><canvas></canvas></div>
+        </figure>
+        </div>${spotlights.map((entry) => entryCard(entry, "small")).join("")}</section>
       <div class="archive-layout">
         <section class="archive" id="archive" aria-label="内容归档">
           <span class="archive-anchor" id="projects" aria-hidden="true"></span>
