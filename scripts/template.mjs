@@ -186,14 +186,6 @@ export function detailPage(entry, previousEntry, nextEntry) {
   const toc = createTableOfContents(rendered.html);
   const author = `<span class="article-author">${escapeHtml(entry.author || "Residualsun")}</span>`;
   const subtitle = entry.homeDescription ? `<p class="article-subtitle">${escapeHtml(entry.homeDescription)}</p>` : "";
-  const updatedDate = entry.updatedDate || entry.date;
-  const modificationCount = Math.max(0, Number(entry.modificationCount) || 0);
-  const articleHistory = `<span class="article-history">
-            <time datetime="${escapeHtml(updatedDate)}">修改于：${formatDate(updatedDate)}</time>
-            <span class="article-history-separator" aria-hidden="true">·</span>
-            <span>已修改 ${modificationCount} 次</span>
-          </span>`;
-  const tags = entry.tags.length ? `<ul class="article-tags" aria-label="文章标签">${entry.tags.map((tag) => `<li>${escapeHtml(tag)}</li>`).join("")}</ul>` : "";
   const pagination = articlePagination(previousEntry, nextEntry);
   return layout({
     title: `${entry.title} — Residualsun`,
@@ -220,7 +212,6 @@ export function detailPage(entry, previousEntry, nextEntry) {
               ${author}<time class="article-published" datetime="${escapeHtml(entry.date)}">${publicationDateHtml(entry.date)}</time>
             </div>
           </div>
-          <div class="article-record">${articleHistory}${tags}</div>
         </div>
       </header>
       <div class="article-layout">

@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
+import path from "node:path";
 import test from "node:test";
 import { detailPage } from "../scripts/build.mjs";
 import { homePage } from "../scripts/homepage.mjs";
 import { createBuildQueue } from "../scripts/build-queue.mjs";
+import { normalizeList, parseFrontmatter } from "../scripts/frontmatter.mjs";
 import { hasAudio, hasMath, hasMetingAudio, renderMarkdown } from "../scripts/markdown.mjs";
 
 const root = new URL("../dist/client/", import.meta.url);
@@ -90,12 +92,14 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   const articleTags = new Set();
 
   for (const { key, label } of groupDefinitions) {
-    for (const slug of await groupDirectoryNames(key)) {
+    const files = await readdir(new URL(`../content/${key}/`, import.meta.url), { recursive: true, withFileTypes: true });
+    for (const file of files.filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".md"))) {
+      const source = await readFile(path.join(file.parentPath, file.name), "utf8");
+      const { data } = parseFrontmatter(source);
+      const slug = String(data.slug || path.basename(file.name, path.extname(file.name))).trim();
       const href = `/${key}/${slug}/`;
       expected.push(href);
-      const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
-      const tagList = page.match(/<ul class="article-tags"[^>]*>([\s\S]*?)<\/ul>/)?.[1] || "";
-      const tags = [...tagList.matchAll(/<li>([^<]*)<\/li>/g)].map((match) => decodeHtml(match[1]));
+      const tags = normalizeList(data.tags);
       tags.forEach((tag) => articleTags.add(tag));
       const card = cards.find((entry) => entry.href === href);
       assert.ok(card, `首页应包含 ${href}`);
@@ -282,8 +286,6 @@ test("固定夹具覆盖旧 Hugo 语法与详情页结构", async () => {
   assert.match(page, /href="\/writings\/fixture-next\/"/);
   assert.doesNotMatch(page, /class="article-description"/);
   assert.match(page, /class="article-author">测试作者<\/span>/);
-  assert.match(page, /class="article-tags"/);
-  assert.match(page, /<li>测试<\/li>/);
   assert.match(page, /src="\/code-blocks\.js(?:\?v=[0-9a-f]{12})?"/);
 });
 
@@ -336,28 +338,20 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   for (const { key } of groupDefinitions) {
     assert.match(detailPages[key], new RegExp(`<body class="detail detail-${key} detail-editorial">`));
     assert.match(detailPages[key], /<time class="article-published" datetime="2026-01-02">2026 <span class="article-date-unit">年<\/span> 1 <span class="article-date-unit">月<\/span> 2 <span class="article-date-unit">日<\/span><\/time>/);
-    assert.match(detailPages[key], /class="article-history">[\s\S]*?修改于：2026\.01\.02[\s\S]*?已修改 0 次/);
     assert.doesNotMatch(detailPages[key], /class="article-description"/);
     assert.match(detailPages[key], /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
     assert.doesNotMatch(detailPages[key], /class="eyebrow"/);
   }
 });
 
-test("详情页根据完整 Git 历史显示最后修改日期与修改次数", async () => {
-  const buildSource = await readFile(new URL("../scripts/build.mjs", import.meta.url), "utf8");
-  const css = await readFile(new URL("styles.css", root), "utf8");
-
-  assert.match(buildSource, /gitOutput\(\["log", "--follow", "--format=%cs", "--", relativePath\]\)/);
-  assert.match(buildSource, /modificationCount: Math\.max\(0, dates\.length - 1\)/);
-  assert.match(buildSource, /gitOutput\(\["fetch", "--unshallow", "--quiet", "origin"\]\)/);
-  assert.match(css, /\.article-history \{[\s\S]*?display: inline-flex;[\s\S]*?flex-wrap: wrap;/);
-
+test("文章头部显示首次发布日期，省略修改历史和标签", async () => {
   for (const { key } of groupDefinitions) {
     const directories = await groupDirectoryNames(key);
     for (const slug of directories) {
       const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
-      assert.match(page, /class="article-published" datetime="\d{4}-\d{2}-\d{2}">\d{4} <span class="article-date-unit">年<\/span>/);
-      assert.match(page, /class="article-history">[\s\S]*?修改于：\d{4}\.\d{2}\.\d{2}[\s\S]*?已修改 \d+ 次/);
+      const header = page.match(/<header class="article-header">[\s\S]*?<\/header>/)?.[0] || "";
+      assert.match(header, /class="article-published" datetime="\d{4}-\d{2}-\d{2}">\d{4} <span class="article-date-unit">年<\/span>/);
+      assert.doesNotMatch(header, /article-record|article-history|article-tags|修改于：|已修改 \d+ 次/);
     }
   }
 });

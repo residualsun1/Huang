@@ -2,7 +2,7 @@
 .detail-editorial .article-header { padding: 36px 0 32px; }
 .detail-editorial .article-header h1 { max-width: 940px; font-size: 29px; line-height: 1.23; color: #353535; }
 .detail-editorial .article-subtitle { max-width: 940px; margin: 14px 0 0; font-family: var(--rs-reading); font-size: 18px; line-height: 1.5; color: #767676; }
-.detail-editorial .article-meta { margin-top: 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+.detail-editorial .article-meta { margin-top: 24px; display: flex; flex-direction: column; align-items: flex-start; }
 .detail-editorial .article-byline { display: flex; align-items: center; flex-wrap: nowrap; gap: 14px; }
 .article-avatar { display: block; width: 48px; height: 48px; flex: 0 0 48px; object-fit: cover; border-radius: 50%; }
 .article-author-details { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; font-size: 13px; line-height: 20px; }
@@ -16,9 +16,6 @@
   color: #767676;
 }
 .article-date-unit { font-weight: 400; }
-.article-record { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; width: 100%; }
-.detail-editorial .article-history { font-size: 11px; line-height: 18px; }
-.detail-editorial .article-tags { margin: 0; }
 .article-back-home { display: none; }
 @media (max-width: 767px) {
   .detail-editorial > .rs-header { display: none; }
@@ -39,7 +36,6 @@
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
-  .detail-editorial .article-record { display: none; }
   .detail-editorial .prose { margin-top: 24px; }
   .detail-editorial .prose > :first-child { margin-top: 0; }
 }

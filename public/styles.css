@@ -752,36 +752,6 @@ a { color: inherit; }
   content: "·";
 }
 
-.article-history {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.article-history-separator { color: var(--gray-alpha-500); }
-
-/* 文章标签位于右侧；使用无序列表保留正确的语义结构。 */
-.article-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: flex-end;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.article-tags li {
-  display: inline-flex;
-  min-height: 24px;
-  align-items: center;
-  padding: 4px 8px;
-  border: 1px solid var(--gray-alpha-400);
-  border-radius: 9999px;
-  background: var(--gray-alpha-100);
-}
-
 /* 四个内容栏目均不在详情页显示摘要，因此缩短标题与元信息之间的距离。 */
 .detail-editorial .article-meta { margin-top: 24px; }
 
@@ -1758,7 +1728,6 @@ a.article-pagination-item:hover {
   .article-header { padding: 48px 0; }
   .article-header h1 { font-size: 36px; line-height: 41px; letter-spacing: -0.045em; }
   .article-meta { align-items: flex-start; flex-direction: column; }
-  .article-tags { justify-content: flex-start; }
 
   /* 手机端 Markdown 正文与扩展组件。 */
   .prose {

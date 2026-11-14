@@ -1,6 +1,5 @@
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
-import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { detailPage, collectionPage, notFoundPage } from "./template.mjs";
@@ -17,41 +16,6 @@ const siteUrl = String(process.env.SITE_URL || process.env.CF_PAGES_URL || "http
   .replace(/\/+$/, "");
 const buildCommit = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "").trim();
 let stylesVersion = "development";
-
-function gitOutput(args) {
-  return execFileSync("git", args, {
-    cwd: root,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  }).trim();
-}
-
-function ensureCompleteGitHistory() {
-  let shallow;
-  try {
-    shallow = gitOutput(["rev-parse", "--is-shallow-repository"]);
-  } catch {
-    throw new Error("无法读取 Git 历史；文章修改日期和修改次数需要在 Git 仓库中构建");
-  }
-
-  if (shallow !== "true") return;
-  try {
-    gitOutput(["fetch", "--unshallow", "--quiet", "origin"]);
-  } catch {
-    throw new Error("当前仓库是浅克隆，且无法补全 Git 历史；不能可靠计算文章修改次数");
-  }
-}
-
-function contentHistory(relativePath, publishedDate) {
-  const dates = gitOutput(["log", "--follow", "--format=%cs", "--", relativePath])
-    .split(/\r?\n/)
-    .map((date) => date.trim())
-    .filter(Boolean);
-  return {
-    updatedDate: dates[0] || publishedDate,
-    modificationCount: Math.max(0, dates.length - 1),
-  };
-}
 
 const groups = [
   { key: "projects", number: "01", label: "项目", eyebrow: "PROJECT" },
@@ -85,8 +49,6 @@ async function loadContent(group) {
   for (const file of files) {
     const source = await readFile(path.join(directory, file), "utf8");
     const { data, body } = parseFrontmatter(source);
-    const repositoryPath = path.relative(root, path.join(directory, file)).split(path.sep).join("/");
-    const history = contentHistory(repositoryPath, data.date);
     const slug = String(data.slug || path.basename(file, path.extname(file))).trim();
     const displayPath = file.split(path.sep).join("/");
     if (!data.title || !data.date) {
@@ -103,7 +65,6 @@ async function loadContent(group) {
       ...data,
       slug,
       pinned: String(data.pinned || "").trim().toLowerCase() === "true",
-      ...history,
       author: String(data.author || "").trim(),
       tags: normalizeList(data.tags),
       homeDescription: String(data.description || "").trim(),
@@ -148,7 +109,6 @@ async function writeDiscoveryFiles(collections) {
 }
 
 export async function buildSite() {
-  ensureCompleteGitHistory();
   await rm(distRoot, { recursive: true, force: true });
   await mkdir(clientRoot, { recursive: true });
   await cp(publicRoot, clientRoot, { recursive: true });
