@@ -13,7 +13,7 @@ function mobilePublicationDateHtml(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(value);
   if (!match) return escapeHtml(value);
   const [, year, month, day, time] = match;
-  return `${year}<span class="article-date-unit">年</span>${Number(month)}<span class="article-date-unit">月</span>${Number(day)}<span class="article-date-unit">日</span>${time ? ` ${time}` : ""}`;
+  return `${year} <span class="article-date-unit">年</span> ${Number(month)} <span class="article-date-unit">月</span> ${Number(day)} <span class="article-date-unit">日</span>${time ? ` ${time}` : ""}`;
 }
 
 function absoluteUrl(pathname) {

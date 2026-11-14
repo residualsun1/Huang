@@ -47,14 +47,13 @@
   .article-published:not(.article-published-mobile) { display: none; }
   .article-published-mobile {
     display: block;
-    font-family: system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    font-family: var(--rs-reading);
     font-size: 14px;
     font-weight: 600;
     font-variant-numeric: lining-nums tabular-nums;
     color: #767676;
   }
   .article-published-mobile .article-date-unit {
-    font-family: var(--rs-reading);
     font-weight: 400;
   }
   .detail-editorial .article-meta { margin-top: 24px; }
