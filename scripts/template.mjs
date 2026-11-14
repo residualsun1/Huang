@@ -9,6 +9,13 @@ function formatDate(value) {
   return [year, month, day].filter(Boolean).join(".");
 }
 
+function formatMobilePublicationDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(value);
+  if (!match) return value;
+  const [, year, month, day, time] = match;
+  return `${year}年${Number(month)}月${Number(day)}日${time ? ` ${time}` : ""}`;
+}
+
 function absoluteUrl(pathname) {
   return siteUrl ? new URL(pathname, `${siteUrl}/`).href : "";
 }
@@ -209,7 +216,10 @@ export function detailPage(entry, previousEntry, nextEntry) {
         <div class="article-meta">
           <div class="article-byline">
             <img class="article-avatar" src="/images/avatar.jpg" alt="作者头像" width="48" height="48">
-            <div class="article-author-details">${author}<time class="article-published" datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time></div>
+            <div class="article-author-details">
+              ${author}<time class="article-published" datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
+              <time class="article-published article-published-mobile" datetime="${escapeHtml(entry.date)}">${escapeHtml(formatMobilePublicationDate(entry.date))}</time>
+            </div>
           </div>
           <div class="article-record">${articleHistory}${tags}</div>
         </div>
