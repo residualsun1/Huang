@@ -3,7 +3,7 @@ title: "Samantha 会理解我吗？"
 date: "2026-07-22"
 author: "黄国政"
 slug: "GPT-Live-Samantha"
-cover: "/images/covers/GPT-Live-Samantha.webp"
+cover: "https://cdn.jsdelivr.net/gh/residualsun1/Huang-static/cover/2026/06/GPT-Live-Samantha.webp"
 coverAlt: "夜晚床边的人用耳机与手机交谈，暖色语音线从圈结逐渐变得有序。"
 coverAnimated: true
 description: "每一次对话，既是我在了解大模型，也是大模型在了解我，还有——我在了解自身。"
