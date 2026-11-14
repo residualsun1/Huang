@@ -12,8 +12,26 @@
 .article-record { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; width: 100%; }
 .detail-editorial .article-history { font-size: 11px; line-height: 18px; }
 .detail-editorial .article-tags { margin: 0; }
+.article-back-home { display: none; }
 @media (max-width: 767px) {
-  .detail-editorial .article-header { padding: 24px 0; }
+  .detail-editorial > .rs-header { display: none; }
+  .detail-editorial .article-header {
+    padding: max(12px, env(safe-area-inset-top, 0px)) 0 24px;
+    border-bottom-color: #e2e2e2;
+  }
+  .article-back-home {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: #f5f5f5;
+  }
+  .article-back-home:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
   .detail-editorial .article-header h1 { font-size: 30px; line-height: 1.35; }
   .detail-editorial .article-subtitle { font-size: 18px; line-height: 1.6; margin-top: 12px; }
   .detail-editorial .article-meta { margin-top: 24px; gap: 16px; }
