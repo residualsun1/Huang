@@ -8,7 +8,7 @@ tags:
   - GPT-Live
 ---
 
-{{< audio server="netease" type="song" id="28226052" >}}
+{{< audio title="Song On The Beach" artist="Arcade Fire" url="https://music.163.com/song/media/outer/url?id=28226052.mp3" link="https://music.163.com/song?id=28226052" >}}
 
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/07/07-23-1.png)
 
