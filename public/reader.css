@@ -53,6 +53,10 @@
     font-variant-numeric: lining-nums tabular-nums;
     color: #767676;
   }
+  .article-published-mobile .article-date-unit {
+    font-family: var(--rs-reading);
+    font-weight: 400;
+  }
   .detail-editorial .article-meta { margin-top: 24px; }
   .detail-editorial .article-record { display: none; }
   .detail-editorial .prose { margin-top: 24px; }

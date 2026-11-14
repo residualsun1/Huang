@@ -9,11 +9,11 @@ function formatDate(value) {
   return [year, month, day].filter(Boolean).join(".");
 }
 
-function formatMobilePublicationDate(value) {
+function mobilePublicationDateHtml(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(value);
-  if (!match) return value;
+  if (!match) return escapeHtml(value);
   const [, year, month, day, time] = match;
-  return `${year}\u2009年 ${Number(month)}\u2009月 ${Number(day)}\u2009日${time ? ` ${time}` : ""}`;
+  return `${year}<span class="article-date-unit">年</span>${Number(month)}<span class="article-date-unit">月</span>${Number(day)}<span class="article-date-unit">日</span>${time ? ` ${time}` : ""}`;
 }
 
 function absoluteUrl(pathname) {
@@ -218,7 +218,7 @@ export function detailPage(entry, previousEntry, nextEntry) {
             <img class="article-avatar" src="/images/avatar.jpg" alt="作者头像" width="48" height="48">
             <div class="article-author-details">
               ${author}<time class="article-published" datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
-              <time class="article-published article-published-mobile" datetime="${escapeHtml(entry.date)}">${escapeHtml(formatMobilePublicationDate(entry.date))}</time>
+              <time class="article-published article-published-mobile" datetime="${escapeHtml(entry.date)}">${mobilePublicationDateHtml(entry.date)}</time>
             </div>
           </div>
           <div class="article-record">${articleHistory}${tags}</div>
