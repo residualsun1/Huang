@@ -1226,7 +1226,7 @@ a { color: inherit; }
   min-inline-size: 0;
   max-width: 100%;
   margin: 2em 0;
-  padding: 20px;
+  padding: 14px 16px;
   border: 1px solid var(--notice-border);
   border-radius: 5px;
   background: var(--notice-surface);
@@ -1240,9 +1240,9 @@ a { color: inherit; }
   padding: 0;
   color: var(--notice-accent);
   font-family: var(--source-han-serif);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  line-height: 21px;
+  line-height: 20px;
   letter-spacing: 0.04em;
 }
 
@@ -1250,10 +1250,16 @@ a { color: inherit; }
   clear: both;
   display: flow-root;
   min-width: 0;
-  padding-top: 12px;
+  padding-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
+.prose .notice-body > :is(p, ul, ol) { margin-bottom: 0.85em; }
+.prose .notice-body li { margin-block: 0.25em; }
 .prose .notice-body > :last-child { margin-bottom: 0; }
+.prose .notice-body > :is(ul, ol):first-child > li:first-child { margin-top: 0; }
+.prose .notice-body > :is(ul, ol):last-child > li:last-child { margin-bottom: 0; }
 
 .prose .notice-warning {
   --notice-surface: #fbf7ee;
@@ -1280,7 +1286,7 @@ a { color: inherit; }
 }
 
 @media (max-width: 767px) {
-  .prose .notice-box { padding: 16px; }
+  .prose .notice-box { padding: 12px 14px; }
 }
 
 /* 可折叠 details / summary，用于隐藏较长代码或补充说明。 */

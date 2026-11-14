@@ -365,11 +365,11 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏版面", asyn
   assert.match(css, /\.table-scroll \{[\s\S]*?overflow-x: auto;[\s\S]*?max-width: 100%;/);
   assert.match(css, /\.notice-box \{[\s\S]*?min-inline-size: 0;[\s\S]*?max-width: 100%;/);
   assert.match(css, /\.prose \.notice-box \{[^}]*border: 1px solid var\(--notice-border\);[^}]*background: var\(--notice-surface\);[^}]*box-shadow: 5px 6px 0 rgba\(0, 0, 0, 0\.12\);/);
-  assert.match(css, /\.prose \.notice-box > legend \{[^}]*float: left;[^}]*font-size: 15px;[^}]*font-weight: 700;/);
+  assert.match(css, /\.prose \.notice-box > legend \{[^}]*float: left;[^}]*font-size: 14px;[^}]*font-weight: 700;/);
   assert.match(css, /\.notice-body \{[\s\S]*?min-width: 0;/);
   assert.match(css, /\.article-pagination-item \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\);/);
   assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #f5f5f5;/);
-  assert.match(css, /@media \(max-width: 767px\) \{\s*\.prose \.notice-box \{ padding: 16px; \}/);
+  assert.match(css, /@media \(max-width: 767px\) \{\s*\.prose \.notice-box \{ padding: 12px 14px; \}/);
 });
 
 test("全站使用白底、近黑文字与中性灰界面层", async () => {
