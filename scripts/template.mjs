@@ -9,7 +9,7 @@ function formatDate(value) {
   return [year, month, day].filter(Boolean).join(".");
 }
 
-function mobilePublicationDateHtml(value) {
+function publicationDateHtml(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(value);
   if (!match) return escapeHtml(value);
   const [, year, month, day, time] = match;
@@ -217,8 +217,7 @@ export function detailPage(entry, previousEntry, nextEntry) {
           <div class="article-byline">
             <img class="article-avatar" src="/images/avatar.jpg" alt="作者头像" width="48" height="48">
             <div class="article-author-details">
-              ${author}<time class="article-published" datetime="${escapeHtml(entry.date)}">${formatDate(entry.date)}</time>
-              <time class="article-published article-published-mobile" datetime="${escapeHtml(entry.date)}">${mobilePublicationDateHtml(entry.date)}</time>
+              ${author}<time class="article-published" datetime="${escapeHtml(entry.date)}">${publicationDateHtml(entry.date)}</time>
             </div>
           </div>
           <div class="article-record">${articleHistory}${tags}</div>

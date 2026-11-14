@@ -335,7 +335,7 @@ test("正文英数与中文正文、引用分别使用对应的阅读字体", as
   assert.match(css, /\.detail-editorial \.article-pagination \{[\s\S]*?border-top: 0/);
   for (const { key } of groupDefinitions) {
     assert.match(detailPages[key], new RegExp(`<body class="detail detail-${key} detail-editorial">`));
-    assert.match(detailPages[key], /class="article-published" datetime="2026-01-02">2026\.01\.02/);
+    assert.match(detailPages[key], /<time class="article-published" datetime="2026-01-02">2026 <span class="article-date-unit">年<\/span> 1 <span class="article-date-unit">月<\/span> 2 <span class="article-date-unit">日<\/span><\/time>/);
     assert.match(detailPages[key], /class="article-history">[\s\S]*?修改于：2026\.01\.02[\s\S]*?已修改 0 次/);
     assert.doesNotMatch(detailPages[key], /class="article-description"/);
     assert.match(detailPages[key], /<div class="article-main">[\s\S]*?<nav class="article-pagination"/);
@@ -356,7 +356,7 @@ test("详情页根据完整 Git 历史显示最后修改日期与修改次数", 
     const directories = await groupDirectoryNames(key);
     for (const slug of directories) {
       const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
-      assert.match(page, /class="article-published" datetime="\d{4}-\d{2}-\d{2}">\d{4}\.\d{2}\.\d{2}/);
+      assert.match(page, /class="article-published" datetime="\d{4}-\d{2}-\d{2}">\d{4} <span class="article-date-unit">年<\/span>/);
       assert.match(page, /class="article-history">[\s\S]*?修改于：\d{4}\.\d{2}\.\d{2}[\s\S]*?已修改 \d+ 次/);
     }
   }
