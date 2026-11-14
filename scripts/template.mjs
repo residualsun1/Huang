@@ -13,7 +13,7 @@ function formatMobilePublicationDate(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(value);
   if (!match) return value;
   const [, year, month, day, time] = match;
-  return `${year}年${Number(month)}月${Number(day)}日${time ? ` ${time}` : ""}`;
+  return `${year}\u2009年 ${Number(month)}\u2009月 ${Number(day)}\u2009日${time ? ` ${time}` : ""}`;
 }
 
 function absoluteUrl(pathname) {
