@@ -36,6 +36,6 @@
   .detail-editorial .article-subtitle { font-size: 18px; line-height: 1.6; margin-top: 12px; }
   .detail-editorial .article-meta { margin-top: 24px; }
   .detail-editorial .article-record { display: none; }
-  .detail-editorial .prose { margin-top: 28px; }
+  .detail-editorial .prose { margin-top: 24px; }
   .detail-editorial .prose > :first-child { margin-top: 0; }
 }
