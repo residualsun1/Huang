@@ -1,4 +1,5 @@
 import { assetUrl } from "./assets.mjs";
+import { renderMarkdown } from "./markdown.mjs";
 import { siteHeader } from "./template.mjs";
 
 const githubUrl = "https://github.com/residualsun1";
@@ -8,6 +9,22 @@ const escapeHtml = (value = "") => String(value)
 const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
   month: "numeric", day: "numeric", timeZone: "UTC",
 });
+
+function readingMinutes(body) {
+  const { html } = renderMarkdown(body, { appendFootnotes: false });
+  // Keep visible prose, including dialogue and link labels, without generated controls.
+  const text = html
+    .replace(/<div class="code-block">[\s\S]*?<\/pre>\s*<\/div>/g, " ")
+    .replace(/<div class="prompt-toolbar">[\s\S]*?<\/button>\s*<\/div>/g, " ")
+    .replace(/<p class="audio-meting-status"[^>]*>[^<]*<\/p>|<a class="audio-source-link"[^>]*>[^<]*<\/a>/g, " ")
+    .replace(/<\/?(?:a|code|em|strong|del|kbd|mark|u)\b[^>]*>/g, "")
+    .replace(/<[^>]*>|&lt;\/?[a-z][\w-]*(?:\s(?:(?!&(?:lt|gt);)[^\n])*)?\/?&gt;/gi, " ")
+    .replaceAll("&#039;", "'")
+    .replace(/&(?:amp|lt|gt|quot);/g, " ");
+  const han = text.match(/\p{Script=Han}/gu)?.length ?? 0;
+  const words = text.match(/\p{Script=Latin}[\p{Script=Latin}\p{M}]*(?:['’-]\p{Script=Latin}[\p{Script=Latin}\p{M}]*)*/gu)?.length ?? 0;
+  return Math.max(1, Math.ceil((han + 2 * words) / 400));
+}
 
 function homepageEntries(collections) {
   return collections.flatMap(({ group, entries }) => entries.map((entry) => {
@@ -21,6 +38,7 @@ function homepageEntries(collections) {
       pinned: entry.pinned,
       author: entry.author,
       date: String(entry.date),
+      minutes: readingMinutes(entry.body ?? ""),
       kind: group.label,
       tags: entry.tags,
       image: validCover ? cover : "",
@@ -36,13 +54,19 @@ function entryCard(entry, variant = "archive") {
   const data = variant === "archive"
     ? ` data-href="${escapeHtml(entry.href)}" data-kind="${escapeHtml(entry.kind)}" data-tags="${escapeHtml(JSON.stringify(entry.tags))}"`
     : "";
+  const date = new Date(`${entry.date.slice(0, 10)}T00:00:00Z`);
+  const dateTime = escapeHtml(entry.date);
+  const fullDate = `${date.getUTCFullYear()} 年 ${date.getUTCMonth() + 1} 月 ${date.getUTCDate()} 日`;
+  const details = [entry.kind, entry.author].filter(Boolean)
+    .map((value) => `<span aria-hidden="true">·</span><span class="entry-meta-detail">${escapeHtml(value)}</span>`).join("");
   const image = entry.image ? `<a class="entry-image" href="${escapeHtml(entry.href)}" aria-label="阅读：${escapeHtml(entry.title)}"><img src="${escapeHtml(entry.image)}" alt="${escapeHtml(entry.imageAlt)}"${entry.animated && !isLead ? ' class="entry-cover--animated"' : ""} loading="${isLead ? "eager" : "lazy"}" fetchpriority="${isLead ? "high" : "auto"}" decoding="async"></a>` : "";
   return `<article class="entry entry--${variant}${entry.image ? "" : " entry--text-only"}" aria-label="${escapeHtml(entry.title)}"${data}>
+    <time class="entry-date-full" datetime="${dateTime}">${fullDate}</time>
     ${image}
     <div class="entry-text">
       <h2><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></h2>
       ${summary ? `<p class="entry-summary">${escapeHtml(summary)}</p>` : ""}
-      <div class="entry-meta"><time datetime="${escapeHtml(entry.date)}">${escapeHtml(dateFormatter.format(new Date(`${entry.date}T00:00:00Z`)))}</time><span aria-hidden="true">·</span><span>${escapeHtml(entry.kind)}</span><span aria-hidden="true">·</span><span>${escapeHtml(entry.author)}</span></div>
+      <div class="entry-meta"><time class="entry-date-short" datetime="${dateTime}">${escapeHtml(dateFormatter.format(date))}</time><span class="entry-reading-time">${entry.minutes} 分钟</span>${details}</div>
     </div>
   </article>`;
 }
