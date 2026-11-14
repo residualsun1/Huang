@@ -364,14 +364,12 @@ test("移动端 notice、宽表格和文章翻页卡片不会破坏版面", asyn
   assert.match(writing, /<fieldset class="notice-box notice-content">[\s\S]*?<div class="table-scroll">/);
   assert.match(css, /\.table-scroll \{[\s\S]*?overflow-x: auto;[\s\S]*?max-width: 100%;/);
   assert.match(css, /\.notice-box \{[\s\S]*?min-inline-size: 0;[\s\S]*?max-width: 100%;/);
-  assert.match(css, /\.notice-box \{[\s\S]*?border-left: 3px solid var\(--notice-accent\);[\s\S]*?background: var\(--paper-surface\), var\(--notice-surface\);/);
-  assert.match(css, /\.notice-box legend \{[\s\S]*?border: 0;[\s\S]*?background: transparent;[\s\S]*?font-size: 15px;[\s\S]*?font-weight: 700;/);
-  assert.doesNotMatch(css, /\.notice-box legend \{[\s\S]*?border-radius: 9999px;/);
-  assert.match(css, /\.notice-info \{[\s\S]*?--notice-surface: #e2e9e5;[\s\S]*?--notice-accent: #3f6664;/);
+  assert.match(css, /\.prose \.notice-box \{[^}]*border: 1px solid var\(--notice-border\);[^}]*background: var\(--notice-surface\);[^}]*box-shadow: 5px 6px 0 rgba\(0, 0, 0, 0\.12\);/);
+  assert.match(css, /\.prose \.notice-box > legend \{[^}]*float: left;[^}]*font-size: 15px;[^}]*font-weight: 700;/);
   assert.match(css, /\.notice-body \{[\s\S]*?min-width: 0;/);
   assert.match(css, /\.article-pagination-item \{[\s\S]*?background: var\(--paper-surface\), var\(--background-100\);/);
   assert.match(css, /a\.article-pagination-item:hover \{[\s\S]*?background: var\(--paper-surface\), #f5f5f5;/);
-  assert.match(css, /@media \(max-width: 600px\) \{[\s\S]*?\.notice-box \{ margin-inline: 0; \}/);
+  assert.match(css, /@media \(max-width: 767px\) \{\s*\.prose \.notice-box \{ padding: 16px; \}/);
 });
 
 test("全站使用白底、近黑文字与中性灰界面层", async () => {

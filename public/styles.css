@@ -1217,29 +1217,27 @@ a { color: inherit; }
   font-weight: 600;
 }
 
-/* Hugo notice 提示框：低饱和语义色和克制的编辑式边框。 */
-.notice-box {
-  --notice-surface: #f5f5f5;
-  --notice-border: rgba(0, 0, 0, 0.16);
+/* 正文标注卡片，按原有类型着色。 */
+.prose .notice-box {
+  --notice-surface: #fafafa;
+  --notice-border: #e2e2e2;
   --notice-accent: var(--gray-900);
 
   min-inline-size: 0;
   max-width: 100%;
   margin: 2em 0;
-  padding: 0;
+  padding: 20px;
   border: 1px solid var(--notice-border);
-  border-left: 3px solid var(--notice-accent);
-  border-radius: 10px;
-  background: var(--paper-surface), var(--notice-surface);
+  border-radius: 5px;
+  background: var(--notice-surface);
+  box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.12);
 }
 
-/* 标题只保留文字，不再使用胶囊背景或描边。 */
-.notice-box legend {
-  margin-left: 18px;
-  padding: 0 7px 0 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+/* 将 legend 放入卡片内，保留原有的分组语义。 */
+.prose .notice-box > legend {
+  float: left;
+  max-inline-size: 100%;
+  padding: 0;
   color: var(--notice-accent);
   font-family: var(--source-han-serif);
   font-size: 15px;
@@ -1248,40 +1246,41 @@ a { color: inherit; }
   letter-spacing: 0.04em;
 }
 
-/* 内容留出稳定呼吸空间；底色由提示框承担。 */
-.notice-body {
+.prose .notice-body {
+  clear: both;
+  display: flow-root;
   min-width: 0;
-  padding: 16px 20px 5px;
+  padding-top: 12px;
 }
 
-.notice-content {
-  --notice-surface: #f5f5f5;
-  --notice-border: rgba(0, 0, 0, 0.16);
-  --notice-accent: var(--gray-900);
-}
+.prose .notice-body > :last-child { margin-bottom: 0; }
 
-.notice-warning {
-  --notice-surface: #f0e5cf;
-  --notice-border: rgba(144, 94, 34, 0.3);
+.prose .notice-warning {
+  --notice-surface: #fbf7ee;
+  --notice-border: #e9dfca;
   --notice-accent: #8a571c;
 }
 
-.notice-info {
-  --notice-surface: #e2e9e5;
-  --notice-border: rgba(62, 99, 96, 0.28);
+.prose .notice-info {
+  --notice-surface: #f2f8f8;
+  --notice-border: #d5e5e5;
   --notice-accent: #3f6664;
 }
 
-.notice-success {
-  --notice-surface: #e4e9dc;
-  --notice-border: rgba(81, 107, 72, 0.28);
+.prose .notice-success {
+  --notice-surface: #f3f7ef;
+  --notice-border: #dbe5d3;
   --notice-accent: #536f49;
 }
 
-.notice-danger {
-  --notice-surface: #eee0db;
-  --notice-border: rgba(135, 70, 58, 0.28);
+.prose .notice-danger {
+  --notice-surface: #fbf3f1;
+  --notice-border: #ebd9d4;
   --notice-accent: #884a3e;
+}
+
+@media (max-width: 767px) {
+  .prose .notice-box { padding: 16px; }
 }
 
 /* 可折叠 details / summary，用于隐藏较长代码或补充说明。 */
@@ -1746,7 +1745,6 @@ a.article-pagination-item:hover {
   .prompt-toolbar { min-height: 42px; padding: 4px 10px 4px 14px; }
   .prompt-content { padding: 12px 16px 14px; font-size: 15px; }
   .prose blockquote { margin-inline: -8px; }
-  .notice-box { margin-inline: 0; }
   .image-loop { grid-auto-columns: 92%; }
   .audio-embed { margin-block: 2em; }
   .audio-caption { gap: 3px 8px; }
