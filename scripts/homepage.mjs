@@ -38,7 +38,7 @@ function homepageEntries(collections) {
       pinned: entry.pinned,
       author: entry.author,
       date: String(entry.date),
-      minutes: readingMinutes(entry.body ?? ""),
+      body: entry.body ?? "",
       kind: group.label,
       tags: entry.tags,
       image: validCover ? cover : "",
@@ -50,23 +50,26 @@ function homepageEntries(collections) {
 
 function entryCard(entry, variant = "archive") {
   const isLead = variant === "lead";
+  const isSmall = variant === "small";
   const summary = isLead ? entry.homeDescription : entry.summary;
   const data = variant === "archive"
     ? ` data-href="${escapeHtml(entry.href)}" data-kind="${escapeHtml(entry.kind)}" data-tags="${escapeHtml(JSON.stringify(entry.tags))}"`
     : "";
   const date = new Date(`${entry.date.slice(0, 10)}T00:00:00Z`);
   const dateTime = escapeHtml(entry.date);
-  const fullDate = `${date.getUTCFullYear()} 年 ${date.getUTCMonth() + 1} 月 ${date.getUTCDate()} 日`;
+  const fullDate = isSmall ? `<time class="entry-date-full" datetime="${dateTime}">${date.getUTCFullYear()} 年 ${date.getUTCMonth() + 1} 月 ${date.getUTCDate()} 日</time>` : "";
+  const shortDate = `<time${isSmall ? ' class="entry-date-short"' : ""} datetime="${dateTime}">${escapeHtml(dateFormatter.format(date))}</time>`;
+  const readingTime = isSmall ? `<span class="entry-reading-time">${readingMinutes(entry.body)} 分钟</span>` : "";
   const details = [entry.kind, entry.author].filter(Boolean)
     .map((value) => `<span aria-hidden="true">·</span><span class="entry-meta-detail">${escapeHtml(value)}</span>`).join("");
   const image = entry.image ? `<a class="entry-image" href="${escapeHtml(entry.href)}" aria-label="阅读：${escapeHtml(entry.title)}"><img src="${escapeHtml(entry.image)}" alt="${escapeHtml(entry.imageAlt)}"${entry.animated && !isLead ? ' class="entry-cover--animated"' : ""} loading="${isLead ? "eager" : "lazy"}" fetchpriority="${isLead ? "high" : "auto"}" decoding="async"></a>` : "";
   return `<article class="entry entry--${variant}${entry.image ? "" : " entry--text-only"}" aria-label="${escapeHtml(entry.title)}"${data}>
-    <time class="entry-date-full" datetime="${dateTime}">${fullDate}</time>
+    ${fullDate}
     ${image}
     <div class="entry-text">
       <h2><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.title)}</a></h2>
       ${summary ? `<p class="entry-summary">${escapeHtml(summary)}</p>` : ""}
-      <div class="entry-meta"><time class="entry-date-short" datetime="${dateTime}">${escapeHtml(dateFormatter.format(date))}</time><span class="entry-reading-time">${entry.minutes} 分钟</span>${details}</div>
+      <div class="entry-meta">${shortDate}${readingTime}${details}</div>
     </div>
   </article>`;
 }
