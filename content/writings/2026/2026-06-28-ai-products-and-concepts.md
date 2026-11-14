@@ -2,7 +2,7 @@
 title: "海外 AI 产品和概念的区分与关系梳理"
 date: "2026-06-28"
 slug: "ai-products-and-concepts"
-cover: "/images/covers/ai-products-and-concepts.webp"
+cover: "https://cdn.jsdelivr.net/gh/residualsun1/Huang-static/cover/2026/06/ai-products-and-concepts.webp"
 coverAlt: "拆开的模块化机器中，计算模块、工具调度机构和玻璃界面框分成三层。"
 author: 黄国政
 tags:
