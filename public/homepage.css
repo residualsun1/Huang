@@ -414,14 +414,15 @@ h2 {
   .archive-grid > .entry--archive .entry-date-full {
     grid-area: date;
     display: block;
-    align-self: stretch;
     text-align: right;
+    white-space: nowrap;
     color: var(--faint);
     font: 12px/18px var(--ui);
   }
   .archive-grid > .entry--archive {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) max-content;
+    /* Reserve enough width for a full date such as 2026 年 12 月 12 日. */
+    grid-template-columns: minmax(0, 1fr) 102px;
     grid-template-areas: ". date" "text image";
     align-items: center;
     gap: 8px 14px;
@@ -430,8 +431,7 @@ h2 {
     border-top: 1px solid var(--line);
   }
   .archive-grid > .entry--archive.entry--text-only {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "date" "text";
+    grid-template-areas: "text date";
   }
   .archive-grid > .entry--archive .entry-image {
     grid-area: image;
@@ -454,7 +454,6 @@ h2 {
     line-height: 18px;
   }
   .archive-grid > .entry--archive .entry-meta {
-    flex-wrap: nowrap;
     white-space: nowrap;
     overflow-wrap: normal;
   }
