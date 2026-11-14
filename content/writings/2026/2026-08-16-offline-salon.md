@@ -3,7 +3,7 @@ title: "北大科技园线下沙龙有感"
 date: "2026-08-16"
 author: "黄国政"
 slug: "offline-salon"
-cover: "/images/covers/offline-salon.webp"
+cover: ""
 coverAlt: "会议厅中听众离开座位，门口摆着职业咨询展架。"
 description: "或许生活在谎言之中"
 tags:

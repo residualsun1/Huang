@@ -3,7 +3,7 @@ title: 我眼中的智能体（Agent）
 author: 黄国政
 date: '2026-05-16'
 slug: what-is-agent
-cover: "/images/covers/what-is-agent.webp"
+cover: "https://cdn.jsdelivr.net/gh/residualsun1/Huang-static/cover/2026/05/what-is-agent.gif"
 coverAlt: "蓝色玻璃球位于闭环轨道的岔道口，透镜和拨道机构根据外部环境选择路径。"
 categories: []
 tags:
