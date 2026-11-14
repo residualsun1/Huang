@@ -16,25 +16,10 @@
   color: #767676;
 }
 .article-date-unit { font-weight: 400; }
-.article-back-home { display: none; }
 @media (max-width: 767px) {
-  .detail-editorial > .rs-header { display: none; }
   .detail-editorial .article-header {
-    padding: max(12px, env(safe-area-inset-top, 0px)) 0 24px;
+    padding: 24px 0;
     border-bottom-color: #e2e2e2;
-  }
-  .article-back-home {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    margin-bottom: 16px;
-    border-radius: 50%;
-    background: #f5f5f5;
-  }
-  .article-back-home:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
   }
   .detail-editorial .prose { margin-top: 24px; }
   .detail-editorial .prose > :first-child { margin-top: 0; }

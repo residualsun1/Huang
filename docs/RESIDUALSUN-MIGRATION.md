@@ -8,11 +8,9 @@
 
 原 13 篇 Markdown 文件字节相同，因此保留 `content/` 原位，不重新导入。原文章网址、Markdown 转换器、数学、音频、代码、脚注、目录、分页、Git 修改记录和托管安全响应头保留。首页及阅读页字体、头像、生成封面、标签、导航和动效移入当前项目，资源按内容哈希生成版本链接。
 
-迁移前提交：`d20e807f842e7f2f9f3089443556a3fd3ebbbbc9`。原始源码与完整 Git bundle 备份位于：
+迁移前提交为 `d20e807f842e7f2f9f3089443556a3fd3ebbbbc9`。原始源码与完整 Git bundle 的本地路径为 `artifacts/website-prototype/artifacts/huang-migration/before-2026-10-03/`，相对于 Huang 根目录。
 
-`D:\03_Project\Website\artifacts\huang-migration\before-2026-10-03\`
-
-备份在正式仓库之外，不随发布上传。Git 仓库本身、远端、CI、pre-push hook、域名和托管配置保留。
+2026-11-14 将原 `D:\03_Project\Website` 的全部文件移入 Huang 的 `artifacts/website-prototype/`。该目录是本地归档，由 Git 忽略。
 
 ## 验证
 
@@ -23,14 +21,14 @@
 - 分类 8/3/2、标签清除、展开与浏览器 hash 返回正常。390px 与 320px 手机视口最终页面均无横向溢出，导航完整。
 - 新动效均受减少动态媒体偏好控制；当前工具未模拟实际操作系统的减少动态设置，不声称跨浏览器验证全部完成。
 
-当前实测数据及截图位于 `D:\03_Project\Website\artifacts\huang-migration\`。普通点击过渡播放且浏览器错误日志为空。前轮内置浏览器自动化键盘跨文档测试曾跳过原生淡化，未添加导航拦截或延迟作为补偿；不支持或取消原生过渡时页面仍正常打开。
+当时的实测数据及截图位于本地 `artifacts/website-prototype/artifacts/huang-migration/`。普通点击过渡播放且浏览器错误日志为空。前轮内置浏览器自动化键盘跨文档测试曾跳过原生淡化，未添加导航拦截或延迟作为补偿；不支持或取消原生过渡时页面仍正常打开。
 
 ## 后续维护
 
-在 Huang 的 `content/` 写 Markdown，新增封面放入 `public/images/`，使用 Front Matter 的 `cover` / `coverAlt` 指定。首页、标签、归档、文章页、robots 和 sitemap 自动重建。不要手工编辑 `dist/`，也不要继续把 Website 当作另一份正式正文来源。完整示例见根目录 README。
+在 Huang 的 `content/` 写 Markdown，新增封面放入 `public/images/`，使用 Front Matter 的 `cover` / `coverAlt` 指定。首页、标签、归档、文章页、robots 和 sitemap 自动重建。完整示例见根目录 README。
 
 ## 回滚
 
-迁移将作为独立提交保留，可用 `git revert <迁移提交>` 生成恢复旧界面的新提交，再检查并推送 `main`，由原发布流程重新上线。回滚不会删除 Git 历史。若仓库本身需要恢复，可从外部 `Huang-history.bundle` 克隆到新目录，先检查后使用，不覆盖现有目录。
+迁移作为独立提交保留，可用 `git revert <迁移提交>` 生成恢复旧界面的新提交，再检查并推送 `main`，由原发布流程重新上线。回滚不会删除 Git 历史。若仓库本身需要恢复，可从上述本地归档中的 `Huang-history.bundle` 克隆到新目录，先检查后使用。
 
 上线成功的判据是正式域名 `/version.json` 的提交与已推送提交一致，且首页、至少一篇阅读页及静态资源返回正常；推送成功本身不等于部署完成。

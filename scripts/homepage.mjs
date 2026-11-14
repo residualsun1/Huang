@@ -1,5 +1,6 @@
 import { generatedCovers } from "./covers.mjs";
 import { assetUrl } from "./assets.mjs";
+import { siteHeader } from "./template.mjs";
 
 const githubUrl = "https://github.com/residualsun1";
 const escapeHtml = (value = "") => String(value)
@@ -86,14 +87,7 @@ export function homePage(collections) {
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
   <div class="homepage">
-    <header class="rs-header" id="home">
-      <div class="rs-masthead"><h1 class="rs-brand"><a href="/" aria-label="Residualsun 首页">Residualsun</a></h1></div>
-      <nav class="rs-nav" aria-label="主导航">
-        <a href="#home" class="is-active" data-nav-kind="全部">首页</a>
-        <a href="#archive" data-nav-kind="全部">归档</a>
-        <a href="#about">关于</a>
-      </nav>
-    </header>
+    ${siteHeader({ homepage: true })}
     <main id="main" tabindex="-1" class="page-width">
       ${lead ? `<section class="spotlight" aria-label="精选内容">
         ${entryCard(lead, "lead")}${spotlights.map((entry) => entryCard(entry, "small")).join("")}

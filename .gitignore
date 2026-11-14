@@ -4,6 +4,9 @@
 /coverage/
 /output/
 
+# Local archive of the former Website prototype and migration backups
+/artifacts/website-prototype/
+
 # Local environment and platform state
 .env
 .env.local

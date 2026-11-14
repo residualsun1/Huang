@@ -1,8 +1,8 @@
 # Residualsun
 
-个人网站，正式地址为 [guozheng.dev](https://guozheng.dev)。页面移自 `D:\03_Project\Website`，继续使用 Huang 原来的零依赖静态构建、Markdown 内容、Git 历史及 Cloudflare 发布流程。
+个人网站，正式地址为 [guozheng.dev](https://guozheng.dev)。Huang 集中管理站点页面、Markdown 文章、静态资源和 Cloudflare 发布流程。
 
-现在 `D:\03_Project\Huang` 是后续写作与维护的唯一正式项目。页面、文章和资源均在此目录内，不依赖 Website 文件夹；不要编辑 `dist/` 里的生成文件。
+在 `D:\03_Project\Huang` 写作和维护站点。`dist/` 由构建生成。
 
 ## 本地写作
 
@@ -65,4 +65,6 @@ git push origin main
 
 分类/标签结果淡入 200ms；展开只让新增卡片浮现 280ms、上移 6px。首次内容和正文直接可见，新增动效遵守减少动态偏好，不支持原生跨页过渡的浏览器正常跳转。
 
-迁移、验证及回滚说明见 [迁移记录](docs/RESIDUALSUN-MIGRATION.md)。原部署文档见 [DEPLOYMENT.md](docs/DEPLOYMENT.md)。
+## 本地归档
+
+原 `Website` 的 Next.js 原型、设计资料和迁移前 Git 备份已移入 `artifacts/website-prototype/`。该目录只在这台电脑上保留，由 Git 忽略。迁移与恢复步骤见 [迁移记录](docs/RESIDUALSUN-MIGRATION.md)，发布配置见 [部署文档](docs/DEPLOYMENT.md)。

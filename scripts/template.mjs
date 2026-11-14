@@ -79,15 +79,20 @@ ${content}${audioScripts}
 </html>`;
 }
 
-function siteHeader({ highlightHome = false } = {}) {
+export function siteHeader({ homepage = false, showNavigation = true } = {}) {
+  const brandTag = homepage ? "h1" : "p";
   return `<header class="rs-header" id="home">
     <div class="rs-masthead">
-      <p class="rs-brand"><a href="/" aria-label="Residualsun 首页">Residualsun</a></p>
-    </div>
-    <nav class="rs-nav" aria-label="主导航">
-      <a href="/"${highlightHome ? ' class="is-active"' : ""}>首页</a>
-      <a href="/#archive">归档</a><a href="/#about">关于</a>
-    </nav>
+      <${brandTag} class="rs-brand"><a href="/" aria-label="Residualsun 首页">Residualsun</a></${brandTag}>
+    </div>${showNavigation ? `
+    <nav class="rs-nav" aria-label="主导航">${homepage ? `
+      <a href="#home" class="is-active" data-nav-kind="全部">首页</a>
+      <a href="#archive" data-nav-kind="全部">归档</a>
+      <a href="#about">关于</a>` : `
+      <a href="/">首页</a>
+      <a href="/#archive">归档</a>
+      <a href="/#about">关于</a>`}
+    </nav>` : ""}
   </header>`;
 }
 
@@ -194,14 +199,9 @@ export function detailPage(entry, previousEntry, nextEntry) {
     audio: hasAudio(entry.body),
     metingAudio: hasMetingAudio(entry.body),
     math: hasMath(entry.body),
-    content: `${siteHeader({ highlightHome: true })}
+    content: `${siteHeader({ showNavigation: false })}
     <main class="article-shell">
       <header class="article-header">
-        <a class="article-back-home" href="/" aria-label="返回首页">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M19 12H5m7-7-7 7 7 7"/>
-          </svg>
-        </a>
         <h1>${escapeHtml(entry.title)}</h1>
         ${subtitle}
         <div class="article-meta">

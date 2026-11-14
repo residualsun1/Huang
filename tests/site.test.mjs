@@ -303,6 +303,9 @@ test("归档和翻页链接只指向当前存在的文章", async () => {
 
     for (const slug of directoryNames) {
       const page = await readFile(new URL(`${key}/${slug}/index.html`, root), "utf8");
+      const header = page.match(/<header class="rs-header"[^>]*>[\s\S]*?<\/header>/)?.[0] || "";
+      assert.match(header, /class="rs-brand"><a href="\/" aria-label="Residualsun 首页">Residualsun<\/a>/);
+      assert.doesNotMatch(header, /class="rs-nav"/);
       const pagination = page.match(/<nav class="article-pagination"[\s\S]*?<\/nav>/)?.[0] ?? "";
       const paginationTargets = [...pagination.matchAll(new RegExp(`href="/${key}/([^/]+)/"`, "g"))]
         .map((match) => match[1]);
