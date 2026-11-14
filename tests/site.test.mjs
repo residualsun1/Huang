@@ -92,7 +92,11 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   const articleTags = new Set();
 
   for (const { key, label } of groupDefinitions) {
-    const files = await readdir(new URL(`../content/${key}/`, import.meta.url), { recursive: true, withFileTypes: true });
+    const directory = new URL(`../content/${key}/`, import.meta.url);
+    const files = await readdir(directory, { recursive: true, withFileTypes: true }).catch((error) => {
+      if (error.code === "ENOENT") return [];
+      throw error;
+    });
     for (const file of files.filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".md"))) {
       const source = await readFile(path.join(file.parentPath, file.name), "utf8");
       const { data } = parseFrontmatter(source);
@@ -118,7 +122,6 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   const tags = [...html.matchAll(/<a href="#archive" data-tag="([^"]*)">/g)]
     .map((match) => decodeHtml(match[1]));
   assert.deepEqual(tags, [...articleTags].sort((a, b) => a.localeCompare(b, "zh-CN")));
-  assert.match(html, /class="spotlight" aria-label="精选内容"/);
   assert.match(html, /class="rs-nav" aria-label="主导航"/);
   assert.match(html, /role="group" aria-label="按内容类型筛选"/);
   assert.match(html, /class="result-count" aria-live="polite"/);
@@ -128,9 +131,10 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   }
   const nav = html.match(/<nav class="rs-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || "";
   assert.doesNotMatch(nav, />写作<|>项目<|>阅读</);
-  const spotlight = html.match(/<section class="spotlight"[^>]*>([\s\S]*?)<\/section>/)?.[1] || "";
-  assert.equal((spotlight.match(/class="entry entry--lead/g) || []).length, 1);
-  assert.equal((spotlight.match(/class="entry entry--small/g) || []).length, 4);
+  const spotlight = html.match(/<section class="spotlight" aria-label="精选内容">([\s\S]*?)<\/section>/)?.[1] || "";
+  const eligibleCount = expected.filter((href) => !href.startsWith("/projects/")).length;
+  assert.equal((spotlight.match(/class="entry entry--lead/g) || []).length, Math.min(1, eligibleCount));
+  assert.equal((spotlight.match(/class="entry entry--small/g) || []).length, Math.min(4, Math.max(0, eligibleCount - 1)));
   assert.doesNotMatch(spotlight, /href="\/projects\//);
   assert.doesNotMatch(html, /ink-hero|training-animation|ink-animations/);
   assert.match(html, /class="profile-socials" aria-label="社交平台"/);

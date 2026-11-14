@@ -42,7 +42,11 @@ async function findMarkdownFiles(directory, relativeDirectory = "") {
 
 async function loadContent(group) {
   const directory = path.join(contentRoot, group.key);
-  const files = await findMarkdownFiles(directory);
+  const files = await findMarkdownFiles(directory).catch((error) => {
+    // A clean Git checkout omits the directory after its last article is removed.
+    if (error.code === "ENOENT" && error.path === directory) return [];
+    throw error;
+  });
   const entries = [];
   const slugSources = new Map();
 
