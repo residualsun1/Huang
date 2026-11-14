@@ -420,10 +420,9 @@ h2 {
     font: 12px/18px var(--ui);
   }
   .archive-grid > .entry--archive {
-    --thumbnail-size: clamp(68px, 19.5vw, 80px);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) var(--thumbnail-size);
-    grid-template-areas: "date date" "text image";
+    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-areas: ". date" "text image";
     align-items: center;
     gap: 8px 14px;
     margin-inline: 16px;
@@ -484,7 +483,10 @@ h2 {
     min-height: 0;
   }
   .spotlight > .entry--small {
-    padding: 0 0 24px;
+    padding: 0;
+  }
+  .spotlight > .entry--small:not(:last-child) {
+    padding-bottom: 24px;
     margin-bottom: 16px;
     border-bottom: 1px solid var(--line);
   }
