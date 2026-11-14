@@ -27,7 +27,7 @@ function homepageEntries(collections) {
       imageAlt: String(entry.coverAlt ?? "").trim() || `${entry.title} 的封面`,
       animated: entry.coverAnimated === "true",
     };
-  })).sort((a, b) => b.date.localeCompare(a.date));
+  })).sort((a, b) => Number(Boolean(b.image)) - Number(Boolean(a.image)) || b.date.localeCompare(a.date));
 }
 
 function entryCard(entry, variant = "archive") {
@@ -49,8 +49,8 @@ function entryCard(entry, variant = "archive") {
 
 export function homePage(collections) {
   const entries = homepageEntries(collections);
-  const writings = entries.filter((entry) => entry.kind === "写作");
-  const articles = entries.filter((entry) => entry.kind !== "项目");
+  const articles = entries.filter((entry) => entry.image && entry.kind !== "项目");
+  const writings = articles.filter((entry) => entry.kind === "写作");
   const lead = writings.find((entry) => entry.pinned) ?? writings[0] ?? articles[0];
   const spotlights = articles.filter((entry) => entry !== lead).slice(0, 4);
   const tags = [...new Set(entries.flatMap((entry) => entry.tags))].sort((a, b) => a.localeCompare(b, "zh-CN"));
@@ -96,7 +96,7 @@ export function homePage(collections) {
           <span class="archive-anchor" id="writings" aria-hidden="true"></span>
           <span class="archive-anchor" id="readings" aria-hidden="true"></span>
           <div class="archive-toolbar">
-            <div class="archive-filters" role="group" aria-label="按内容类型筛选">${["全部", "写作", "项目", "阅读"].map((kind) => `<button type="button" data-kind="${kind}" aria-pressed="${kind === "全部"}">${kind === "全部" ? "最新" : kind}</button>`).join("")}</div>
+            <div class="archive-filters" role="group" aria-label="按内容类型筛选">${["全部", "写作", "项目", "阅读"].map((kind) => `<button type="button" data-kind="${kind}" aria-pressed="${kind === "全部"}">${kind}</button>`).join("")}</div>
             <span class="result-count" aria-live="polite">${entries.length} 篇</span>
           </div>
           <div class="active-tag" hidden><span></span><button type="button">清除筛选</button></div>

@@ -115,9 +115,9 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   assert.deepEqual(cards.map(({ href }) => href).sort(), expected.sort());
   assert.equal(archiveCards(firstGrid).length, Math.min(9, cards.length));
   assert.deepEqual(
-    [...archiveCards(firstGrid), ...archiveCards(additionalGrid)].map(({ href }) => href).sort(),
-    expected,
-    "禁用 JavaScript 时仍能访问每篇文章",
+    [...archiveCards(firstGrid), ...archiveCards(additionalGrid)].map(({ href }) => href),
+    cards.map(({ href }) => href),
+    "禁用 JavaScript 时也按同样顺序显示全部文章",
   );
   const tags = [...html.matchAll(/<a href="#archive" data-tag="([^"]*)">/g)]
     .map((match) => decodeHtml(match[1]));
@@ -132,10 +132,10 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   const nav = html.match(/<nav class="rs-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || "";
   assert.doesNotMatch(nav, />写作<|>项目<|>阅读</);
   const spotlight = html.match(/<section class="spotlight" aria-label="精选内容">([\s\S]*?)<\/section>/)?.[1] || "";
-  const eligibleCount = expected.filter((href) => !href.startsWith("/projects/")).length;
+  const eligibleCount = cards.filter(({ kind, card }) => kind !== "项目" && !card.includes("entry--text-only")).length;
   assert.equal((spotlight.match(/class="entry entry--lead/g) || []).length, Math.min(1, eligibleCount));
   assert.equal((spotlight.match(/class="entry entry--small/g) || []).length, Math.min(4, Math.max(0, eligibleCount - 1)));
-  assert.doesNotMatch(spotlight, /href="\/projects\//);
+  assert.doesNotMatch(spotlight, /href="\/projects\/|entry--text-only/);
   assert.doesNotMatch(html, /ink-hero|training-animation|ink-animations/);
   assert.match(html, /class="profile-socials" aria-label="社交平台"/);
   assert.match(html, /href="https:\/\/x\.com\/Residualsun1\/"/);
@@ -144,18 +144,19 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   assert.doesNotMatch(html, /mailto:|class="hero-intro"|class="breadcrumb"/);
 });
 
-test("首页优先展示置顶写作，无封面或原摘要时省略对应元素", () => {
+test("首页精选使用有封面的写作，优先采用置顶文章", () => {
   const group = groupDefinitions[1];
   const entries = [
-    fixtureEntry(group, { href: "/writings/newer/", date: "2026-02-01" }),
-    fixtureEntry(group, { href: "/writings/pinned/", pinned: true }),
+    fixtureEntry(group, { href: "/writings/newer/", date: "2026-02-01", cover: "/images/newer.webp" }),
+    fixtureEntry(group, { href: "/writings/pinned/", pinned: true, cover: "/images/pinned.webp" }),
   ];
   const leadCard = (items) => homePage([{ group, entries: items }])
     .match(/<article class="entry entry--lead[^>]*>[\s\S]*?<\/article>/)?.[0] || "";
   const lead = leadCard(entries);
   assert.match(lead, /href="\/writings\/pinned\/"/);
-  assert.doesNotMatch(lead, /entry-image|entry-summary/);
+  assert.doesNotMatch(lead, /entry-summary/);
   assert.match(leadCard(entries.slice(0, 1)), /href="\/writings\/newer\/"/);
+  assert.match(leadCard([entries[0], { ...entries[1], cover: "" }]), /href="\/writings\/newer\/"/);
   assert.match(leadCard([{ ...entries[1], homeDescription: "原摘要" }]), /class="entry-summary">原摘要</);
 });
 
@@ -203,15 +204,15 @@ test("后续新文章自动进入首页，封面保留 GIF/WebP 且内容安全�
     author: '作者 "A"',
     date: `2026-01-${String(index + 1).padStart(2, "0")}`,
     tags: [index % 2 ? "阅读 & 讨论" : "AI", '标签 "A"'],
-    cover: index === 11 ? "/images/new-cover.gif" : index === 10 ? "/images/new-cover.webp" : "",
+    cover: index === 10 ? "/images/new-cover.gif" : index === 9 ? "/images/new-cover.webp" : "",
     coverAlt: '封面 "A"',
   }));
   const html = homePage([{ group, entries }]);
   const template = html.match(/<template id="archive-cards">([\s\S]*?)<\/template>/)?.[1] || "";
   const cards = archiveCards(template);
   assert.equal(cards.length, entries.length);
-  assert.equal(cards[0].href, "/projects/fixture-11/");
-  assert.deepEqual(cards[0].tags, entries[11].tags);
+  assert.deepEqual(cards.slice(0, 4).map(({ href }) => href), [10, 9, 11, 8].map((index) => entries[index].href));
+  assert.deepEqual(cards[0].tags, entries[10].tags);
   assert.match(html, /src="\/images\/new-cover\.gif"/);
   assert.match(html, /src="\/images\/new-cover\.webp"/);
   assert.match(html, /class="entry entry--archive entry--text-only"/);
@@ -237,7 +238,8 @@ coverAlt: '一张 "封面"'
   assert.match(lead, cover);
   assert.match(archive[0].card, cover);
   const textOnly = homePage([{ group, entries: [{ ...entry, cover: undefined }] }]);
-  assert.match(textOnly, /class="entry entry--lead entry--text-only"/);
+  assert.doesNotMatch(textOnly, /class="spotlight"/);
+  assert.match(textOnly, /class="entry entry--archive entry--text-only"/);
   assert.doesNotMatch(textOnly, cover);
 });
 
