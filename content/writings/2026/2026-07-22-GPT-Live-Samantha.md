@@ -8,6 +8,8 @@ tags:
   - GPT-Live
 ---
 
+{{< audio server="netease" type="song" id="28226052" >}}
+
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/07/07-23-1.png)
 
 Karpathy 今天发布了一条关于自己与 LLM 对话的想法，里面提到 LLM 特别擅长重构用户冗长而杂乱的想法。相比于用户最开始的表述还要清晰，LLM 对前者乱麻般的思绪的复述要更加清晰。

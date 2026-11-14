@@ -1,12 +1,12 @@
 ---
-title: "通过充值 App Store 礼品卡订阅 Codex Plus"
+title: "通过充值 App Store 礼品卡订阅 ChatGPT Plus"
 date: "2026-06-23"
-slug: "appstore-codex-plus"
+slug: "appstore-chatgpt-plus"
 author: 黄国政
 tags:
   - Codex
   - 技术折腾
-description: "在没有海外信用卡的情况下，我终于成功订阅了 Codex Plus"
+description: "在没有海外信用卡的情况下，我终于成功订阅了 ChatGPT Plus"
 pinned: true
 ---
 
@@ -16,7 +16,7 @@ pinned: true
 
 [^service]: 我们无法得知中转站背后反代的大模型究竟是什么，代充服务则往往要求消费者提供诸如 https://chatgpt.com/api/auth/session 这样的链接，显然涉及账号隐私，后患无穷。
 
-本文以 Codex Plus 为例。开始以前，我们需要做好以下条件的准备：
+本文以 ChatGPT Plus 为例。开始以前，我们需要做好以下条件的准备：
 
 1. 可以成功科学上网的 VPN（必需）
 2. 一个海外邮箱（如 Google、Proton、Outlook 等，国内的 163 邮箱也可以）（必需）
@@ -29,7 +29,7 @@ pinned: true
 {{% notice warning "注意" %}}
 1. 以下经验主要参考了小红书用户经验帖子的分享，经个人实践后整理形成。
 2. 以下所有步骤都建议在开启 VPN 走代理的环境下进行。
-3. 通过礼品卡充值 Codex Plus 是当下的可行方式，但也可能在未来发生变化，并非最稳定的方式。事实上，只有我们自己的国产大模型做好了，才能从根本上摆脱绞尽脑汁获取海外大模型的现状。
+3. 通过礼品卡充值 ChatGPT Plus 是当下的可行方式，但也可能在未来发生变化，并非最稳定的方式。事实上，只有我们自己的国产大模型做好了，才能从根本上摆脱绞尽脑汁获取海外大模型的现状。
 {{% /notice %}}
 
 ## 一、获取美区 Apple ID
@@ -98,7 +98,7 @@ pinned: true
 
 ![](https://cdn.jsdelivr.net/gh/residualsun1/blog-static/project/2026/06/06-23-6.png)
 
-最后，让我们在美区 App Store 中下载的 ChatGPT 中将账号订阅升级为 Plus，会默认使用礼品卡充值的余额完成支付。此时在电脑上打开 Codex，登录升级为 Plus 的 GPT 账号，即可使用 Codex Plus 了。
+最后，让我们在美区 App Store 中下载的 ChatGPT 中将账号订阅升级为 Plus，会默认使用礼品卡充值的余额完成支付。此时在电脑上打开 Codex，登录升级为 Plus 的 GPT 账号，即可使用 Codex 了。
 
 ### 2.2 问题
 
