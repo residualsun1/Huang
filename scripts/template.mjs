@@ -79,14 +79,13 @@ ${content}${audioScripts}
 </html>`;
 }
 
-function siteHeader(active = "") {
-  const navItem = (label, href, key) => `<a${active === key ? ' class="is-active" aria-current="page"' : ""} href="${href}">${label}</a>`;
+function siteHeader({ highlightHome = false } = {}) {
   return `<header class="rs-header" id="home">
     <div class="rs-masthead">
       <p class="rs-brand"><a href="/" aria-label="Residualsun 首页">Residualsun</a></p>
     </div>
     <nav class="rs-nav" aria-label="主导航">
-      ${navItem("首页", "/", "home")}
+      <a href="/"${highlightHome ? ' class="is-active"' : ""}>首页</a>
       <a href="/#archive">归档</a><a href="/#about">关于</a>
     </nav>
   </header>`;
@@ -128,7 +127,7 @@ function collectionPage(collection) {
     description: `Residualsun 的${group.label}归档。`,
     pathname: `/${group.key}/`,
     bodyClass: `listing listing-${group.key}`,
-    content: `${siteHeader(group.key)}
+    content: `${siteHeader()}
     <main class="collection-shell">
       <header class="collection-header">
         <p class="section-kicker">${group.number} / ${group.eyebrow}</p>
@@ -195,7 +194,7 @@ export function detailPage(entry, previousEntry, nextEntry) {
     audio: hasAudio(entry.body),
     metingAudio: hasMetingAudio(entry.body),
     math: hasMath(entry.body),
-    content: `${siteHeader(entry.group.key)}
+    content: `${siteHeader({ highlightHome: true })}
     <main class="article-shell">
       <header class="article-header">
         <a class="article-back-home" href="/" aria-label="返回首页">

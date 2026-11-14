@@ -72,19 +72,6 @@ h2 {
   width: min(1248px, calc(100% - 64px));
   margin-inline: auto;
 }
-.homepage .rs-masthead {
-  min-height: 0;
-  padding-block: 12px;
-}
-.homepage .rs-nav {
-  height: 44px;
-  gap: 24px;
-  border-block-color: var(--line);
-}
-.homepage .rs-nav .is-active::after {
-  height: 1px;
-  background: var(--faint);
-}
 .archive { position: relative; }
 .archive-anchor { position: absolute; top: 0; }
 .button {
@@ -399,9 +386,6 @@ h2 {
   }
 }
 @media (max-width: 767px) {
-  .homepage .rs-nav {
-    gap: clamp(14px, 4.5vw, 22px);
-  }
   .page-width {
     width: 100%;
   }
