@@ -3,6 +3,8 @@ title: "阅读札记 | 《我们从未现代过：对称性人类学论集》"
 author: "黄国政"
 date: "2026-06-02"
 slug: "we-have-never-been-modern"
+cover: "/images/covers/we-have-never-been-modern.webp"
+coverAlt: "植物根茎、实验玻璃器具、研究记录与城市窗景交织在同一张工作桌上。"
 tags:
   - 阅读札记
   - 人类学

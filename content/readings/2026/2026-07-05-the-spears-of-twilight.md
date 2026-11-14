@@ -3,6 +3,8 @@ title: "阅读札记 | 《暮光之矛：一桩亚马孙雨林中的仇杀案》
 author: "黄国政"
 date: "2026-07-05"
 slug: "the-spears-of-twilight"
+cover: "/images/covers/the-spears-of-twilight.webp"
+coverAlt: "暮色中的雨林河流与木薯园圃，近景打开的田野笔记本画着植物与关系草图。"
 tags:
   - 阅读札记
   - 人类学

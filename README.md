@@ -27,8 +27,8 @@ date: 2026-10-03
 slug: example
 tags:
   - 写作
-cover: /images/example.webp
-coverAlt: 图片内容的简要说明
+cover: "https://example.com/images/example.webp"
+coverAlt: "图片内容的简要说明"
 ---
 
 这里写 Markdown 正文。
@@ -36,7 +36,7 @@ coverAlt: 图片内容的简要说明
 
 `title`、`date` 必填；其余字段按需填写。`slug` 决定固定文章网址，已发布文章请保持其值。省略时使用文件名。首页自动读取标题、摘要、日期、标签与封面；标签侧栏自动汇总所有文章。原有文章的 URL 和正文保留。
 
-封面文件放在 `public/images/`。支持 JPG、PNG、WebP 和 GIF，动态 WebP/GIF 直接显示原文件。未填写 `cover` 时，已有文章使用 `scripts/covers.mjs` 中的生成封面；新文章没有映射时显示文字卡片。首页两张默认封面保持轻缓漂移。
+在文章开头的 YAML 区域修改 `cover`，首页精选与归档卡片会使用同一张图。填可直接打开图片的 HTTPS 地址，带查询参数时也建议用引号包住整个网址。本地图片放在 `public/images/`，对应写法为 `cover: "/images/example.webp"`。`coverAlt` 可选，用来描述图片内容。删掉 `cover` 或将它留空，卡片会只显示文字。动态 WebP 和 GIF 会直接播放。已有的轻缓漂移动效由 `coverAnimated: true` 控制。
 
 ## 发布
 

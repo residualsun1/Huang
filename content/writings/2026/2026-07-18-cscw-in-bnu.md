@@ -2,6 +2,8 @@
 title: "2026 CSCW 与社会计算暑校有感"
 date: "2026-07-18"
 slug: "cscw-in-bnu"
+cover: "/images/covers/cscw-in-bnu.webp"
+coverAlt: "学生与教师在阳光下的校园餐厅交流，餐盘旁的笔记本画着彩色流程草图。"
 author: 黄国政
 tags:
   - AI

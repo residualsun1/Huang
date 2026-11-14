@@ -221,6 +221,26 @@ test("后续新文章自动进入首页，封面保留 GIF/WebP 且内容安全�
   assert.equal((html.match(/data-tag=/g) || []).length, 3);
 });
 
+test("文章 YAML 中的 HTTPS 封面用于首页精选和归档", () => {
+  const { data } = parseFrontmatter(`---
+cover: "https://example.com/images/cover?width=900&format=webp"
+coverAlt: '一张 "封面"'
+---
+正文`);
+  const group = groupDefinitions[1];
+  const entry = fixtureEntry(group, data);
+  const html = homePage([{ group, entries: [entry] }]);
+  const cover = /src="https:\/\/example\.com\/images\/cover\?width=900&amp;format=webp" alt="一张 &quot;封面&quot;"/;
+  const lead = html.match(/<article class="entry entry--lead"[\s\S]*?<\/article>/)?.[0] || "";
+  const archive = archiveCards(html.match(/<template id="archive-cards">([\s\S]*?)<\/template>/)?.[1] || "");
+
+  assert.match(lead, cover);
+  assert.match(archive[0].card, cover);
+  const textOnly = homePage([{ group, entries: [{ ...entry, cover: undefined }] }]);
+  assert.match(textOnly, /class="entry entry--lead entry--text-only"/);
+  assert.doesNotMatch(textOnly, cover);
+});
+
 test("项目、写作和阅读归档页采用聚焦且无摘要的布局", async () => {
   const css = await readFile(new URL("styles.css", root), "utf8");
 

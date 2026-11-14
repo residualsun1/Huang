@@ -2,6 +2,8 @@
 title: "通过充值 App Store 礼品卡订阅 ChatGPT Plus"
 date: "2026-06-23"
 slug: "appstore-chatgpt-plus"
+cover: "/images/covers/appstore-codex-plus.webp"
+coverAlt: "空白礼品卡沿纸桥穿过手机形状的门，通往一台展开的笔记本电脑。"
 author: 黄国政
 tags:
   - Codex

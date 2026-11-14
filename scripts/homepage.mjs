@@ -1,4 +1,3 @@
-import { generatedCovers } from "./covers.mjs";
 import { assetUrl } from "./assets.mjs";
 import { siteHeader } from "./template.mjs";
 
@@ -12,10 +11,9 @@ const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
 
 function homepageEntries(collections) {
   return collections.flatMap(({ group, entries }) => entries.map((entry) => {
-    const generated = generatedCovers[entry.slug];
-    const cover = String(entry.cover || "").trim();
+    const cover = typeof entry.cover === "string" ? entry.cover.trim() : "";
+    const validCover = /^\/(?![\/\\])/.test(cover) || (/^https:\/\//i.test(cover) && URL.canParse(cover));
     return {
-      slug: entry.slug,
       href: entry.href,
       title: entry.title,
       summary: entry.description,
@@ -25,9 +23,9 @@ function homepageEntries(collections) {
       date: String(entry.date),
       kind: group.label,
       tags: entry.tags,
-      image: cover || generated?.image,
-      imageAlt: cover ? String(entry.coverAlt || `${entry.title} 的封面`).trim() : generated?.imageAlt || "",
-      animated: !cover && Boolean(generated?.animated),
+      image: validCover ? cover : "",
+      imageAlt: String(entry.coverAlt ?? "").trim() || `${entry.title} 的封面`,
+      animated: entry.coverAnimated === "true",
     };
   })).sort((a, b) => b.date.localeCompare(a.date));
 }
