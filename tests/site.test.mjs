@@ -218,22 +218,20 @@ test("后续新文章自动进入首页，封面保留 GIF/WebP 且内容安全�
 });
 
 test("项目、写作和阅读归档页采用聚焦且无摘要的布局", async () => {
-  const projects = await readFile(new URL("projects/index.html", root), "utf8");
-  const writings = await readFile(new URL("writings/index.html", root), "utf8");
-  const readings = await readFile(new URL("readings/index.html", root), "utf8");
   const css = await readFile(new URL("styles.css", root), "utf8");
 
-  assert.match(projects, /<body class="listing listing-projects">/);
-  assert.match(projects, /<h1>项目<\/h1>/);
-  assert.ok((projects.match(/class="writing-row"/g) ?? []).length >= 1);
-  assert.doesNotMatch(projects, /<\/strong>\s*<span>/);
-  assert.match(writings, /class="collection-shell"/);
-  assert.match(writings, /<body class="listing listing-writings">/);
-  assert.match(writings, /<h1>写作<\/h1>/);
-  assert.match(writings, /class="writing-row" href="\/writings\/[^"/]+\/"/);
-  assert.doesNotMatch(writings, /<\/strong>\s*<span>/);
-  assert.match(readings, /<h1>阅读<\/h1>/);
-  assert.doesNotMatch(readings, /<\/strong>\s*<span>/);
+  for (const { key, label } of groupDefinitions) {
+    const archive = await readFile(new URL(`${key}/index.html`, root), "utf8");
+    const slugs = await groupDirectoryNames(key);
+    const rows = [...archive.matchAll(/class="writing-row" href="([^"]+)"/g)].map(([, href]) => href);
+
+    assert.ok(archive.includes(`<body class="listing listing-${key}">`));
+    assert.match(archive, /class="collection-shell"/);
+    assert.ok(archive.includes(`<h1>${label}</h1>`));
+    assert.deepEqual(rows.sort(), slugs.map((slug) => `/${key}/${slug}/`).sort(), `${label}归档应列出当前栏目下的全部文章`);
+    assert.doesNotMatch(archive, /<\/strong>\s*<span>/);
+  }
+
   assert.match(css, /\.listing \.collection-shell \{[\s\S]*?760px/);
   assert.match(css, /\.collection-header h1 \{[\s\S]*?color: #1a1a1a;[\s\S]*?font-weight: 400;[\s\S]*?letter-spacing: -0\.02em;/);
   assert.match(css, /\.listing \.writing-row \{[\s\S]*?padding: 16px 4px;[\s\S]*?border-bottom: 0;/);
