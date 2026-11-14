@@ -34,5 +34,6 @@
   }
   .detail-editorial .article-header h1 { font-size: 30px; line-height: 1.35; }
   .detail-editorial .article-subtitle { font-size: 18px; line-height: 1.6; margin-top: 12px; }
-  .detail-editorial .article-meta { margin-top: 24px; gap: 16px; }
+  .detail-editorial .article-meta { margin-top: 24px; }
+  .detail-editorial .article-record { display: none; }
 }
