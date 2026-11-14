@@ -202,6 +202,11 @@ export function detailPage(entry, previousEntry, nextEntry) {
     content: `${siteHeader({ showNavigation: false })}
     <main class="article-shell">
       <header class="article-header">
+        <a class="article-back-home" href="/" aria-label="返回首页">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m15 5-7 7 7 7"/>
+          </svg>
+        </a>
         <h1>${escapeHtml(entry.title)}</h1>
         ${subtitle}
         <div class="article-meta">

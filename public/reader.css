@@ -16,11 +16,28 @@
   color: #767676;
 }
 .article-date-unit { font-weight: 400; }
+.article-back-home { display: none; }
 @media (max-width: 767px) {
+  .detail-editorial > .rs-header { display: none; }
   .detail-editorial .article-header {
-    padding: 24px 0;
+    padding: max(16px, env(safe-area-inset-top, 0px)) 0 24px;
     border-bottom-color: #e2e2e2;
   }
+  .article-back-home {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 28px;
+    border-radius: 50%;
+    background: #f3f3f3;
+    color: #333;
+  }
+  .article-back-home:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+  .detail-editorial .article-header h1 { line-height: 1.25; }
   .detail-editorial .prose { margin-top: 24px; }
   .detail-editorial .prose > :first-child { margin-top: 0; }
 }
