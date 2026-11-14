@@ -125,13 +125,30 @@ test("编辑式首页包含完整文章、可筛选标签和无脚本阅读入�
   const nav = html.match(/<nav class="rs-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1] || "";
   assert.doesNotMatch(nav, />写作<|>项目<|>阅读</);
   const spotlight = html.match(/<section class="spotlight"[^>]*>([\s\S]*?)<\/section>/)?.[1] || "";
+  assert.equal((spotlight.match(/class="entry entry--lead/g) || []).length, 1);
   assert.equal((spotlight.match(/class="entry entry--small/g) || []).length, 4);
   assert.doesNotMatch(spotlight, /href="\/projects\//);
+  assert.doesNotMatch(html, /ink-hero|training-animation|ink-animations/);
   assert.match(html, /class="profile-socials" aria-label="社交平台"/);
   assert.match(html, /href="https:\/\/x\.com\/Residualsun1\/"/);
   assert.match(html, /href="https:\/\/github\.com\/residualsun1"/);
   assert.match(html, /重要的是此时此刻/);
   assert.doesNotMatch(html, /mailto:|class="hero-intro"|class="breadcrumb"/);
+});
+
+test("首页优先展示置顶写作，无封面或原摘要时省略对应元素", () => {
+  const group = groupDefinitions[1];
+  const entries = [
+    fixtureEntry(group, { href: "/writings/newer/", date: "2026-02-01" }),
+    fixtureEntry(group, { href: "/writings/pinned/", pinned: true }),
+  ];
+  const leadCard = (items) => homePage([{ group, entries: items }])
+    .match(/<article class="entry entry--lead[^>]*>[\s\S]*?<\/article>/)?.[0] || "";
+  const lead = leadCard(entries);
+  assert.match(lead, /href="\/writings\/pinned\/"/);
+  assert.doesNotMatch(lead, /entry-image|entry-summary/);
+  assert.match(leadCard(entries.slice(0, 1)), /href="\/writings\/newer\/"/);
+  assert.match(leadCard([{ ...entries[1], homeDescription: "原摘要" }]), /class="entry-summary">原摘要</);
 });
 
 test("首页图片、图标、字体和筛选脚本均包含在静态构建中", async () => {
