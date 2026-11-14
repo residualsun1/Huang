@@ -1215,38 +1215,33 @@ a { color: inherit; }
 }
 
 /* 表格外层：小屏幕时允许横向滚动。 */
-.table-scroll {
+.prose .table-scroll {
   overflow-x: auto;
   max-width: 100%;
   margin: 2em 0;
-  border: 1px solid var(--gray-alpha-400);
-  border-radius: var(--radius-sm);
-  background: var(--surface-raised);
 }
 
-/* 表格本体与单元格边框、内边距。 */
+/* 正文三线表：顶线、表头分隔线、底线。 */
 .prose table {
   width: 100%;
   min-width: 560px;
   border-collapse: collapse;
+  border-block: 1.2px solid var(--gray-alpha-400);
   font-size: 14px;
   line-height: 20px;
 }
 
+.prose thead { border-bottom: 0.8px solid var(--gray-alpha-400); }
+
+.prose :is(table, thead, tbody, th, td) { background: transparent; }
+
 .prose th,
 .prose td {
   padding: 12px 14px;
-  border-right: 1px solid var(--gray-alpha-400);
-  border-bottom: 1px solid var(--gray-alpha-400);
   vertical-align: top;
 }
 
-.prose th:last-child,
-.prose td:last-child { border-right: 0; }
-.prose tr:last-child td { border-bottom: 0; }
-
 .prose th {
-  background: var(--background-200);
   color: var(--gray-1000);
   font-size: 13px;
   font-weight: 600;
