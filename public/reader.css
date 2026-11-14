@@ -37,7 +37,7 @@
     outline: 2px solid currentColor;
     outline-offset: 3px;
   }
-  .detail-editorial .article-header h1 { line-height: 1.25; }
+  .detail-editorial .article-header h1 { line-height: 1.30; }
   .detail-editorial .prose { margin-top: 24px; }
   .detail-editorial .prose > :first-child { margin-top: 0; }
 }
