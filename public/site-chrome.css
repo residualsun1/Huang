@@ -20,6 +20,8 @@
 .rs-nav .is-active::after { content: ""; position: absolute; height: 3px; bottom: 0; left: 0; right: 0; background: #757575; }
 @media (min-width: 768px) {
   .homepage .rs-header { font-family: var(--rs-brand-font); }
+  :is(.homepage, .detail-editorial) > .rs-header > .rs-masthead { min-height: 88px; padding-block: 8px; }
+  :is(.homepage, .detail-editorial) > .rs-header .rs-brand { font-size: 44px; }
 }
 .rs-footer { margin: 80px 8px 0; padding-bottom: 40px; }
 .rs-footer-title { font: 700 15px/24px var(--rs-serif); border-bottom: 1px solid #e9e9e9; padding-bottom: 12px; }
@@ -31,6 +33,8 @@
 @media (max-width: 767px) {
   .rs-masthead { min-height: 72px; }
   .rs-brand { font-size: 30px; }
+  .homepage > .rs-header > .rs-masthead { min-height: 60px; padding-block: 8px; }
+  .homepage > .rs-header .rs-brand { font-size: 26px; }
   .rs-nav { height: 48px; }
   .rs-footer-width { width: 100%; }
   .rs-footer { margin: 48px 16px 0; padding-bottom: 32px; }
